@@ -48,10 +48,10 @@
    "node_type": "conversation",
    "on_enter": {
     "type": "tts",
-    "text": "Hello, I am a digital assistant calling from Freya Bank. This call is recorded. Am I speaking with {{title}} {{last_name}}?"
+    "text": "Hello, I am a digital assistant calling from Freya Bank, and a recording of this call is kept. Am I speaking with {{title}} {{last_name}}?"
    },
    "on_enter_first_entry_only": true,
-   "task_message": "You have already said that you are a digital assistant calling from Freya Bank, that the call is recorded, and asked \"Am I speaking with {{title}} {{last_name}}?\". Your only job here is to find out who is on the line.\n\nUntil identity is verified, never say why you are calling. Never say \"collections\", \"debt\", \"payment\", \"account\", \"loan\", \"card\", any product or any amount. If asked what it is about, say you can only discuss it with {{title}} {{last_name}} in person.\n\n- Only \"yes\", \"that's me\", \"speaking\" or the customer's own name confirms. \"Hello\", \"go ahead\" and \"who is this\" do not confirm.\n- If it is not confirmed yet, ask once more: \"Am I speaking with {{title}} {{last_name}}?\". If the person asked a question, answer it first (robot or AI, scam), then ask; that ask is the second ask. If it is still not confirmed after the second ask, thank them, say goodbye and call close_call with outcome not_reached and reason unclear.\n- If the person says this number does not belong to the customer: thank them, say goodbye, call close_call with outcome not_reached and reason wrong_number.\n- If the person says the customer has died: say \"I am sorry for your loss.\", say goodbye, and call close_call with outcome not_reached and reason deceased. Ask nothing else.\n- If the person says a second time that they do not want to talk: thank them, say goodbye, call close_call with outcome not_verified and reason declined.\n- If the person asks for a human: ask once whether you can help first. If they insist, call transfer_to_agent with queue general.",
+   "task_message": "You have already said that you are a digital assistant calling from Freya Bank, that a recording of this call is kept, and asked \"Am I speaking with {{title}} {{last_name}}?\". Your only job here is to find out who is on the line.\n\nUntil identity is verified, never say why you are calling. Never say \"collections\", \"debt\", \"payment\", \"account\", \"loan\", \"card\", any product or any amount. If asked what it is about, say you can only discuss it with {{title}} {{last_name}} in person.\n\n- Only \"yes\", \"that's me\", \"speaking\" or the customer's own name confirms. \"Hello\", \"go ahead\" and \"who is this\" do not confirm.\n- If it is not confirmed yet, ask once more: \"Am I speaking with {{title}} {{last_name}}?\". If the person asked a question, answer it first (robot or AI, scam), then ask; that ask is the second ask. If it is still not confirmed after the second ask, thank them, say goodbye and call close_call with outcome not_reached and reason unclear.\n- If the person says this number does not belong to the customer: thank them, say goodbye, call close_call with outcome not_reached and reason wrong_number.\n- If the person says the customer has died: say \"I am sorry for your loss.\", say goodbye, and call close_call with outcome not_reached and reason deceased. Ask nothing else.\n- If the person says a second time that they do not want to talk: thank them, say goodbye, call close_call with outcome not_verified and reason declined.\n- If the person asks for a human: ask once whether you can help first. If they insist, call transfer_to_agent with queue general.",
    "tools": [
     {
      "type": "function",
@@ -209,6 +209,20 @@
         "variable": "close_call_response.data.ok",
         "operator": "equals",
         "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
        }
       ]
      }
@@ -482,6 +496,292 @@
        }
       ]
      }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "callback_failed",
+     "description": "schedule_callback failed twice with a service error",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "schedule_callback_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60
+  },
+  "service_down": {
+   "name": "service_down",
+   "node_type": "conversation",
+   "on_enter": {
+    "type": "llm"
+   },
+   "on_enter_first_entry_only": true,
+   "task_message": "The bank's identity check is not working right now: it failed twice. Never say why you are calling and name no product, debt or amount. Tell the customer there is a technical problem and that Freya Bank will call again another time. Thank them, say goodbye, and in the same message call close_call with outcome no_promise and reason service_error.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "Ends the call in the bank's records. CALL it exactly once, as the very last tool call, when the call is over. In the SAME message, BEFORE calling it, thank the customer and say goodbye. outcome and reason follow the rules of the current step.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://freya-bank-mock.freyavoice.workers.dev/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "promise",
+            "paid",
+            "transferred",
+            "no_promise",
+            "not_verified",
+            "not_reached"
+           ],
+           "default": "{{outcome}}",
+           "description": "One of: promise, paid, transferred, no_promise, not_verified, not_reached."
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "restructuring",
+            "human",
+            "support",
+            "refused",
+            "hardship",
+            "dispute",
+            "service_error",
+            "failed",
+            "declined",
+            "callback",
+            "no_callback",
+            "wrong_number",
+            "deceased",
+            "unclear"
+           ],
+           "default": "{{reason}}",
+           "description": "Leave out for promise and paid. transferred: restructuring, human, support. no_promise: refused, hardship, dispute, service_error. not_verified: failed, declined. not_reached: callback, no_callback, wrong_number, deceased, unclear."
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ndef tv(x):\n    return x is True or str(x).strip().lower() == 'true'\ndef failed(res):\n    if not isinstance(res, dict):\n        return True\n    sc = res.get('status_code')\n    d = res.get('data')\n    if sc is not None and str(sc) != '200':\n        return True\n    return not isinstance(d, dict)\n\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        tok = tv(vars.get('transfer_to_agent_response.data.ok'))\n        q = str(vars.get('transfer_to_agent_args.queue') or '')\n        has_p = 'create_promise_response.data.ok' in vars\n        pok = tv(vars.get('create_promise_response.data.ok'))\n        left = str(vars.get('verify_identity_response.data.wrong_answers_left'))\n        av = tv(vars.get('verify_identity_response.data.all_verified'))\n        if tok and q in ('general', 'support', 'restructuring'):\n            b['outcome'] = 'transferred'\n            b['reason'] = 'human' if q == 'general' else q\n        elif has_p and pok:\n            b['outcome'] = 'promise'\n        elif has_p and b.get('outcome') == 'promise':\n            b['outcome'] = 'no_promise'\n            b['reason'] = 'service_error'\n        elif left == '0' and not av:\n            b['outcome'] = 'not_verified'\n            b['reason'] = 'failed'\n        if b.get('outcome') in ('promise', 'paid') or not b.get('reason'):\n            b.pop('reason', None)\n        config['body'] = b\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef tv(x):\n    return x is True or str(x).strip().lower() == 'true'\ndef failed(res):\n    if not isinstance(res, dict):\n        return True\n    sc = res.get('status_code')\n    d = res.get('data')\n    if sc is not None and str(sc) != '200':\n        return True\n    return not isinstance(d, dict)\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n        ok = (not failed(result)) and tv(result['data'].get('ok'))\n        if not ok:\n            msg = 'close_call failed. Call close_call again with the same outcome and reason. Say nothing else.'\n            if isinstance(result.get('data'), dict):\n                result['data']['what_to_do_next'] = msg\n            else:\n                result['what_to_do_next'] = msg\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
+    }
+   ],
+   "max_node_turns": 60
+  },
+  "callback_failed": {
+   "name": "callback_failed",
+   "node_type": "conversation",
+   "on_enter": {
+    "type": "llm"
+   },
+   "on_enter_first_entry_only": true,
+   "task_message": "The callback could NOT be booked: the service failed twice and nothing was saved. Never say it is booked. Tell the person you could not book the callback. Thank them, say goodbye, and in the same message call close_call with outcome not_reached and reason no_callback.",
+   "tools": [
+    {
+     "type": "function",
+     "config": {
+      "timeoutMs": 12000,
+      "maxRetries": 0
+     },
+     "function": {
+      "name": "close_call",
+      "handler": "__function__:api_call",
+      "description": "Ends the call in the bank's records. CALL it exactly once, as the very last tool call, when the call is over. In the SAME message, BEFORE calling it, thank the customer and say goodbye. outcome and reason follow the rules of the current step.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "url": {
+         "type": "string",
+         "default": "https://freya-bank-mock.freyavoice.workers.dev/v1/close_call"
+        },
+        "method": {
+         "type": "string",
+         "default": "POST"
+        },
+        "headers": {
+         "type": "object",
+         "properties": {
+          "Content-Type": {
+           "type": "string",
+           "default": "application/json"
+          }
+         }
+        },
+        "body": {
+         "type": "object",
+         "properties": {
+          "customer_id": {
+           "type": "string",
+           "default": "{{customer_id}}"
+          },
+          "outcome": {
+           "type": "string",
+           "enum": [
+            "promise",
+            "paid",
+            "transferred",
+            "no_promise",
+            "not_verified",
+            "not_reached"
+           ],
+           "default": "{{outcome}}",
+           "description": "One of: promise, paid, transferred, no_promise, not_verified, not_reached."
+          },
+          "reason": {
+           "type": "string",
+           "enum": [
+            "restructuring",
+            "human",
+            "support",
+            "refused",
+            "hardship",
+            "dispute",
+            "service_error",
+            "failed",
+            "declined",
+            "callback",
+            "no_callback",
+            "wrong_number",
+            "deceased",
+            "unclear"
+           ],
+           "default": "{{reason}}",
+           "description": "Leave out for promise and paid. transferred: restructuring, human, support. no_promise: refused, hardship, dispute, service_error. not_verified: failed, declined. not_reached: callback, no_callback, wrong_number, deceased, unclear."
+          }
+         },
+         "required": [
+          "outcome"
+         ]
+        }
+       }
+      }
+     },
+     "pre_process_code": "\ndef tv(x):\n    return x is True or str(x).strip().lower() == 'true'\ndef failed(res):\n    if not isinstance(res, dict):\n        return True\n    sc = res.get('status_code')\n    d = res.get('data')\n    if sc is not None and str(sc) != '200':\n        return True\n    return not isinstance(d, dict)\n\ntry:\n    b = config.get('body')\n    if isinstance(b, dict):\n        tok = tv(vars.get('transfer_to_agent_response.data.ok'))\n        q = str(vars.get('transfer_to_agent_args.queue') or '')\n        has_p = 'create_promise_response.data.ok' in vars\n        pok = tv(vars.get('create_promise_response.data.ok'))\n        left = str(vars.get('verify_identity_response.data.wrong_answers_left'))\n        av = tv(vars.get('verify_identity_response.data.all_verified'))\n        if tok and q in ('general', 'support', 'restructuring'):\n            b['outcome'] = 'transferred'\n            b['reason'] = 'human' if q == 'general' else q\n        elif has_p and pok:\n            b['outcome'] = 'promise'\n        elif has_p and b.get('outcome') == 'promise':\n            b['outcome'] = 'no_promise'\n            b['reason'] = 'service_error'\n        elif left == '0' and not av:\n            b['outcome'] = 'not_verified'\n            b['reason'] = 'failed'\n        if b.get('outcome') in ('promise', 'paid') or not b.get('reason'):\n            b.pop('reason', None)\n        config['body'] = b\nexcept Exception:\n    pass\n",
+     "post_process_code": "\ndef tv(x):\n    return x is True or str(x).strip().lower() == 'true'\ndef failed(res):\n    if not isinstance(res, dict):\n        return True\n    sc = res.get('status_code')\n    d = res.get('data')\n    if sc is not None and str(sc) != '200':\n        return True\n    return not isinstance(d, dict)\n\ntry:\n    if isinstance(result, dict):\n        result.pop('header', None)\n        ok = (not failed(result)) and tv(result['data'].get('ok'))\n        if not ok:\n            msg = 'close_call failed. Call close_call again with the same outcome and reason. Say nothing else.'\n            if isinstance(result.get('data'), dict):\n                result['data']['what_to_do_next'] = msg\n            else:\n                result['what_to_do_next'] = msg\nexcept Exception:\n    pass\n"
+    }
+   ],
+   "transitions": [
+    {
+     "target_node": "end",
+     "description": "close_call was recorded",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "true"
+       },
+       {
+        "variable": "close_call_response.data.ok",
+        "operator": "equals",
+        "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
     }
    ],
    "max_node_turns": 60
@@ -720,6 +1020,34 @@
      }
     },
     {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "service_down",
+     "description": "verify_identity failed twice with a service error",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "verify_identity_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
+    },
+    {
      "target_node": "load_account",
      "description": "both security answers verified",
      "condition": {
@@ -904,7 +1232,7 @@
     "text": "Thank you, you are verified. I am calling from the collections team about a late payment on your {{product_words}}. The past-due amount is {{past_due_text}}, and it is {{days_late_text}} days late. Can you make this payment today?"
    },
    "on_enter_first_entry_only": true,
-   "task_message": "The customer is verified. You have already said you are calling from the collections team, named the product, stated the past-due amount and the days late, and asked \"Can you make this payment today?\".\n\nACCOUNT\n- Product: {{product_words}}\n- Full past-due amount: {{past_due_text}}\n- Days late: {{days_late_text}} (band: {{band}})\n- Floor, the lowest amount you may record: {{floor_text}}\n- Deadline, the latest date you may record: {{deadline_spoken}} ({{deadline_iso}})\n- Persuasion attempts allowed: {{attempts}}\n- Attempt 1 date: {{attempt1_spoken}} ({{attempt1_iso}})\n\nDATE WORDS\n{{week_table}}\n\nCALENDAR. Each line says what to do when the customer names that day:\n{{calendar}}\n\nHANDLE THE CUSTOMER'S ANSWERS. Check these in order:\n1. Illness, a death in the family or job loss: say one short sentence of sympathy. Make NO persuasion attempt. Offer once to connect them with the customer support team. If they accept, call transfer_to_agent with queue support. If they decline, thank them, say goodbye and call close_call with outcome no_promise and reason hardship. Only if they still name a date or an amount themselves, handle it as in rule 6.\n2. They say they already paid this amount: say that payments can take one business day to appear. Take no promise. Thank them, say goodbye, call close_call with outcome paid.\n3. They say the debt is not theirs, they never had this product, or it was closed or paid off in the past: do not argue and take no promise. Thank them, say goodbye, call close_call with outcome no_promise and reason dispute.\n4. They ask for a new payment plan or lower instalments: describe no plan. Call transfer_to_agent with queue restructuring.\n5. They ask for a human: ask once whether you can help first. If they insist, call transfer_to_agent with queue general.\n6. They name a date and/or an amount. This is NEVER a refusal.\n   - Date: find it in the calendar and do exactly what its line says. Use DATE WORDS for \"this <weekday>\", \"next <weekday>\", \"tomorrow\".\n   - A vague period (\"next week\", \"the week after next\", \"end of the month\", \"when my salary comes\"): ask once for the exact day. If they still give no exact day, propose the deadline.\n   - If they refuse the deadline after you offered it, that is a flat refusal (rule 8).\n   - Amount: anything from {{floor_text}} up to {{past_due_text}}, both included, is accepted. Below {{floor_text}}: say it cannot be recorded and offer {{floor_text}} once; if they do not accept, that is a flat refusal (rule 8).\n\n   - With only a date, the amount is the full amount. With only an amount, ask on which day they can pay it.\n7. They say the full amount is too much: offer {{floor_text}}, once, and say that the rest stays overdue. Ask if they can pay it today. If they refuse the floor, that is a flat refusal (rule 8).\n8. A flat refusal or a non-answer (including a no to paying today with no date and no amount) uses one persuasion attempt:\n   - Attempt 1: propose the full amount {{past_due_text}} on {{attempt1_spoken}}.\n   - Attempt 2, only when persuasion attempts allowed is 2: propose {{floor_text}} on {{deadline_spoken}}.\n   - When the allowed attempts are used up, stop. Do not repeat an offer they refused. Thank them, say goodbye, call close_call with outcome no_promise and reason refused.\n9. They say a second time that they do not want to talk: thank them, say goodbye, call close_call with outcome no_promise and reason refused.\n\nNEVER ask \"how much can you pay?\" or any question that lets them choose the amount. You propose every amount.\n\nCONFIRM AND RECORD\n- When an allowed amount and an allowed date are agreed, read back: \"So that is <amount> for your {{product_words}}, paid on <weekday, day month>. Do you confirm?\"\n- Call create_promise only after a clear yes, with amount as a number and date as YYYY-MM-DD.\n- If they change the date or the amount at this point, check the new value with the rules above and read it back again.\n- There is one promise only. A recorded promise cannot be changed or cancelled in this call; if they ask, say they can change it in the mobile app.\n- Follow what_to_do_next after create_promise. Do not use the word \"recorded\" about the promise until a create_promise result says it is recorded. After a recorded promise, say: \"You will receive a text message confirming this promise.\"",
+   "task_message": "The customer is verified. You have already said you are calling from the collections team, named the product, stated the past-due amount and the days late, and asked \"Can you make this payment today?\".\n\nACCOUNT\n- Product: {{product_words}}\n- Full past-due amount: {{past_due_text}}\n- Days late: {{days_late_text}} (band: {{band}})\n- Floor, the lowest amount you may record: {{floor_text}}\n- Deadline, the latest date you may record: {{deadline_spoken}} ({{deadline_iso}})\n- Persuasion attempts allowed: {{attempts}}\n- Attempt 1 date: {{attempt1_spoken}} ({{attempt1_iso}})\n\nDATE WORDS\n{{week_table}}\n\nCALENDAR. Each line says what to do when the customer names that day:\n{{calendar}}\n\nHANDLE THE CUSTOMER'S ANSWERS. Check these in order:\n1. Illness, a death in the family or job loss: say one short sentence of sympathy. Make NO persuasion attempt. Offer once to connect them with the customer support team. If they accept, call transfer_to_agent with queue support. If they decline, thank them, say goodbye and call close_call with outcome no_promise and reason hardship. Only if they still name a date or an amount themselves, handle it as in rule 6.\n2. They say they already paid this amount: say that payments can take one business day to appear. Take no promise. Thank them, say goodbye, call close_call with outcome paid.\n3. They say the debt is not theirs, they never had this product, or it was closed or paid off in the past: do not argue and take no promise. Thank them, say goodbye, call close_call with outcome no_promise and reason dispute.\n4. They ask for a new payment plan or lower instalments: describe no plan. Call transfer_to_agent with queue restructuring.\n5. They ask for a human: ask once whether you can help first. If they insist, call transfer_to_agent with queue general.\n6. They name a date and/or an amount. This is NEVER a refusal.\n   - Date: find it in the calendar and do exactly what its line says. Use DATE WORDS for \"this <weekday>\", \"next <weekday>\", \"tomorrow\".\n   - A vague period (\"next week\", \"the week after next\", \"end of the month\", \"when my salary comes\"): ask once for the exact day. If they still give no exact day, propose the deadline.\n   - If they refuse the deadline after you offered it, that is a flat refusal (rule 8).\n   - Amount: anything from {{floor_text}} up to {{past_due_text}}, both included, is accepted. Below {{floor_text}}: say you cannot accept that amount and offer {{floor_text}} once; if they do not accept, that is a flat refusal (rule 8).\n\n   - With only a date, the amount is the full amount. With only an amount, ask on which day they can pay it.\n7. They say the full amount is too much: offer {{floor_text}}, once, and say that the rest stays overdue. Ask if they can pay it today. If they refuse the floor, that is a flat refusal (rule 8).\n8. A flat refusal or a non-answer (including a no to paying today with no date and no amount) uses one persuasion attempt:\n   - Attempt 1: propose the full amount {{past_due_text}} on {{attempt1_spoken}}.\n   - Attempt 2, only when persuasion attempts allowed is 2: propose {{floor_text}} on {{deadline_spoken}}.\n   - When the allowed attempts are used up, stop. Do not repeat an offer they refused. Thank them, say goodbye, call close_call with outcome no_promise and reason refused.\n9. They say a second time that they do not want to talk: thank them, say goodbye, call close_call with outcome no_promise and reason refused.\n\nNEVER ask \"how much can you pay?\" or any question that lets them choose the amount. You propose every amount.\n\nCONFIRM AND RECORD\n- When an allowed amount and an allowed date are agreed, read back: \"So that is <amount> for your {{product_words}}, paid on <weekday, day month>. Do you confirm?\"\n- Call create_promise only after a clear yes, with amount as a number and date as YYYY-MM-DD.\n- If they change the date or the amount at this point, check the new value with the rules above and read it back again.\n- There is one promise only. A recorded promise cannot be changed or cancelled in this call; if they ask, say they can change it in the mobile app.\n- Follow what_to_do_next after create_promise. Do not use the word \"recorded\" about the promise until a create_promise result says it is recorded. After a recorded promise, say: \"You will receive a text message confirming this promise.\"",
    "tools": [
     {
      "type": "function",
@@ -1124,6 +1452,20 @@
         "variable": "close_call_response.data.ok",
         "operator": "equals",
         "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
        }
       ]
      }
@@ -1211,7 +1553,7 @@
     "text": "I understand. The lowest amount I can accept is {{floor_text}}, and the rest stays overdue. Can you pay {{floor_text}} today?"
    },
    "on_enter_first_entry_only": true,
-   "task_message": "The customer is verified and said the full amount is too much. You have ALREADY offered {{floor_text}} for today and said that the rest stays overdue. That offer is made: do not make it again.\n\nACCOUNT\n- Product: {{product_words}}\n- Full past-due amount: {{past_due_text}}\n- Days late: {{days_late_text}} (band: {{band}})\n- Floor, the lowest amount you may record: {{floor_text}}\n- Deadline, the latest date you may record: {{deadline_spoken}} ({{deadline_iso}})\n- Persuasion attempts allowed: {{attempts}}\n- Attempt 1 date: {{attempt1_spoken}} ({{attempt1_iso}})\n\nDATE WORDS\n{{week_table}}\n\nCALENDAR. Each line says what to do when the customer names that day:\n{{calendar}}\n\nHANDLE THE CUSTOMER'S ANSWERS. Check these in order:\n1. Illness, a death in the family or job loss: say one short sentence of sympathy. Make NO persuasion attempt. Offer once to connect them with the customer support team. If they accept, call transfer_to_agent with queue support. If they decline, thank them, say goodbye and call close_call with outcome no_promise and reason hardship. Only if they still name a date or an amount themselves, handle it as in rule 6.\n2. They say they already paid this amount: say that payments can take one business day to appear. Take no promise. Thank them, say goodbye, call close_call with outcome paid.\n3. They say the debt is not theirs, they never had this product, or it was closed or paid off in the past: do not argue and take no promise. Thank them, say goodbye, call close_call with outcome no_promise and reason dispute.\n4. They ask for a new payment plan or lower instalments: describe no plan. Call transfer_to_agent with queue restructuring.\n5. They ask for a human: ask once whether you can help first. If they insist, call transfer_to_agent with queue general.\n6. They name a date and/or an amount. This is NEVER a refusal.\n   - Date: find it in the calendar and do exactly what its line says. Use DATE WORDS for \"this <weekday>\", \"next <weekday>\", \"tomorrow\".\n   - A vague period (\"next week\", \"the week after next\", \"end of the month\", \"when my salary comes\"): ask once for the exact day. If they still give no exact day, propose the deadline.\n   - If they refuse the deadline after you offered it, that is a flat refusal (rule 8).\n   - Amount: anything from {{floor_text}} up to {{past_due_text}}, both included, is accepted. Below {{floor_text}}: say it cannot be recorded and offer {{floor_text}} once; if they do not accept, that is a flat refusal (rule 8).\n\n   - With only a date, the amount is {{floor_text}}. With only an amount, ask on which day they can pay it.\n7. A flat refusal or a non-answer (\"you tell me\", \"I don't know\", \"what are my options\", a no to paying today with no date and no amount) uses one persuasion attempt. Make them in this order, one per refusal:\n{{floor_plan}}\n   If earlier in this call you already proposed {{past_due_text}} on {{attempt1_spoken}} and they refused it, attempt 1 is used up: go straight to the next line of that list.\n   Never repeat an offer they refused. Never offer {{floor_text}} for today again.\n8. They say a second time that they do not want to talk: thank them, say goodbye, call close_call with outcome no_promise and reason refused.\n\nNEVER ask \"how much can you pay?\" or any question that lets them choose the amount. You propose every amount.\n\nCONFIRM AND RECORD\n- When an allowed amount and an allowed date are agreed, read back: \"So that is <amount> for your {{product_words}}, paid on <weekday, day month>. Do you confirm?\"\n- Call create_promise only after a clear yes, with amount as a number and date as YYYY-MM-DD.\n- If they change the date or the amount at this point, check the new value with the rules above and read it back again.\n- There is one promise only. A recorded promise cannot be changed or cancelled in this call; if they ask, say they can change it in the mobile app.\n- Follow what_to_do_next after create_promise. Do not use the word \"recorded\" about the promise until a create_promise result says it is recorded. After a recorded promise, say: \"You will receive a text message confirming this promise.\"",
+   "task_message": "The customer is verified and said the full amount is too much. You have ALREADY offered {{floor_text}} for today and said that the rest stays overdue. That offer is made: do not make it again.\n\nACCOUNT\n- Product: {{product_words}}\n- Full past-due amount: {{past_due_text}}\n- Days late: {{days_late_text}} (band: {{band}})\n- Floor, the lowest amount you may record: {{floor_text}}\n- Deadline, the latest date you may record: {{deadline_spoken}} ({{deadline_iso}})\n- Persuasion attempts allowed: {{attempts}}\n- Attempt 1 date: {{attempt1_spoken}} ({{attempt1_iso}})\n\nDATE WORDS\n{{week_table}}\n\nCALENDAR. Each line says what to do when the customer names that day:\n{{calendar}}\n\nHANDLE THE CUSTOMER'S ANSWERS. Check these in order:\n1. Illness, a death in the family or job loss: say one short sentence of sympathy. Make NO persuasion attempt. Offer once to connect them with the customer support team. If they accept, call transfer_to_agent with queue support. If they decline, thank them, say goodbye and call close_call with outcome no_promise and reason hardship. Only if they still name a date or an amount themselves, handle it as in rule 6.\n2. They say they already paid this amount: say that payments can take one business day to appear. Take no promise. Thank them, say goodbye, call close_call with outcome paid.\n3. They say the debt is not theirs, they never had this product, or it was closed or paid off in the past: do not argue and take no promise. Thank them, say goodbye, call close_call with outcome no_promise and reason dispute.\n4. They ask for a new payment plan or lower instalments: describe no plan. Call transfer_to_agent with queue restructuring.\n5. They ask for a human: ask once whether you can help first. If they insist, call transfer_to_agent with queue general.\n6. They name a date and/or an amount. This is NEVER a refusal.\n   - Date: find it in the calendar and do exactly what its line says. Use DATE WORDS for \"this <weekday>\", \"next <weekday>\", \"tomorrow\".\n   - A vague period (\"next week\", \"the week after next\", \"end of the month\", \"when my salary comes\"): ask once for the exact day. If they still give no exact day, propose the deadline.\n   - If they refuse the deadline after you offered it, that is a flat refusal (rule 8).\n   - Amount: anything from {{floor_text}} up to {{past_due_text}}, both included, is accepted. Below {{floor_text}}: say you cannot accept that amount and offer {{floor_text}} once; if they do not accept, that is a flat refusal (rule 8).\n\n   - With only a date, the amount is {{floor_text}}. With only an amount, ask on which day they can pay it.\n7. A flat refusal or a non-answer (\"you tell me\", \"I don't know\", \"what are my options\", a no to paying today with no date and no amount) uses one persuasion attempt. Make them in this order, one per refusal:\n{{floor_plan}}\n   If earlier in this call you already proposed {{past_due_text}} on {{attempt1_spoken}} and they refused it, attempt 1 is used up: go straight to the next line of that list.\n   Never repeat an offer they refused. Never offer {{floor_text}} for today again.\n8. They say a second time that they do not want to talk: thank them, say goodbye, call close_call with outcome no_promise and reason refused.\n\nNEVER ask \"how much can you pay?\" or any question that lets them choose the amount. You propose every amount.\n\nCONFIRM AND RECORD\n- When an allowed amount and an allowed date are agreed, read back: \"So that is <amount> for your {{product_words}}, paid on <weekday, day month>. Do you confirm?\"\n- Call create_promise only after a clear yes, with amount as a number and date as YYYY-MM-DD.\n- If they change the date or the amount at this point, check the new value with the rules above and read it back again.\n- There is one promise only. A recorded promise cannot be changed or cancelled in this call; if they ask, say they can change it in the mobile app.\n- Follow what_to_do_next after create_promise. Do not use the word \"recorded\" about the promise until a create_promise result says it is recorded. After a recorded promise, say: \"You will receive a text message confirming this promise.\"",
    "tools": [
     {
      "type": "function",
@@ -1431,6 +1773,20 @@
         "variable": "close_call_response.data.ok",
         "operator": "equals",
         "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
        }
       ]
      }
@@ -1669,6 +2025,20 @@
        }
       ]
      }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
     }
    ],
    "max_node_turns": 60
@@ -1784,6 +2154,20 @@
        }
       ]
      }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
+       }
+      ]
+     }
     }
    ],
    "max_node_turns": 60
@@ -1795,7 +2179,7 @@
     "type": "llm"
    },
    "on_enter_first_entry_only": true,
-   "task_message": "The account details could not be loaded. Tell the customer that you cannot access the details right now and that nothing was recorded. Thank them, say goodbye, and call close_call with outcome no_promise and reason service_error.",
+   "task_message": "The account details could not be loaded. Tell the customer that you cannot access the details right now and that nothing was saved. Thank them, say goodbye, and call close_call with outcome no_promise and reason service_error.",
    "tools": [
     {
      "type": "function",
@@ -1896,6 +2280,20 @@
         "variable": "close_call_response.data.ok",
         "operator": "equals",
         "operand": "True"
+       }
+      ]
+     }
+    },
+    {
+     "target_node": "end",
+     "description": "close_call failed twice, hang up anyway",
+     "condition": {
+      "logic": "or",
+      "conditions": [
+       {
+        "variable": "close_call_failure_count",
+        "operator": "greater_than",
+        "operand": 1
        }
       ]
      }

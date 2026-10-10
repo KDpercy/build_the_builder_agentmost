@@ -150,6 +150,15 @@ def var_is(target: str, desc: str, variable: str, values: list) -> dict:
 
 
 CLOSED = var_is("end", "close_call was recorded", "close_call_response.data.ok", ["true", "True"])
+def failed_twice(tool: str, target: str) -> dict:
+    return {"target_node": target, "description": f"{tool} failed twice with a service error",
+            "condition": {"logic": "or", "conditions": [
+                {"variable": f"{tool}_failure_count", "operator": "greater_than", "operand": 1}]}}
+
+
+CLOSE_GIVEUP = {"target_node": "end", "description": "close_call failed twice, hang up anyway",
+                "condition": {"logic": "or", "conditions": [
+                    {"variable": "close_call_failure_count", "operator": "greater_than", "operand": 1}]}}
 RETRY = {"target_node": "retry_promise", "description": "create_promise failed with a service error, retry once",
          "condition": {"logic": "or", "conditions": [
              {"variable": "create_promise_failure_count", "operator": "greater_than", "operand": 0}]}}
@@ -185,10 +194,10 @@ Rules for every step:
 - Every call ends with close_call, exactly once, as the very last tool call. In the same message, before calling close_call, thank the customer and say goodbye. After close_call, say nothing more.
 - Today is {{today_spoken}}, the time is {{now_time}}. Use this, never your own clock."""
 
-OPENING_LINE = ("Hello, I am a digital assistant calling from Freya Bank. This call is recorded. "
+OPENING_LINE = ("Hello, I am a digital assistant calling from Freya Bank, and a recording of this call is kept. "
                 "Am I speaking with {{title}} {{last_name}}?")
 
-OPENING_TASK = """You have already said that you are a digital assistant calling from Freya Bank, that the call is recorded, and asked "Am I speaking with {{title}} {{last_name}}?". Your only job here is to find out who is on the line.
+OPENING_TASK = """You have already said that you are a digital assistant calling from Freya Bank, that a recording of this call is kept, and asked "Am I speaking with {{title}} {{last_name}}?". Your only job here is to find out who is on the line.
 
 Until identity is verified, never say why you are calling. Never say "collections", "debt", "payment", "account", "loan", "card", any product or any amount. If asked what it is about, say you can only discuss it with {{title}} {{last_name}} in person.
 
@@ -263,7 +272,7 @@ COMMON_RULES = """HANDLE THE CUSTOMER'S ANSWERS. Check these in order:
    - Date: find it in the calendar and do exactly what its line says. Use DATE WORDS for "this <weekday>", "next <weekday>", "tomorrow".
    - A vague period ("next week", "the week after next", "end of the month", "when my salary comes"): ask once for the exact day. If they still give no exact day, propose the deadline.
    - If they refuse the deadline after you offered it, that is a flat refusal (rule 8).
-   - Amount: anything from {{floor_text}} up to {{past_due_text}}, both included, is accepted. Below {{floor_text}}: say it cannot be recorded and offer {{floor_text}} once; if they do not accept, that is a flat refusal (rule 8).
+   - Amount: anything from {{floor_text}} up to {{past_due_text}}, both included, is accepted. Below {{floor_text}}: say you cannot accept that amount and offer {{floor_text}} once; if they do not accept, that is a flat refusal (rule 8).
 """
 
 DEBT_RULES = """   - With only a date, the amount is the full amount. With only an amount, ask on which day they can pay it.
@@ -326,7 +335,11 @@ TO_FLOOR = {"target_node": "floor", "description": "the full amount is too much 
                     {"variable": "full_too_much", "operator": "equals", "operand": "yes"},
                     {"variable": "hardship", "operator": "not_equals", "operand": "yes"}]}]}}
 
-ERROR_TASK = """The account details could not be loaded. Tell the customer that you cannot access the details right now and that nothing was recorded. Thank them, say goodbye, and call close_call with outcome no_promise and reason service_error."""
+SERVICE_TASK = """The bank's identity check is not working right now: it failed twice. Never say why you are calling and name no product, debt or amount. Tell the customer there is a technical problem and that Freya Bank will call again another time. Thank them, say goodbye, and in the same message call close_call with outcome no_promise and reason service_error."""
+
+CALLBACK_FAIL_TASK = """The callback could NOT be booked: the service failed twice and nothing was saved. Never say it is booked. Tell the person you could not book the callback. Thank them, say goodbye, and in the same message call close_call with outcome not_reached and reason no_callback."""
+
+ERROR_TASK = """The account details could not be loaded. Tell the customer that you cannot access the details right now and that nothing was saved. Thank them, say goodbye, and call close_call with outcome no_promise and reason service_error."""
 
 
 DONE_TASK = """A payment promise was just recorded after a retry. Say: "Your promise is now recorded. You will receive a text message confirming this promise." Then thank the customer, say goodbye, and in the same message call close_call with outcome promise. The promise cannot be changed in this call; if asked, they can change it in the mobile app."""
@@ -381,16 +394,20 @@ def build() -> dict:
         "setup": code_node("setup", H.SETUP_CODE, [always("opening")]),
         "opening": conv(
             "opening", OPENING_TASK, [transfer_tool(), close_call_tool()],
-            [CLOSED,
+            [CLOSED, CLOSE_GIVEUP,
              var_is("identity", "the customer confirmed who they are", "speaker", ["customer"]),
              var_is("third_party", "someone else answered", "speaker", ["someone_else"])],
             {"type": "tts", "text": OPENING_LINE}, extraction=SPEAKER),
         "third_party": conv(
             "third_party", THIRD_TASK, [callback_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED], {"type": "llm"}),
+            [CLOSED, CLOSE_GIVEUP, failed_twice("schedule_callback", "callback_failed")], {"type": "llm"}),
+        "service_down": conv(
+            "service_down", SERVICE_TASK, [close_call_tool()], [CLOSED, CLOSE_GIVEUP], {"type": "llm"}),
+        "callback_failed": conv(
+            "callback_failed", CALLBACK_FAIL_TASK, [close_call_tool()], [CLOSED, CLOSE_GIVEUP], {"type": "llm"}),
         "identity": conv(
             "identity", IDENTITY_TASK, [verify_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED,
+            [CLOSED, CLOSE_GIVEUP, failed_twice("verify_identity", "service_down"),
              var_is("load_account", "both security answers verified", "verify_identity_response.data.all_verified", ["true", "True"])],
             {"type": "tts", "text": IDENTITY_LINE}),
         "load_account": get_account_node(),
@@ -399,19 +416,19 @@ def build() -> dict:
             always("account_error")]),
         "debt": conv(
             "debt", DEBT_TASK, [promise_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED, RETRY, TO_FLOOR],
+            [CLOSED, CLOSE_GIVEUP, RETRY, TO_FLOOR],
             {"type": "tts", "text": DEBT_LINE}, extraction=TOO_MUCH),
         "floor": conv(
             "floor", FLOOR_TASK, [promise_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED, RETRY],
+            [CLOSED, CLOSE_GIVEUP, RETRY],
             {"type": "tts", "text": FLOOR_LINE}),
         "retry_promise": retry_promise_node(),
         "promise_done": conv(
-            "promise_done", DONE_TASK, [close_call_tool()], [CLOSED], {"type": "llm"}),
+            "promise_done", DONE_TASK, [close_call_tool()], [CLOSED, CLOSE_GIVEUP], {"type": "llm"}),
         "promise_failed": conv(
-            "promise_failed", FAILED_TASK, [close_call_tool()], [CLOSED], {"type": "llm"}),
+            "promise_failed", FAILED_TASK, [close_call_tool()], [CLOSED, CLOSE_GIVEUP], {"type": "llm"}),
         "account_error": conv(
-            "account_error", ERROR_TASK, [close_call_tool()], [CLOSED], {"type": "llm"}),
+            "account_error", ERROR_TASK, [close_call_tool()], [CLOSED, CLOSE_GIVEUP], {"type": "llm"}),
         "end": {
             "name": "end",
             "node_type": "end_call",
