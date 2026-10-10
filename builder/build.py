@@ -233,8 +233,9 @@ def main(argv: list) -> int:
     os.chdir(ROOT)
     saved = freya.save_workflow(slot, wf)
     trace.log("freya_saved", **saved)
-    (ROOT / "submission").mkdir(exist_ok=True)
-    export = ROOT / "submission" / f"{slot}.workflow.json"
+    folder = ROOT / ("out" if os.environ.get("BUILD_SLOT") else "submission")    # practice runs never touch submission/
+    folder.mkdir(exist_ok=True)
+    export = folder / f"{slot}.workflow.json"
     freya.export_workflow(saved["workflow_id"], str(export))
     nodes = wf.get("nodes", {})
     trace.log("end", ok=True, seconds=round(time.time() - start), workflow_id=saved["workflow_id"],
