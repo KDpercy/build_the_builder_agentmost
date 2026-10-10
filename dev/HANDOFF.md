@@ -29,7 +29,19 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   Found: (a) it read Claude's project memory because the stage was inside the repo -> stage now
   in a temp dir outside the repo (56ee245); (b) it started its test with nohup & -> forbidden;
   (c) its opening said "this call is recorded" -> validator now errors on success-claim words
-  spoken before verification (231136c). Independent --reps 3 of its agent running.
+  spoken before verification (231136c).
+- 00:06 Freya simulation ba5fc132 stuck in 'running' -> every new simulation refused ("another
+  simulation is running"). No documented way to stop it. Platform tests paused; a client keeps
+  retrying every 30 s (rehearsal-a Brief A run). ASK FREYA in the morning if still stuck.
+- Phase 4 started: variant V1 (dev/variants/v1: mail + policy + memo overriding 2 points + code
+  list, own tool API with renamed fields/codes/call variables) and its answer-key spec. Writing
+  it found builder assumptions -> fixed: `now` and `customer_id` names, form of address,
+  practice-brief names as code defaults (7eaf509).
+- 00:44 BUILDER RUN 2 on V1 (no practice customers, BUILD_PRACTICE unset): 2.7 min, 29 turns,
+  $0.81. Spec matches the answer key on every key value; both memo overrides applied and
+  logged as conflicts; 53 ledger rules; 4 sensible gaps. build.py's final gate wrongly
+  rejected it (my bug: ignored the brief's call variables) -> fixed, finished by hand (logged
+  in the trace as manual_finish), saved to slot ref-b.
 
 ## Overnight plan (Sat 23:45 -> Sun morning, Claude alone; Mac kept awake)
 1. Reference retests: PUB-06 x3, PUB-12 x3, full A, full B (running) -> fix what fails.
@@ -60,5 +72,6 @@ Limits: max 2 builder runs; no Freya deletions; no GitHub; one simulation at a t
 ## Budgets
 - Freya: ~0.16 credits per 10-customer run; ~95 left.
 - Builder model: example builder A $2.09 / 15 min; B $3.26 / 22 min. Kerem added ~$10.
+  Our builder: run 1 (A) $0.79 / 7.5 min; run 2 (V1) $0.81 / 2.7 min.
 - 10 Oct ~17:30: bank mock gave Cloudflare 403/1010 to Python; Freya fixed it.
 - 10 Oct 22:02: Freya API 503 'API key validation temporarily unavailable' for ~1 min.

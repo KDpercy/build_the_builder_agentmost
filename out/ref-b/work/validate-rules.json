@@ -1,0 +1,28 @@
+{
+ "forbidden_before_verification": [
+  "arrears",
+  "balance",
+  "overdue",
+  "money owed",
+  "overdraft",
+  "credit card",
+  "home loan",
+  "account"
+ ],
+ "restricted_words": [
+  "promise is in place"
+ ],
+ "required_sentences": [
+  "Please accept my condolences.",
+  "We will send you a letter confirming this arrangement.",
+  "Is that correct?",
+  "anything left stays in arrears."
+ ],
+ "call_variables": [
+  "member_ref",
+  "given_name",
+  "surname",
+  "salutation",
+  "call_time"
+ ]
+}

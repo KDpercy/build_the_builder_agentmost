@@ -1,0 +1,426 @@
+[
+ {
+  "id": "R1",
+  "quote": "member_ref (pass it on every request)",
+  "file": "01-mail.md",
+  "kind": "other",
+  "rule": "Pass member_ref on every tool request.",
+  "implemented_by": "tool body default {{member_ref}}"
+ },
+ {
+  "id": "R2",
+  "quote": "Always use call_time, never your own clock.",
+  "file": "01-mail.md",
+  "kind": "dates",
+  "rule": "Use call_time as today.",
+  "implemented_by": "setup/compute_debt code (calendar, bands, deadlines)"
+ },
+ {
+  "id": "R3",
+  "quote": "Speak to the member as salutation plus surname.",
+  "file": "01-mail.md",
+  "kind": "opening",
+  "rule": "Address as salutation plus surname.",
+  "implemented_by": "opening node on_enter line"
+ },
+ {
+  "id": "R4",
+  "quote": "that it is an automated assistant phoning on behalf of Harbour Lane Bank",
+  "file": "02-policy.md",
+  "kind": "opening",
+  "rule": "First say it is an automated assistant for Harbour Lane Bank.",
+  "implemented_by": "opening node on_enter line"
+ },
+ {
+  "id": "R5",
+  "quote": "calls are monitored for quality",
+  "file": "02-policy.md",
+  "kind": "opening",
+  "rule": "First sentence says calls are monitored for quality.",
+  "implemented_by": "opening node on_enter line"
+ },
+ {
+  "id": "R6",
+  "quote": "\"Could I speak to {salutation} {surname}, please?\"",
+  "file": "02-policy.md",
+  "kind": "required_sentence",
+  "rule": "Then ask for the member by this exact sentence.",
+  "implemented_by": "fixed lines / prompts (opening, third_party, readback, product_k)"
+ },
+ {
+  "id": "R7",
+  "quote": "never mention arrears, balance, overdue, money owed, or any account type",
+  "file": "02-policy.md",
+  "kind": "forbidden",
+  "rule": "Before security, never mention these words.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; add_note tool not generated"
+ },
+ {
+  "id": "R8",
+  "quote": "Confirmation means the person says yes or gives the member's name as their own.",
+  "file": "02-policy.md",
+  "kind": "who_is_on_line",
+  "rule": "Only yes or own name confirms.",
+  "implemented_by": "opening node speaker extraction + prompt (ask at most 2)"
+ },
+ {
+  "id": "R9",
+  "quote": "Anything else, ask once more",
+  "file": "02-policy.md",
+  "kind": "who_is_on_line",
+  "rule": "Otherwise ask once more.",
+  "implemented_by": "opening node speaker extraction + prompt (ask at most 2)"
+ },
+ {
+  "id": "R10",
+  "quote": "still unclear after that, end the contact with code NC-UNC",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Still unclear: close NC-UNC.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R11",
+  "quote": "If the number is not the member's: NC-WRG.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Wrong number: close NC-WRG.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R12",
+  "quote": "say \"Please accept my condolences.\"",
+  "file": "02-policy.md",
+  "kind": "required_sentence",
+  "rule": "Deceased: say the condolence sentence.",
+  "implemented_by": "fixed lines / prompts (opening, third_party, readback, product_k)"
+ },
+ {
+  "id": "R13",
+  "quote": "end with NC-DEC, asking nothing else",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Deceased: ask nothing else, close NC-DEC.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R14",
+  "quote": "Third parties: say nothing about why you call.",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Say nothing about the reason to third parties.",
+  "implemented_by": "third_party node + setup callback_facts (next business day 10:00-16:00)"
+ },
+ {
+  "id": "R15",
+  "quote": "Offer a call-back on the next working day",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Offer call-back on next working day.",
+  "implemented_by": "third_party node + setup callback_facts (next business day 10:00-16:00)"
+ },
+ {
+  "id": "R16",
+  "quote": "the window is 10:00 to 16:00, still the next working day only",
+  "file": "03-memo.md",
+  "kind": "third_party",
+  "rule": "Call-back window 10:00-16:00 (overrides 09:30-17:30).",
+  "implemented_by": "third_party node + setup callback_facts (next business day 10:00-16:00)"
+ },
+ {
+  "id": "R17",
+  "quote": "Book it if they agree a time in that window, then end with NC-CBK.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Book and close NC-CBK.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R18",
+  "quote": "If they cannot, end with NC-NCB.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "No time: close NC-NCB.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R19",
+  "quote": "Two questions, in this order: the postcode on the account, then the member's year of birth.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "Postcode then year of birth.",
+  "implemented_by": "identity node + verify_identity tool (wrong_answer_limit 3)"
+ },
+ {
+  "id": "R20",
+  "quote": "Send the postcode exactly as said, the year of birth as four digits.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "Postcode as said; year as four digits.",
+  "implemented_by": "identity node + verify_identity tool (wrong_answer_limit 3)"
+ },
+ {
+  "id": "R21",
+  "quote": "three wrong answers in total end security, not two",
+  "file": "03-memo.md",
+  "kind": "identity",
+  "rule": "Three wrong answers end security (overrides two).",
+  "implemented_by": "identity node + verify_identity tool (wrong_answer_limit 3)"
+ },
+ {
+  "id": "R22",
+  "quote": "direct the member to online banking and end with SEC-FAIL",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "After failed security, direct to online banking, close SEC-FAIL.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R23",
+  "quote": "Never state any arrears after a failed check.",
+  "file": "02-policy.md",
+  "kind": "forbidden",
+  "rule": "No arrears after failed check.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; add_note tool not generated"
+ },
+ {
+  "id": "R24",
+  "quote": "A member who refuses to answer is told once that the questions keep their savings safe.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "Explain once on refusal.",
+  "implemented_by": "identity node + verify_identity tool (wrong_answer_limit 3)"
+ },
+ {
+  "id": "R25",
+  "quote": "A second refusal ends with SEC-REF.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Second refusal: close SEC-REF.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R26",
+  "quote": "say, for each account, its name, the overdue sum and how many days overdue",
+  "file": "02-policy.md",
+  "kind": "debt_statement",
+  "rule": "State name, sum, days per account.",
+  "implemented_by": "compute_debt code -> debt_line"
+ },
+ {
+  "id": "R27",
+  "quote": "Working days are Monday to Friday except bank holidays: 2026-11-30, 2026-12-25, 2026-12-28, 2027-01-01.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Working days and holidays.",
+  "implemented_by": "setup/compute_debt code (calendar, bands, deadlines)"
+ },
+ {
+  "id": "R28",
+  "quote": "1-10 \"light\": latest promise date 10 working days after today, one persuasion attempt.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Light band.",
+  "implemented_by": "setup/compute_debt code (calendar, bands, deadlines)"
+ },
+ {
+  "id": "R29",
+  "quote": "11-30 \"medium\": 6 working days, two attempts.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Medium band.",
+  "implemented_by": "setup/compute_debt code (calendar, bands, deadlines)"
+ },
+ {
+  "id": "R30",
+  "quote": "31-90 \"heavy\": 3 working days, two attempts.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Heavy band.",
+  "implemented_by": "setup/compute_debt code (calendar, bands, deadlines)"
+ },
+ {
+  "id": "R31",
+  "quote": "A promise date must be a working day, not before today and not after the band's latest date.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Promise date limits.",
+  "implemented_by": "setup/compute_debt code (calendar, bands, deadlines)"
+ },
+ {
+  "id": "R32",
+  "quote": "Ask for the full overdue sum first.",
+  "file": "02-policy.md",
+  "kind": "amounts",
+  "rule": "Ask full sum first.",
+  "implemented_by": "product_k prompts + floor in compute_debt"
+ },
+ {
+  "id": "R33",
+  "quote": "Never ask the member to name an amount.",
+  "file": "02-policy.md",
+  "kind": "forbidden",
+  "rule": "Never ask member to name an amount.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; add_note tool not generated"
+ },
+ {
+  "id": "R34",
+  "quote": "The lowest acceptable amount is the account's min_due.",
+  "file": "02-policy.md",
+  "kind": "amounts",
+  "rule": "Floor is min_due.",
+  "implemented_by": "product_k prompts + floor in compute_debt"
+ },
+ {
+  "id": "R35",
+  "quote": "Offer it once, only if the member says the full sum is too much",
+  "file": "02-policy.md",
+  "kind": "amounts",
+  "rule": "Offer min_due once, only if full is too much.",
+  "implemented_by": "product_k prompts + floor in compute_debt"
+ },
+ {
+  "id": "R36",
+  "quote": "\"anything left stays in arrears.\"",
+  "file": "02-policy.md",
+  "kind": "required_sentence",
+  "rule": "Say this with the min_due offer.",
+  "implemented_by": "fixed lines / prompts (opening, third_party, readback, product_k)"
+ },
+ {
+  "id": "R37",
+  "quote": "Attempt 1: the full overdue sum (or min_due if already said too much) on the last working day of the current week; if today is that day, the last working day of next week.",
+  "file": "02-policy.md",
+  "kind": "persuasion",
+  "rule": "Attempt 1.",
+  "implemented_by": "compute_debt pK_attempts + product_k prompts"
+ },
+ {
+  "id": "R38",
+  "quote": "Attempt 2: min_due on the latest promise date.",
+  "file": "02-policy.md",
+  "kind": "persuasion",
+  "rule": "Attempt 2.",
+  "implemented_by": "compute_debt pK_attempts + product_k prompts"
+ },
+ {
+  "id": "R39",
+  "quote": "When attempts are used up: end with code PTP-NO / REFUSED.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Close PTP-NO/REFUSED.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R40",
+  "quote": "Read every agreed promise back in one go and ask \"Is that correct?\"",
+  "file": "02-policy.md",
+  "kind": "read_back",
+  "rule": "One read-back with Is that correct?",
+  "implemented_by": "readback node"
+ },
+ {
+  "id": "R41",
+  "quote": "record each promise only after a clear yes",
+  "file": "02-policy.md",
+  "kind": "recording",
+  "rule": "Record only after clear yes.",
+  "implemented_by": "readback node + create_promise post_process + retry_promise nodes"
+ },
+ {
+  "id": "R42",
+  "quote": "Only say a promise is in place after the system confirms it.",
+  "file": "02-policy.md",
+  "kind": "recording",
+  "rule": "Restricted claim; paraphrase never used before success.",
+  "implemented_by": "readback node + create_promise post_process + retry_promise nodes"
+ },
+ {
+  "id": "R43",
+  "quote": "If recording fails, try once more; if it fails again, say so and use PTP-NO / SYSERR.",
+  "file": "02-policy.md",
+  "kind": "recording",
+  "rule": "Retry once then PTP-NO/SYSERR.",
+  "implemented_by": "readback node + create_promise post_process + retry_promise nodes"
+ },
+ {
+  "id": "R44",
+  "quote": "\"We will send you a letter confirming this arrangement.\"",
+  "file": "02-policy.md",
+  "kind": "required_sentence",
+  "rule": "After recorded promise.",
+  "implemented_by": "fixed lines / prompts (opening, third_party, readback, product_k)"
+ },
+ {
+  "id": "R45",
+  "quote": "Illness, bereavement or redundancy: one sentence of sympathy, no persuasion, offer the Member Care team once (queue CARE).",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Hardship.",
+  "implemented_by": "special_cases routes, sc_hardship node, transfer tool"
+ },
+ {
+  "id": "R46",
+  "quote": "Accepted: transfer, XFER / CARE. Declined: PTP-NO / CARE-DECL.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Hardship outcomes.",
+  "implemented_by": "special_cases routes, sc_hardship node, transfer tool"
+ },
+ {
+  "id": "R47",
+  "quote": "Request for a lower monthly amount or a new plan: transfer to queue PLAN, XFER / PLAN.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Plan.",
+  "implemented_by": "special_cases routes, sc_hardship node, transfer tool"
+ },
+ {
+  "id": "R48",
+  "quote": "Says already paid: tell them payments show within two working days, take no promise; PAID.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Paid.",
+  "implemented_by": "special_cases routes, sc_hardship node, transfer tool"
+ },
+ {
+  "id": "R49",
+  "quote": "Disputes the account: do not argue, no promise; PTP-NO / DISPUTE.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Dispute.",
+  "implemented_by": "special_cases routes, sc_hardship node, transfer tool"
+ },
+ {
+  "id": "R50",
+  "quote": "Asks for a person: ask once if you can help; if they insist, queue DESK, XFER / DESK.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Person.",
+  "implemented_by": "special_cases routes, sc_hardship node, transfer tool"
+ },
+ {
+  "id": "R51",
+  "quote": "One end-contact call per conversation, the last action, after thanking the member and saying goodbye.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "One close_call, last.",
+  "implemented_by": "close_call tool in each node + closing hook outcome logic"
+ },
+ {
+  "id": "R52",
+  "quote": "Promises are recorded per account.",
+  "file": "04-codes.md",
+  "kind": "recording",
+  "rule": "One promise per account.",
+  "implemented_by": "readback node + create_promise post_process + retry_promise nodes"
+ },
+ {
+  "id": "R53",
+  "quote": "Notes are not used.",
+  "file": "04-codes.md",
+  "kind": "forbidden",
+  "rule": "Never call add_note.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; add_note tool not generated"
+ }
+]

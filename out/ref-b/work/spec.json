@@ -1,0 +1,330 @@
+{
+ "agent_identity": "an automated assistant phoning on behalf of Harbour Lane Bank",
+ "customer_variable": "member_ref",
+ "now_variable": "call_time",
+ "address_as": "{{salutation}} {{surname}}",
+ "call_variables": [
+  "member_ref",
+  "given_name",
+  "surname",
+  "salutation",
+  "call_time"
+ ],
+ "opening": {
+  "first_sentence": "Hello, I am an automated assistant phoning on behalf of Harbour Lane Bank, and calls are monitored for quality.",
+  "ask": "Could I speak to {{salutation}} {{surname}}, please?"
+ },
+ "forbidden_before_verification": [
+  "arrears",
+  "balance",
+  "overdue",
+  "money owed",
+  "overdraft",
+  "credit card",
+  "home loan",
+  "account"
+ ],
+ "confirmation_words": {
+  "confirms": [
+   "yes",
+   "the person gives the member's name as their own"
+  ],
+  "does_not_confirm": [
+   "anything else, e.g. hello, who is this, maybe"
+  ],
+  "asks": 2,
+  "close_if_unclear": [
+   "NC-UNC",
+   ""
+  ]
+ },
+ "identity": {
+  "questions": [
+   {
+    "value": "postcode",
+    "ask": "what is your postcode, as we hold it for you?",
+    "kind": "text"
+   },
+   {
+    "value": "birth_year",
+    "ask": "what is your year of birth?",
+    "kind": "year"
+   }
+  ],
+  "question_field": "question",
+  "answer_field": "reply",
+  "numeric_date_order": "dmy",
+  "wrong_answer_limit": 3,
+  "first_line": "Thank you. Before we go on I need to ask two security questions. First, what is your postcode, as we hold it for you?",
+  "response": {
+   "ok": "ok",
+   "verified": "correct",
+   "all_verified": "passed",
+   "left": "remaining"
+  },
+  "on_failed": {
+   "say": "direct the member to online banking",
+   "close": [
+    "SEC-FAIL",
+    ""
+   ]
+  },
+  "on_declined": {
+   "explain_once": "the questions keep their savings safe",
+   "counts_as_declining": "refusing to answer a security question",
+   "close": [
+    "SEC-REF",
+    ""
+   ]
+  }
+ },
+ "calendar": {
+  "holidays": [
+   "2026-11-30",
+   "2026-12-25",
+   "2026-12-28",
+   "2027-01-01"
+  ],
+  "weekend": [
+   5,
+   6
+  ],
+  "count_today": false
+ },
+ "bands": [
+  {
+   "name": "light",
+   "min_days": 1,
+   "max_days": 10,
+   "deadline": "business_days_after_today:10",
+   "attempts": 1
+  },
+  {
+   "name": "medium",
+   "min_days": 11,
+   "max_days": 30,
+   "deadline": "business_days_after_today:6",
+   "attempts": 2
+  },
+  {
+   "name": "heavy",
+   "min_days": 31,
+   "max_days": 90,
+   "deadline": "business_days_after_today:3",
+   "attempts": 2
+  }
+ ],
+ "products": {
+  "type_field": "product",
+  "fields": {
+   "id": "account_no",
+   "due_amount": "overdue",
+   "late_days": "days_overdue"
+  },
+  "response_path": "accounts",
+  "types": {
+   "overdraft": {
+    "spoken": "overdraft",
+    "floor_field": "min_due"
+   },
+   "credit_card": {
+    "spoken": "credit card ending {card_end}",
+    "floor_field": "min_due"
+   },
+   "home_loan": {
+    "spoken": "home loan",
+    "floor_field": "min_due"
+   }
+  }
+ },
+ "debt_statement": "I am calling about overdue payments",
+ "first_ask": "Could you pay the full overdue sum?",
+ "first_ask_all": "Could you pay the full overdue sum on each of these accounts?",
+ "persuasion": {
+  "attempts": [
+   {
+    "amount": "full_or_floor_if_too_much",
+    "date": "last_business_day_this_week_or_next_if_today"
+   },
+   {
+    "amount": "floor",
+    "date": "deadline"
+   }
+  ],
+  "floor_offer": {
+   "once": true,
+   "say_with_offer": "anything left stays in arrears."
+  },
+  "close_refused": [
+   "PTP-NO",
+   "REFUSED"
+  ]
+ },
+ "callback": {
+  "days": [
+   "next_business_day"
+  ],
+  "from": "10:00",
+  "to": "16:00",
+  "later_than_now": false,
+  "ask_again_once": false,
+  "close_booked": [
+   "NC-CBK",
+   ""
+  ],
+  "close_none": [
+   "NC-NCB",
+   ""
+  ]
+ },
+ "third_party": {
+  "wrong_number": [
+   "NC-WRG",
+   ""
+  ],
+  "deceased": {
+   "say": "Please accept my condolences.",
+   "close": [
+    "NC-DEC",
+    ""
+   ]
+  }
+ },
+ "special_cases": [
+  {
+   "name": "hardship",
+   "trigger": "illness, bereavement or redundancy",
+   "precedence": 1,
+   "action": "one sentence of sympathy, no persuasion, offer the Member Care team once",
+   "line": "I am very sorry to hear that. Would you like me to put you through to our Member Care team?",
+   "accept": {
+    "transfer": "CARE",
+    "close": [
+     "XFER",
+     "CARE"
+    ]
+   },
+   "decline": {
+    "close": [
+     "PTP-NO",
+     "CARE-DECL"
+    ]
+   }
+  },
+  {
+   "name": "plan",
+   "trigger": "asks for a lower monthly amount or a new plan",
+   "action": "transfer to the plan team",
+   "transfer": "PLAN",
+   "close": [
+    "XFER",
+    "PLAN"
+   ],
+   "precedence": 2
+  },
+  {
+   "name": "paid",
+   "trigger": "says already paid",
+   "action": "tell them payments show within two working days, take no promise",
+   "close": [
+    "PAID",
+    ""
+   ],
+   "precedence": 3
+  },
+  {
+   "name": "dispute",
+   "trigger": "disputes the account",
+   "action": "do not argue, take no promise",
+   "close": [
+    "PTP-NO",
+    "DISPUTE"
+   ],
+   "precedence": 4
+  },
+  {
+   "name": "human_desk",
+   "trigger": "asks for a person",
+   "action": "ask once if you can help; if they insist, transfer",
+   "transfer": "DESK",
+   "close": [
+    "XFER",
+    "DESK"
+   ],
+   "precedence": 5
+  }
+ ],
+ "outcome_logic": {
+  "on_transfer": "XFER",
+  "reason_by_queue": {
+   "PLAN": "PLAN",
+   "DESK": "DESK",
+   "CARE": "CARE"
+  },
+  "on_promise": "PTP",
+  "no_deal": "PTP-NO",
+  "verify_failed": [
+   "SEC-FAIL",
+   ""
+  ],
+  "promise_failed": [
+   "PTP-NO",
+   "SYSERR"
+  ]
+ },
+ "notes": {
+  "used": false
+ },
+ "sentences": {
+  "after_promise": "We will send you a letter confirming this arrangement."
+ },
+ "read_back": {
+  "ask": "Is that correct?"
+ },
+ "required_sentences": [
+  "Please accept my condolences.",
+  "We will send you a letter confirming this arrangement.",
+  "Is that correct?",
+  "Could I speak to {{salutation}} {{surname}}, please?",
+  "anything left stays in arrears."
+ ],
+ "restricted_words": [
+  {
+   "word": "promise is in place",
+   "allowed_only": "after create_promise succeeded"
+  }
+ ],
+ "tool_failures": {
+  "create_promise": "try once more; if it fails again, say so and close PTP-NO / SYSERR"
+ },
+ "multi_product": {
+  "read_back": "one read-back of every agreed promise",
+  "record": "per account",
+  "counting": "attempts per account"
+ },
+ "tool_names": {
+  "verify": "verify_identity",
+  "account": "get_account",
+  "promise": "create_promise",
+  "callback": "schedule_callback",
+  "transfer": "transfer_to_agent",
+  "note": "add_note",
+  "close": "close_call"
+ },
+ "tool_fields": {
+  "customer": "member_ref",
+  "product": "account_no",
+  "amount": "sum",
+  "date": "pay_date",
+  "queue": "queue",
+  "note_reason": "why",
+  "outcome": "result",
+  "reason": "why"
+ },
+ "gaps": [
+  "spoken product names not given: taken from the API enum (overdraft, credit card ending card_end, home loan)",
+  "failure handling for tools other than create_promise not given: treat a 500 as repeatable once, then close honestly",
+  "callback time in the window: 10:00 to 16:00 treated as inclusive",
+  "opening greeting wording is paraphrased from 2.1"
+ ]
+}

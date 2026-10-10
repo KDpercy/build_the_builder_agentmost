@@ -145,9 +145,24 @@ async def run_model(st: pathlib.Path, prompt: str, trace: Trace) -> None:
         trace.log("message", kind=type(message).__name__, body=dataclasses.asdict(message))
 
 
+def final_rules(st: pathlib.Path) -> dict:
+    """The validator rules the run wrote, plus every call variable its spec names."""
+    def load(name: str) -> dict:
+        try:
+            return json.loads((st / "work" / name).read_text())
+        except (OSError, ValueError):
+            return {}
+    rules, spec = load("validate-rules.json"), load("spec.json")
+    names = set(rules.get("call_variables") or [])
+    names |= {spec.get("customer_variable"), spec.get("now_variable")} - {None}
+    names |= set(re.findall(r"\{\{\s*(\w+)\s*\}\}", json.dumps([spec.get("address_as"), spec.get("opening")])))
+    return dict(rules, call_variables=sorted(names))
+
+
 def pick_workflow(st: pathlib.Path, api: dict, trace: Trace) -> dict | None:
     """The final workflow if it validates, else the last one that did."""
     import validate as V
+    rules = final_rules(st)
     for name in ("workflow.json", "good.workflow.json"):
         p = st / "work" / name
         if not p.exists():
@@ -157,7 +172,7 @@ def pick_workflow(st: pathlib.Path, api: dict, trace: Trace) -> dict | None:
         except ValueError as e:
             trace.log("candidate_unreadable", file=name, error=str(e))
             continue
-        errors = [m for level, m in V.validate(wf, api) if level == V.ERROR]
+        errors = [m for level, m in V.validate(wf, api, rules) if level == V.ERROR]
         trace.log("validate", file=name, errors=errors[:20])
         if not errors:
             return wf

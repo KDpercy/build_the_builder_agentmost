@@ -61,5 +61,18 @@ class TestBuild(unittest.TestCase):
             t.close()
 
 
+class TestFinalRules(unittest.TestCase):
+    def test_call_variables_come_from_the_runs_rules_and_spec(self):
+        with tempfile.TemporaryDirectory() as d:
+            st = pathlib.Path(d)
+            (st / "work").mkdir()
+            (st / "work" / "validate-rules.json").write_text(json.dumps({"call_variables": ["a"], "required_sentences": ["x"]}))
+            (st / "work" / "spec.json").write_text(json.dumps({"customer_variable": "b", "now_variable": "c",
+                                                               "address_as": "{{d}} {{e}}", "opening": {"ask": "Is it {{f}}?"}}))
+            r = B.final_rules(st)
+            self.assertEqual(r["call_variables"], ["a", "b", "c", "d", "e", "f"])
+            self.assertEqual(r["required_sentences"], ["x"])
+
+
 if __name__ == "__main__":
     unittest.main()
