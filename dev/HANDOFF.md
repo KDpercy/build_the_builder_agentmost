@@ -2,28 +2,22 @@
 
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
-## Where we are (Sat 10 Oct, ~21:00)
-- Phase 1 DONE: Brief A hand agent 41e5caa1 10/10 --reps 3 (results/phase1-final.json).
-- Phase 2 nearly done: Brief B hand agent ffcb39ae (example builder + our A code) 3/3 --reps 3,
-  pieces/corrects/talkative 3/3, PUB-07 vague-date bug fixed (3/3), our 6 custom B cases
-  (dev/cases/b-set1/2.json: paid+dispute, restructuring, paid+refusal, all paid, hardship,
-  human) all pass. Brief A customers on B agent fail only on notes (Brief A never notes).
-- Phase 3 started early (all committed, 54+ unit tests green):
-  builder/validate.py (+ledger check), lib/calendar_code.py, lib/date_facts.py (matches hand
-  agent on 360 date cases), lib/nodes.py, lib/hooks.py (identity answers), reference/
-  (generate.py, code.py, hooks.py, prompts.py: spec + tool API -> workflow, no brief values),
-  skills/read-brief, design-agent, check-agent, build.py (staging, trace, budget, fallback),
-  DESIGN.md. dev/specs/brief-a.spec.json = hand-written answer key spec.
-- Reference agents (built only from dev/specs/*.spec.json by builder/reference): ref-a agent cbc21b5c
-  (run1 2/10: list flattening bug, fixed; run2 9/10, PUB-10 'not recorded' -> added deterministic
-  promise retry; retest running), ref-b agent 7ca97613 (saved, not yet tested).
-- Invented-bank test (builder/tests/test_generate.py) proves no brief values in the reference.
+## Where we are (Sat 10 Oct, ~21:35)
+- Phase 1 DONE: Brief A hand agent 41e5caa1 10/10 --reps 3. Phase 2 DONE: Brief B hand agent
+  ffcb39ae 3/3 --reps 3, 3 styles 3/3, 6 custom B cases pass. Hand agents now in dev/hand/.
+- Phase 3 well under way (all committed, 60+ unit tests green, `python3 -m unittest discover -s builder/tests`):
+  builder/validate.py, lib/ (calendar, date facts, nodes, identity hooks), reference/ (generate,
+  code, hooks, prompts, SPEC.md), skills/ (read-brief, design-agent, check-agent), build.py,
+  PATTERNS.md (generic; evidence in dev/PATTERNS-evidence.md), DESIGN.md.
+- Reference agents built only from dev/specs/brief-{a,b}.spec.json (answer-key specs):
+  ref-a (agent cbc21b5c): 9/10 twice; PUB-10 retry fixed in 3 steps (args naming, close count).
+  ref-b (agent 7ca97613): 0/3 on first try (read-back lacked dates/deadlines; early-band extra
+  offer) -> fixed in b62389b, saved, retest next.
+- Invented-bank test proves the reference has no brief values.
 
 ## Next step (one, concrete)
-- Read results/ref-a-run1.json; fix the reference until it matches the hand agent; then write
-  the Brief B spec and test the reference on B; then a full build.py run on Brief A.
-- Before freeze: move build_a/b + hooks_a/b to dev/hand/ (they hold brief values) and strip
-  brief examples from PATTERNS.md (it is staged into builder runs).
+- Retest ref-a PUB-10 x3 and ref-b on B + custom sets; then first end-to-end build.py run on
+  Brief A with BUILD_SLOT=rehearsal-a (costs ~$3; Kerem allowed builder runs, key in subshell).
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |

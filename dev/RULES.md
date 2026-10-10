@@ -74,17 +74,16 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 ## Layout
 - briefs/ docs/ examples/ tools/ freya.py   the kit, left as it is
 - .claude/skills/                           the builder's skills
-- builder/                                  our builder: build.py, lib/, tests/
+- builder/                                  our builder: build.py, lib/, reference/, skills/, tests/
+- dev/hand/                                 Phase 1-2 hand agents (hold brief values; never staged)
 - out/<slot>/                               everything a run generates
 - traces/                                   one trace per builder run
 - submission/                               exported workflows for the final
 - dev/                                      these notes; never read by a run
 
 ## Status (update after every phase)
-- Phase: 1 done (hand agent Brief A, fixes 1-3, A-E; commit 72fda28). Phase 2 next: Brief B
-- Last scores (Brief A, agent 41e5caa1): base 0/10 -> example builder 8/10 reps3 ->
-  10/10 reps3 plain (final, after D/E); styles 1 run: pieces/corrects/asks_back/in_words 10,
-  talkative 7 -> D/E fixed the real causes (rest is simulator junk input)
-- Next step: example-builder baseline on Brief B (running)
-- Known problems: no GitHub remote (install gh .pkg); build_a.py/hooks_a.py hold Brief A
-  values (Phase 1 only); move dev/ aside during builder runs; results/log.jsonl not in git
+- Phase: 1 and 2 done; Phase 3 (the real builder) well under way, ahead of plan
+- Last scores: hand A 10/10 --reps 3; hand B 3/3 --reps 3 + styles + 6 custom cases;
+  reference (generic) A 9/10, B being fixed
+- Next step: see dev/HANDOFF.md
+- Known problems: no GitHub remote (install gh .pkg); Freya slow at times (15-30 s turns)
