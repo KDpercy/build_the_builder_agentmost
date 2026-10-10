@@ -10,14 +10,15 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   code, hooks, prompts, SPEC.md), skills/ (read-brief, design-agent, check-agent), build.py,
   PATTERNS.md (generic; evidence in dev/PATTERNS-evidence.md), DESIGN.md.
 - Reference agents built only from dev/specs/brief-{a,b}.spec.json (answer-key specs):
-  ref-a (agent cbc21b5c): 9/10 twice; PUB-10 retry fixed in 3 steps (args naming, close count).
-  ref-b (agent 7ca97613): 0/3 on first try (read-back lacked dates/deadlines; early-band extra
-  offer) -> fixed in b62389b, saved, retest next.
+  ref-a (agent cbc21b5c): 9/10 twice; PUB-10 retry fixed (args naming, close count): 3/3.
+  ref-b (agent 7ca97613): 0/3 -> 2/3 after giving read-back the facts; PUB-12 early-band
+  extra offer -> attempt lines no longer mention the floor; PUB-12 and PUB-06 x3 running.
 - Invented-bank test proves the reference has no brief values.
 
 ## Next step (one, concrete)
-- Retest ref-a PUB-10 x3 and ref-b on B + custom sets; then first end-to-end build.py run on
-  Brief A with BUILD_SLOT=rehearsal-a (costs ~$3; Kerem allowed builder runs, key in subshell).
+- First end-to-end run of our builder (costs ~$3; key only in a subshell):
+  (source env.sh && source env.builder.sh && BUILD_SLOT=ref-a python3 builder/build.py tools/openapi.json briefs/brief-a.md)
+  then read traces/ref-a-*.jsonl and out/ref-a/stage/work/ (spec.json vs dev/specs/brief-a.spec.json).
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
