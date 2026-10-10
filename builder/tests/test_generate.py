@@ -97,5 +97,31 @@ class TestGenerate(unittest.TestCase):
             self.assertNotIn(word, self.text, word)
 
 
+class TestGenerateWithNotes(unittest.TestCase):
+    """Second invented bank: notes in use, own note reasons, Friday-Saturday weekend."""
+
+    def setUp(self):
+        spec = json.loads(json.dumps(SPEC))
+        spec["notes"] = {"used": True, "reasons": ["declined", "settled"], "service_error_reason": "declined"}
+        spec["calendar"] = {"holidays": [], "weekend": [4, 5]}
+        spec["outcome_logic"].update(all_notes_paid="none", paid_note="settled")
+        self.spec, self.wf = spec, build(spec, API)
+        self.text = json.dumps(self.wf)
+
+    def test_note_tool_present_with_the_api_reasons(self):
+        tools = {t["function"]["name"]: t for n in self.wf["nodes"].values() for t in n.get("tools", [])}
+        self.assertIn("add_note", tools)
+        why = tools["add_note"]["function"]["parameters"]["properties"]["body"]["properties"]["why"]
+        self.assertEqual(why["enum"], ["declined", "settled"])
+        self.assertIn("declined, settled", self.text)
+
+    def test_passes_the_validator(self):
+        rules = {"call_variables": ["client_ref", "honorific", "family_name", "stamp"]}
+        self.assertEqual([m for level, m in V.validate(self.wf, API, rules) if level == V.ERROR], [])
+
+    def test_weekend_reaches_the_code(self):
+        self.assertIn('\\"weekend\\":[4,5]', self.text)
+
+
 if __name__ == "__main__":
     unittest.main()
