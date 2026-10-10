@@ -209,9 +209,10 @@ def written_variables(wf: dict) -> tuple:
     return names, patterns
 
 
-def check_placeholders(wf: dict) -> list:
+def check_placeholders(wf: dict, call_variables: list | None = None) -> list:
     out = []
     known, patterns = written_variables(wf)
+    known |= set(call_variables or [])
     texts = [("system_prompt", wf.get("system_prompt", ""))]
     for k, n in wf.get("nodes", {}).items():
         texts.append((k, n.get("task_message", "")))
@@ -281,8 +282,9 @@ def check_ledger(ledger: list, brief_texts: dict) -> list:
 def validate(wf: dict, api_spec: dict, rules: dict | None = None) -> list:
     api = load_api(api_spec)
     problems = check_nulls(wf)
-    for check in (check_structure, check_code, check_booleans, check_paths, check_placeholders):
+    for check in (check_structure, check_code, check_booleans, check_paths):
         problems += check(wf)
+    problems += check_placeholders(wf, (rules or {}).get("call_variables"))
     problems += check_tools(wf, api)
     problems += check_rules(wf, rules or {})
     return problems

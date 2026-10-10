@@ -11,6 +11,11 @@ def _close(pair) -> str:
     return f"outcome {pair[0]}" + (f" and reason {pair[1]}" if pair[1] else "")
 
 
+def _who(spec: dict) -> str:
+    """How the customer is named, from the call variables the brief defines."""
+    return spec.get("address_as") or "{{title}} {{last_name}}"
+
+
 def tool_move(target: str, description: str) -> dict:
     return {"target_node": target, "description": description, "is_tool_call": True,
             "condition": {"operator": "matches_intent", "description": description}}
@@ -19,7 +24,7 @@ def tool_move(target: str, description: str) -> dict:
 def system_prompt(spec: dict) -> str:
     who = spec.get("agent_identity") or "the bank's digital assistant"
     never = ", ".join(spec.get("never_offer") or [])
-    return f"""You are {who}, making an outbound phone call. Speak English. One or two short sentences per turn. Address the customer as {{{{title}}}} {{{{last_name}}}}.
+    return f"""You are {who}, making an outbound phone call. Speak English. One or two short sentences per turn. Address the customer as {_who(spec)}.
 
 Rules for every step:
 - When a rule says to call a tool, CALL the tool. Saying you did it is not enough. Call one tool per message.
@@ -71,7 +76,7 @@ def opening_task(spec: dict) -> str:
         f'You have already said: "{opening_line(spec)}". Your only job here is to find out who is on the line.',
         "",
         f"Until identity is verified, never say why you are calling. Never say any of these words: {_q(spec.get('forbidden_before_verification'))}, "
-        "any product or any amount. If asked what it is about, say you can only discuss it with {{title}} {{last_name}} in person.",
+        f"any product or any amount. If asked what it is about, say you can only discuss it with {_who(spec)} in person.",
         "",
         f"- Only these confirm: {', '.join(c.get('confirms') or [])}. These do not: {', '.join(c.get('does_not_confirm') or [])}.",
         f"- If it is not confirmed, ask again: \"{(spec.get('opening') or {}).get('ask', '')}\". If the person asked a question, answer it first; "
@@ -92,11 +97,11 @@ def opening_task(spec: dict) -> str:
 def third_party_task(spec: dict) -> str:
     tp, cb = spec.get("third_party") or {}, spec.get("callback") or {}
     dec = tp.get("deceased") or {}
-    return f"""The person on the line is NOT {{{{title}}}} {{{{last_name}}}}. Never say why you are calling. Say nothing about any account, debt, payment, product or amount, even if they ask or offer to pay. If they ask, say you can only discuss it with {{{{title}}}} {{{{last_name}}}} in person. Ask them no security questions.
+    return f"""The person on the line is NOT {_who(spec)}. Never say why you are calling. Say nothing about any account, debt, payment, product or amount, even if they ask or offer to pay. If they ask, say you can only discuss it with {_who(spec)} in person. Ask them no security questions.
 
 - If they say this number does not belong to the customer: thank them, say goodbye, call the closing tool with {_close(tp.get('wrong_number'))}.
 - If they say the customer has died: say "{dec.get('say', '')}", say goodbye, and call the closing tool with {_close(dec.get('close'))}. Ask nothing else.
-- Otherwise ask when {{{{title}}}} {{{{last_name}}}} can be reached.
+- Otherwise ask when {_who(spec)} can be reached.
 
 Callback window:
 {{{{callback_facts}}}}
@@ -127,7 +132,7 @@ def identity_task(spec: dict) -> str:
     fail = ident.get("on_failed") or {}
     human = [s for s in spec.get("special_cases") or [] if s.get("transfer") and "human" in s.get("name", "")]
     lines = [
-        f"The person confirmed they are {{{{title}}}} {{{{last_name}}}}. Check identity with these security questions, one at a time, in this order: {order}. You have already asked the first one.",
+        f"The person confirmed they are {_who(spec)}. Check identity with these security questions, one at a time, in this order: {order}. You have already asked the first one.",
         "",
         "- Every time the customer gives a complete answer, call the check tool once with that question's field value and the answer. If they give only part of it, wait for the rest.",
         f"- Follow what_to_do_next in every result. A wrong answer may be asked again. {ident.get('wrong_answer_limit', 3)} wrong answers in total end the check.",

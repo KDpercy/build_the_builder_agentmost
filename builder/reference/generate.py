@@ -23,7 +23,7 @@ from reference import prompts as P  # noqa: E402
 def tools_for(spec: dict, api: dict) -> dict:
     """Every tool the workflow may use, built from the tool API file."""
     tn, tf = spec["tool_names"], spec.get("tool_fields", {})
-    cust = {tf.get("customer", "customer_id"): "{{customer_id}}"}
+    cust = {tf.get("customer", "customer_id"): "{{" + spec.get("customer_variable", "customer_id") + "}}"}
     notes_used = bool((spec.get("notes") or {}).get("used"))
     t = {
         "verify": N.api_tool(api, tn["verify"], "Checks one security answer. CALL it every time the customer gives a complete answer "
@@ -85,7 +85,7 @@ def build(spec: dict, api_spec: dict) -> dict:
         "load_account": {
             "name": "load_account", "node_type": "api_request", "passthrough": True,
             "passthrough_default_transition": "compute_debt", "on_enter": {"type": "silent"}, "disable_inactivity_monitor": True,
-            "pre_actions": [N.api_tool(api, tn["account"], "Get the late products.", baked={spec.get("tool_fields", {}).get("customer", "customer_id"): "{{customer_id}}"},
+            "pre_actions": [N.api_tool(api, tn["account"], "Get the late products.", baked={spec.get("tool_fields", {}).get("customer", "customer_id"): "{{" + spec.get("customer_variable", "customer_id") + "}}"},
                                        post=C.GET_ACCOUNT_POST, retries=2)],
             "response_mapping": C.products_mapping(spec), "transitions": [N.always("compute_debt")],
         },
