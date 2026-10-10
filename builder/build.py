@@ -126,7 +126,7 @@ async def run_model(st: pathlib.Path, prompt: str, trace: Trace) -> None:
             texts = [b.text for b in message.content if isinstance(b, TextBlock) and b.text.strip()]
             tools = [b for b in message.content if isinstance(b, ToolUseBlock)]
             purpose = (texts[0].splitlines()[0][:160] if texts else
-                       ", ".join(f"{t.name}: {str(t.input.get('description') or t.input.get('command') or t.input.get('file_path') or '')[:100]}"
+                       ", ".join(f"{t.name}: {str(t.input.get('description') or t.input.get('skill') or t.input.get('command') or t.input.get('file_path') or '')[:100]}"
                                  for t in tools))
             trace.log("model_call", model=getattr(message, "model", MODEL), purpose=purpose)
             for t in tools:
