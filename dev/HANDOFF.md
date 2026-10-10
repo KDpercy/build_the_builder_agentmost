@@ -3,7 +3,11 @@
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
 ## Where we are
-- Phase: 1, fix 1 saved v5: PUB-06 3/3, full reps3 9/10 but PUB-05 0/3 (floor offered
+- Phase: 2 started. Example builder on Brief B (it saw builder/ + PATTERNS.md): agent
+  ffcb39ae-6222-4dfd-8d40-eaa0aab74316, wf d4076f50; runs B: 3/3, then reps3 2/3, 2/3, 3/3.
+  22 min, 35 turns, $3.26, trace traces/20261010-193830.jsonl (no keys). build_b.py
+  imports build_a/hooks_a: a change to A changes B.
+- (Phase 1 history) fix 1 saved v5: PUB-06 3/3, full reps3 9/10 but PUB-05 0/3 (floor offered
   to hardship). Fix 1b (hardship guard) saved, commit bbc7086: PUB-05 3/3, PUB-06 3/3.
   Full reps3 after 1b: 9/10 (runs 10,10,9), only PUB-10 2/3 on the opening 'recorded'.
   Pre-fix workflow copy: scratchpad brief-a.before-fix1.json (regenerate via git if lost).
@@ -21,14 +25,13 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   in PUB-06). Full reps3 after 1c: 10/10. Styles (1 run each): pieces 10, corrects 10, asks_back 10,
   in_words 10, talkative 7 (PUB-01,03,05; real, no outage). Fixes A-C saved (6fce695): PUB-01,03,05 3/3 talkative AND
   3/3 plain. Full after A-C: plain reps3 9/10 (PUB-05 1 fail), talkative 7/10.
-  Fixes D+E written, dry-run valid, not saved. Kerem: commit, save, PUB-05 plain
-  reps3 + PUB-06,09 talkative reps3. Then Phase 2 (Brief B).
+  D+E saved (72fda28): PUB-05 plain 3/3, PUB-06+09 talkative 3/3. Phase 1 DONE:
+  final full reps3 10/10 (results/phase1-final.json, all 30 calls, turns < 5 s). Next: Phase 2, example builder baseline on Brief B
+  (Kerem approved the cost, 10 Oct ~19:35).
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
 | --- | --- | --- | --- |
-| PUB-05 plain | Hardship | 'Is that a yes or a no?' after customer already declined -> judged as pressure | my hardship prompt: discount line runs before decline check (fix D) |
-| PUB-06 talk | Amounts | floor amount repeated 10x to fragments | my fix A says 're-ask last question' -> repeats offer (fix E) |
 | PUB-09 talk | Restructuring | agent silent 60 s after user sent '"' -> hangup | empty model reply on junk input; simulator junk |
 | PUB-08 talk | Paid | customer hung up right after a correct re-ask | simulator side, not ours |
 
@@ -48,6 +51,6 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 
 ## Budgets
 - Freya: 99.60 after first run; one 10-customer run ~0.16 credits (~600 runs left)
-- Builder model: one example-builder run $2.09 / 15 min
+- Builder model: example builder A $2.09 / 15 min; B $3.26 / 22 min
 - 10 Oct ~17:30: bank mock returned Cloudflare 403/1010 to Python; Freya fixed it.
 - Claude plan: no limit hit yet

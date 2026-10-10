@@ -79,9 +79,10 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 - dev/                                      these notes; never read by a run
 
 ## Status (update after every phase)
-- Phase: 1 (hand agent for Brief A). Fixes 1, 1b, 1c, 2, 3 in; commit 150b060, Freya v8
+- Phase: 1 done (hand agent Brief A, fixes 1-3, A-E; commit 72fda28). Phase 2 next: Brief B
 - Last scores (Brief A, agent 41e5caa1): base 0/10 -> example builder 8/10 reps3 ->
-  now 10/10 with --reps 3 (plain). Styles not yet measured cleanly.
-- Next step: --style pieces, then corrects / talkative / asks_back / in_words
+  10/10 reps3 plain (final, after D/E); styles 1 run: pieces/corrects/asks_back/in_words 10,
+  talkative 7 -> D/E fixed the real causes (rest is simulator junk input)
+- Next step: example-builder baseline on Brief B (running)
 - Known problems: no GitHub remote (install gh .pkg); build_a.py/hooks_a.py hold Brief A
   values (Phase 1 only); move dev/ aside during builder runs; results/log.jsonl not in git
