@@ -9,9 +9,9 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 - Reference agents (generic code from a spec): A 9/10 (the 1 fail was a judge glitch),
   B 3/3, PUB-06/PUB-10 3/3 each. 69 unit tests green. No practice-brief names in builder code.
 - BLOCKER: Freya simulation ba5fc132 stuck in 'running' since 00:06; every new simulation is
-  refused. Ask Freya (dev@freyavoice.ai) to clear it. A client is still waiting and will run
-  Brief A on the run-1 agent (rehearsal-a, 1e3ff1a8) by itself once it clears
-  -> results/rehearsal-a-run2.json.
+  refused. Ask Freya (dev@freyavoice.ai) to clear it. The waiting client was stopped at 00:55
+  (no polling overnight). When clear, run Brief A on the run-1 agent:
+  source env.sh && python3 tools/run_cases.py 1e3ff1a8-4477-4b94-a6e5-54054a299c0a --brief A --reps 3 --out results/rehearsal-a-reps3.json
 - First thing today: if unblocked, `--reps 3` on rehearsal-a; then a builder run on Brief B
   (BUILD_PRACTICE=B); then Phase 5 rehearsal (section 7 of PLAN). GitHub remote still missing.
 
