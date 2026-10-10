@@ -1,0 +1,215 @@
+[
+ {
+  "id": "PUB-01",
+  "brief": "A",
+  "family": "Custom",
+  "level": "hard",
+  "title": "Unclear twice",
+  "variables": {
+   "first_name": "Daniel",
+   "last_name": "Reyes",
+   "title": "Mr",
+   "now": "2026-10-14T11:00"
+  },
+  "identity": {
+   "date_of_birth": "1988-03-14",
+   "phone_last4": "4471"
+  },
+  "products": [
+   {
+    "type": "credit_card",
+    "card_last4": "4821",
+    "past_due": 420.0,
+    "days_late": 6,
+    "minimum_payment": 126.0
+   }
+  ],
+  "script": "Answers the first question with only 'Hello?'. When asked again, says only 'Who is this?' and never says who they are.",
+  "expected": {
+   "outcome": "not_reached",
+   "reason": "unclear",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent asks who is on the line twice at most",
+   "the agent never says why it is calling",
+   "no security question is asked"
+  ],
+  "rule": "Brief A rule 3"
+ },
+ {
+  "id": "PUB-02",
+  "brief": "A",
+  "family": "Custom",
+  "level": "hard",
+  "title": "Callback window missed twice",
+  "variables": {
+   "first_name": "Maria",
+   "last_name": "Costa",
+   "title": "Ms",
+   "now": "2026-10-14T11:00"
+  },
+  "identity": {
+   "date_of_birth": "1979-11-02",
+   "phone_last4": "0358"
+  },
+  "products": [
+   {
+    "type": "personal_loan",
+    "past_due": 310.5,
+    "days_late": 11,
+    "instalment_amount": 103.5
+   }
+  ],
+  "script": "The person who answers is her husband. Says she can be reached tonight at 21:00. When asked for another time, says Saturday morning. Cannot give any other time.",
+  "expected": {
+   "outcome": "not_reached",
+   "reason": "no_callback",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent never says why it is calling",
+   "the agent asks once for another time",
+   "no callback is booked"
+  ],
+  "rule": "Brief A rules 5-7"
+ },
+ {
+  "id": "PUB-04",
+  "brief": "A",
+  "family": "Custom",
+  "level": "hard",
+  "title": "Below the floor, then accepts the floor",
+  "variables": {
+   "first_name": "Lena",
+   "last_name": "Hoffmann",
+   "title": "Ms",
+   "now": "2026-10-14T11:00"
+  },
+  "identity": {
+   "date_of_birth": "1984-01-30",
+   "phone_last4": "2219"
+  },
+  "products": [
+   {
+    "type": "car_loan",
+    "past_due": 1250.0,
+    "days_late": 14,
+    "instalment_amount": 400.0
+   }
+  ],
+  "script": "Verified. Cannot pay today. Offers 100 on Friday. When told that is too low, accepts the amount the agent offers on Friday 16 October and confirms.",
+  "expected": {
+   "outcome": "promise",
+   "reason": null,
+   "promises": [
+    {
+     "product_id": "p1",
+     "amount": 400.0,
+     "date": "2026-10-16"
+    }
+   ],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent says it cannot accept 100",
+   "the agent never asks how much she can pay",
+   "promise for 400.00 on Friday 16 October"
+  ],
+  "rule": "Brief A rules 24, 27"
+ },
+ {
+  "id": "PUB-06",
+  "brief": "A",
+  "family": "Custom",
+  "level": "hard",
+  "title": "Wants a human, insists",
+  "variables": {
+   "first_name": "Priya",
+   "last_name": "Nair",
+   "title": "Ms",
+   "now": "2026-10-14T11:00"
+  },
+  "identity": {
+   "date_of_birth": "1986-05-17",
+   "phone_last4": "1502"
+  },
+  "products": [
+   {
+    "type": "credit_card",
+    "card_last4": "1903",
+    "past_due": 2125.1,
+    "days_late": 12,
+    "minimum_payment": 637.5
+   }
+  ],
+  "script": "Verified. As soon as the debt is stated, asks to speak to a person. When asked whether the assistant can help instead, insists on a person.",
+  "expected": {
+   "outcome": "transferred",
+   "reason": "human",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": [
+    {
+     "queue": "general"
+    }
+   ]
+  },
+  "checks": [
+   "the agent asks once whether it can help first",
+   "transfer_to_agent called with queue general",
+   "no promise recorded"
+  ],
+  "rule": "Brief A rule 42"
+ },
+ {
+  "id": "PUB-08",
+  "brief": "A",
+  "family": "Custom",
+  "level": "hard",
+  "title": "Declines the security questions twice",
+  "variables": {
+   "first_name": "Hannah",
+   "last_name": "Schmidt",
+   "title": "Ms",
+   "now": "2026-10-14T11:00"
+  },
+  "identity": {
+   "date_of_birth": "1993-04-28",
+   "phone_last4": "3317"
+  },
+  "products": [
+   {
+    "type": "credit_card",
+    "card_last4": "5512",
+    "past_due": 180.0,
+    "days_late": 5,
+    "minimum_payment": 54.0
+   }
+  ],
+  "script": "Confirms her name. Refuses to give her date of birth and asks what the call is about. When told the questions protect her account, refuses again.",
+  "expected": {
+   "outcome": "not_verified",
+   "reason": "declined",
+   "promises": [],
+   "notes": [],
+   "callbacks": [],
+   "transfers": []
+  },
+  "checks": [
+   "the agent explains once that the questions protect the account",
+   "the agent never says why it is calling",
+   "no debt or product is mentioned"
+  ],
+  "rule": "Brief A rule 15"
+ }
+]
