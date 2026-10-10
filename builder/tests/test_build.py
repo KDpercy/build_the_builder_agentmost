@@ -38,7 +38,9 @@ class TestBuild(unittest.TestCase):
             self.assertTrue((st / "input" / "brief-a.md").exists())
             self.assertTrue((st / "freya.py").exists())
             self.assertTrue((st / "builder" / "validate.py").exists())
-            for hidden in ("dev", "results", "out", "briefs", "submission", "traces"):
+            self.assertTrue((st / "results").is_dir())
+            self.assertFalse(any((st / "results").iterdir()))       # empty: no earlier scores
+            for hidden in ("dev", "out", "briefs", "submission", "traces"):
                 self.assertFalse((st / hidden).exists(), hidden)
             self.assertTrue((st / ".freya-agents.json").is_symlink())
         finally:

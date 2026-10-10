@@ -97,6 +97,7 @@ def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
         state.write_text("{}")
     (st / ".freya-agents.json").symlink_to(state)
     (st / "work").mkdir()
+    (st / "results").mkdir()                     # tools/run_cases.py appends to results/log.jsonl
     return st
 
 
