@@ -61,6 +61,24 @@ class TestBuild(unittest.TestCase):
             t.close()
 
 
+class TestFallback(unittest.TestCase):
+    def test_generates_from_spec_when_no_workflow_is_valid(self):
+        sys.path.insert(0, str(B.ROOT / "builder"))
+        from tests.test_generate import API, SPEC
+        with tempfile.TemporaryDirectory() as d:
+            st = pathlib.Path(d)
+            (st / "work").mkdir()
+            (st / "input").mkdir()
+            shutil.copytree(B.ROOT / "builder", st / "builder", ignore=shutil.ignore_patterns("__pycache__"))
+            (st / "input" / "api.json").write_text(json.dumps(API))
+            (st / "work" / "spec.json").write_text(json.dumps(SPEC))
+            t = B.Trace(st / "t.jsonl")
+            B.generate_from_spec(st, st / "input" / "api.json", t)
+            (st / "work" / "validate-rules.json").write_text(json.dumps({"call_variables": ["client_ref", "honorific", "family_name", "stamp"]}))
+            self.assertIsNotNone(B.pick_workflow(st, API, t))
+            t.close()
+
+
 class TestFinalRules(unittest.TestCase):
     def test_call_variables_come_from_the_runs_rules_and_spec(self):
         with tempfile.TemporaryDirectory() as d:

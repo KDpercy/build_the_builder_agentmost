@@ -179,6 +179,22 @@ def pick_workflow(st: pathlib.Path, api: dict, trace: Trace) -> dict | None:
     return None
 
 
+def generate_from_spec(st: pathlib.Path, api_file: pathlib.Path, trace: Trace) -> None:
+    """Last resort: build work/workflow.json from work/spec.json with the reference generator."""
+    gen = st / "work" / "reference" / "generate.py"
+    if not gen.exists():
+        gen = st / "builder" / "reference" / "generate.py"
+    if not (st / "work" / "spec.json").exists() or not gen.exists():
+        trace.log("fallback_skipped", reason="no spec.json or generator")
+        return
+    out = st / "work" / "fallback.workflow.json"
+    r = subprocess.run([sys.executable, str(gen), str(st / "work" / "spec.json"), str(st / "input" / api_file.name), str(out)],
+                       cwd=st, capture_output=True, text=True)
+    trace.log("fallback_generate", returncode=r.returncode, stderr=r.stderr[-500:])
+    if r.returncode == 0 and out.exists():
+        shutil.copy2(out, st / "work" / "workflow.json")
+
+
 def main(argv: list) -> int:
     if len(argv) < 3:
         print(__doc__)
@@ -205,6 +221,9 @@ def main(argv: list) -> int:
     trace.log("work_kept", path=str(keep.relative_to(ROOT)))
     api = json.loads(api_file.read_text())
     wf = pick_workflow(st, api, trace)
+    if wf is None:
+        generate_from_spec(st, api_file, trace)
+        wf = pick_workflow(st, api, trace)
     if wf is None:
         trace.log("end", ok=False, reason="no valid workflow", seconds=round(time.time() - start))
         trace.close()
