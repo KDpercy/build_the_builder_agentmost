@@ -1,0 +1,25 @@
+# secrets
+env.sh
+env.builder.sh
+.env
+.env.*
+
+# points at workflows and personas in my own workspace; would break a rerun elsewhere
+.freya-agents.json
+.personas.json
+
+# local test results and caches
+results/
+.cache/
+cache/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS and editor
+.DS_Store
+.vscode/
+.idea/
