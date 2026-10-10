@@ -116,7 +116,8 @@ def build(spec: dict, api_spec: dict) -> dict:
     # Deterministic retry of a failed promise (the model must not decide or talk before it).
     tf = spec.get("tool_fields", {})
     pr = tn["promise"]
-    args = {tf.get(k, k): "{{" + pr + "_args." + tf.get(k, k) + "}}" for k in ("product", "amount", "date")}
+    # The engine stores call arguments under the placeholder name: <tool>_args.<tool>_<field>.
+    args = {tf.get(k, k): "{{" + pr + "_args." + pr + "_" + tf.get(k, k) + "}}" for k in ("product", "amount", "date")}
     args[tf.get("customer", "customer_id")] = "{{" + spec.get("customer_variable", "customer_id") + "}}"
     retry = N.api_tool(api, pr, "Retry the last failed promise once.", baked=args, pre=H.promise_pre(spec))
     nodes["retry_promise"] = {

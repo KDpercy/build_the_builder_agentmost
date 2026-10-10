@@ -83,6 +83,15 @@ try:
     b = config.get('body')
     F = CFG.get('fields') or dict()
     if isinstance(b, dict):
+        tool = str(CFG.get('tool') or '')
+        for key in ('product', 'amount', 'date'):
+            f = F.get(key) or key
+            v = b.get(f)
+            if v is None or str(v).strip() == '' or '{' in str(v):
+                for cand in (tool + '_args.' + tool + '_' + f, tool + '_args.' + f):
+                    if vars.get(cand) not in (None, ''):
+                        b[f] = vars.get(cand)
+                        break
         ids = [s for s in str(vars.get('product_ids') or '').split(',') if s]
         pf = F.get('product') or 'product_id'
         pid = str(b.get(pf) or '').strip()
@@ -145,7 +154,7 @@ except Exception:
 
 def promise_pre(spec: dict) -> str:
     src = calendar_source(spec.get("calendar") or {}) + "\nCFG = json.loads(" + json_literal(
-        {"fields": spec.get("tool_fields") or {}}) + ")\n" + PROMISE_PRE
+        {"fields": spec.get("tool_fields") or {}, "tool": (spec.get("tool_names") or {}).get("promise", "")}) + ")\n" + PROMISE_PRE
     assert "{{" not in src and "}}" not in src
     return src
 

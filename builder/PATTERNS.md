@@ -61,3 +61,8 @@ a no ("Is that a yes or a no?" after a no was judged as pressure, PUB-05).
 A response_mapping of a list (data.products) sets no variable. The engine writes
 `<node>_response.data.<list>.<index>.<field>` instead. Code that reads a tool's list must
 rebuild it from those keys (or flatten it in a post-hook).
+
+## 8. Stored tool arguments are named after the placeholder  (status: confirmed in call logs)
+A model-filled field with default `{{create_x_amount}}` is stored as
+`<tool>_args.create_x_amount`, not `<tool>_args.amount`. A retry or a later step that reuses
+the arguments must use the placeholder name (and should fall back to the field name).

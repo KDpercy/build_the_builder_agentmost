@@ -61,5 +61,16 @@ class TestDebtFacts(unittest.TestCase):
         self.assertEqual(run([{"kind": "overdraft"}])["debt_state"], "error")
 
 
+class TestPromiseRetryFill(unittest.TestCase):
+    def test_missing_amount_and_date_come_from_stored_args(self):
+        from reference import hooks as RH
+        spec = dict(SPEC, tool_names={"promise": "make_deal"}, tool_fields={"product": "item", "amount": "sum", "date": "day"})
+        v = {"make_deal_args.make_deal_sum": 120, "make_deal_args.make_deal_day": "2030-03-06", "product_ids": "a1"}
+        cfg = {"body": {"item": "a1"}}
+        exec(RH.promise_pre(spec), {"config": cfg, "vars": v})
+        self.assertEqual(cfg["body"]["sum"], 120.0)
+        self.assertEqual(cfg["body"]["day"], "2030-03-06")
+
+
 if __name__ == "__main__":
     unittest.main()
