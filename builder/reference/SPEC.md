@@ -8,6 +8,7 @@ Text values are spoken or shown to the phone agent: copy required sentences word
 | --- | --- | --- |
 | `agent_identity` | text | how the agent describes itself ("the Northwind Credit assistant") |
 | `customer_variable` | text | call variable passed to every tool as the customer (default `customer_id`) |
+| `now_variable` | text | call variable holding the current date and time (default `now`) |
 | `address_as` | text | how to name the customer, with call variables (`{{title}} {{last_name}}`) |
 | `opening.first_sentence` | text | the required first sentence |
 | `opening.ask` | text | the who-is-this question, with call variables |

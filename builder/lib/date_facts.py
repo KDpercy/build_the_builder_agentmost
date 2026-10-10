@@ -79,7 +79,7 @@ def callback_text(today, hm):
     rows.append('- Every other day, and every other time, is OUTSIDE the window.')
     return '\n'.join(rows)
 try:
-    now = str(vars.get('now') or '')
+    now = str(vars.get(SPEC.get('now_variable') or 'now') or '')
     today = D.fromisoformat(now[:10])
     hm = now[11:16] if len(now) >= 16 else '00:00'
     vars['today_iso'] = today.isoformat()
@@ -89,7 +89,7 @@ try:
     vars['callback_facts'] = callback_text(today, hm)
     vars['date_state'] = 'ok'
 except Exception as e:
-    vars['today_spoken'] = str(vars.get('now') or '')
+    vars['today_spoken'] = str(vars.get(SPEC.get('now_variable') or 'now') or '')
     vars['week_table'] = ''
     vars['callback_facts'] = ''
     vars['date_state'] = 'error ' + str(e)

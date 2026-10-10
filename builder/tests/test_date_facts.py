@@ -61,6 +61,11 @@ class TestDateFacts(unittest.TestCase):
         self.assertIn("Monday 4 March 2030 (2030-03-04): NOT allowed, a bank holiday. Offer the next business day, Tuesday 5 March 2030.", text)
         self.assertIn("Friday 15 March 2030 (2030-03-15): AFTER the deadline", text)
 
+    def test_now_variable_name_comes_from_the_spec(self):
+        v = {"stamp": "2030-03-01T12:15"}
+        exec(date_facts_source(dict(SPEC, now_variable="stamp")), {"vars": v})
+        self.assertEqual(v["today_spoken"], "Friday 1 March 2030")
+
     def test_bad_now_never_raises(self):
         v, _ = run("not a date")
         self.assertTrue(v["date_state"].startswith("error"))

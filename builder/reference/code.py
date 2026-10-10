@@ -53,7 +53,7 @@ def offer(kind, x, too_much):
         return x['floor']
     return x['past']
 try:
-    today = D.fromisoformat(str(vars.get('now'))[:10])
+    today = D.fromisoformat(str(vars.get(SPEC.get('now_variable') or 'now'))[:10])
     raw = products_from_vars()
     prods = []
     for i, p in enumerate(raw):
