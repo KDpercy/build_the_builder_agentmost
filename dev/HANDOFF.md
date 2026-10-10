@@ -21,6 +21,16 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
      product_k_done and readback closes with their codes (needs a refused-close spec key).
 - Invented-bank test proves the reference has no brief values.
 
+## Overnight log
+- 23:50 reference retests: PUB-06 3/3; ref-a full 9/10 (PUB-01 judge 'no verdict', ledger ok);
+  ref-b full 3/3; PUB-12 2/3 -> read-back now finds agreements by their "Noted" line.
+- 23:50 BUILDER RUN 1 (build.py, Brief A, slot rehearsal-a): 7.5 min, 25 turns, $0.79, its own
+  test 10/10, agent 1e3ff1a8, trace traces/rehearsal-a-20261010-235028.jsonl (no keys).
+  Found: (a) it read Claude's project memory because the stage was inside the repo -> stage now
+  in a temp dir outside the repo (56ee245); (b) it started its test with nohup & -> forbidden;
+  (c) its opening said "this call is recorded" -> validator now errors on success-claim words
+  spoken before verification (231136c). Independent --reps 3 of its agent running.
+
 ## Overnight plan (Sat 23:45 -> Sun morning, Claude alone; Mac kept awake)
 1. Reference retests: PUB-06 x3, PUB-12 x3, full A, full B (running) -> fix what fails.
 2. Builder run 1: build.py on Brief A, BUILD_SLOT=rehearsal-a (~$3). Score its agent: full A,
