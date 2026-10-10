@@ -294,6 +294,7 @@ def readback_task(spec: dict) -> str:
     return f"""Every product has been handled. Products ({{{{n_products}}}}): {{{{product_list}}}}.
 
 For each product in order, work out from the conversation its status: agreed (amount and date), refused, or settled by a special case.
+Every agreed product has a line where you said "Noted, <amount> on <date>." for it: find each of those lines. A product with such a line is agreed, even if the customer refused other products.
 If the customer named one date for everything: each product is agreed at its full past-due amount on that date, except a product whose deadline is earlier: that product is agreed on its own deadline.
 
 YOUR FIRST MESSAGE IN THIS STEP: if at least one product is agreed, the single read-back of all agreed products. Otherwise go straight to closing.

@@ -35,10 +35,11 @@ def tools_for(spec: dict, api: dict) -> dict:
                                                   "and call the closing tool.",
                                                   "The transfer did NOT work. Never say they are being transferred. Call it once more with the "
                                                   "same queue; if it fails again, tell the customer and continue.")),
-        "close": N.api_tool(api, tn["close"], "Ends the call in the bank's records. CALL it exactly once, as the very last tool call. "
+        "close": N.api_tool(api, tn["close"], "Ends the call in the bank's records. CALL it exactly once, as the very last tool call, always with the outcome (and the reason when there is one). "
                             "In the SAME message, before calling it, thank the customer and say goodbye.", baked=cust,
                             pre=H.close_pre(spec),
-                            post=H.simple_post("", "The closing call failed. Call it again with the same values. Say nothing else.")),
+                            post=H.simple_post("", "The closing call failed. If the error says the call is already closed, say nothing and do nothing more. "
+                                                   "Otherwise call it once more with the outcome and the reason filled in. Say nothing else.")),
         "promise": N.api_tool(api, tn["promise"], "Records the payment promise of ONE product. CALL it only after the single read-back of all "
                               "agreed products got a clear yes. Once per agreed product, one per message, in product order.",
                               baked=cust, pre=H.promise_pre(spec), post=H.promise_post(spec)),
