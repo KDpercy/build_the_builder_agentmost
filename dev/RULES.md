@@ -43,8 +43,9 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 - I am not an experienced engineer. Detect my OS and shell, then give exact
   commands. Short explanations. Show changed code only.
 - Since 10 Oct ~20:10: Claude runs tests (run_cases.py) itself, one at a time, reads
-  the results, fixes and commits. Builder runs stay in my own terminal (they need
-  env.builder.sh, which is never sourced in Claude's shell).
+  the results, fixes and commits. Since ~20:20 Claude may also do builder runs (Kerem
+  added ~$10 to the key): only as `(source env.builder.sh && <builder cmd>)` in a
+  subshell, never exported into Claude's own shell, never printed. Log each run's cost.
 - Ask before deleting anything in the Freya workspace, before a test run
   longer than ten minutes, and before a builder run (it costs money).
 - If the kit contradicts these files, the kit wins. Tell me.
