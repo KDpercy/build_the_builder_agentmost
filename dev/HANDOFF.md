@@ -2,24 +2,18 @@
 
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
-## Where we are (Sat 10 Oct, ~21:35)
-- Phase 1 DONE: Brief A hand agent 41e5caa1 10/10 --reps 3. Phase 2 DONE: Brief B hand agent
-  ffcb39ae 3/3 --reps 3, 3 styles 3/3, 6 custom B cases pass. Hand agents now in dev/hand/.
-- Phase 3 well under way (all committed, 60+ unit tests green, `python3 -m unittest discover -s builder/tests`):
-  builder/validate.py, lib/ (calendar, date facts, nodes, identity hooks), reference/ (generate,
-  code, hooks, prompts, SPEC.md), skills/ (read-brief, design-agent, check-agent), build.py,
-  PATTERNS.md (generic; evidence in dev/PATTERNS-evidence.md), DESIGN.md.
-- Reference agents built only from dev/specs/brief-{a,b}.spec.json (answer-key specs):
-  ref-a (agent cbc21b5c): 9/10 twice; PUB-10 retry fixed (args naming, close count): 3/3.
-  ref-b (agent 7ca97613): 0/3 -> 2/3 after giving read-back the facts. Latest retest
-  (22:13, after removing the floor from attempt lines) found two real reference bugs:
-  1. PUB-06 0/3: "full amount is too much" is extracted as a special case (hardship once,
-     restructuring twice) because the reference has no separate too-much value. Fix: add a
-     `full_too_much` extraction and exclude it in the special_case description (pattern 2).
-  2. PUB-12 2 of 3 runs: product_3 called close_call itself, skipping read-back and notes.
-     Fix: remove the close tool from product steps; special cases there move on to
-     product_k_done and readback closes with their codes (needs a refused-close spec key).
-- Invented-bank test proves the reference has no brief values.
+## MORNING REPORT (Sun 11 Oct, written ~00:55)
+- Our builder works end to end. Run 1 (Brief A): 7.5 min, $0.79, its own test 10/10.
+  Run 2 (raw-material variant V1, no practice customers): 2.7 min, $0.81, spec matches the
+  answer key, both memo overrides applied. Total builder spend tonight $1.60.
+- Reference agents (generic code from a spec): A 9/10 (the 1 fail was a judge glitch),
+  B 3/3, PUB-06/PUB-10 3/3 each. 69 unit tests green. No practice-brief names in builder code.
+- BLOCKER: Freya simulation ba5fc132 stuck in 'running' since 00:06; every new simulation is
+  refused. Ask Freya (dev@freyavoice.ai) to clear it. A client is still waiting and will run
+  Brief A on the run-1 agent (rehearsal-a, 1e3ff1a8) by itself once it clears
+  -> results/rehearsal-a-run2.json.
+- First thing today: if unblocked, `--reps 3` on rehearsal-a; then a builder run on Brief B
+  (BUILD_PRACTICE=B); then Phase 5 rehearsal (section 7 of PLAN). GitHub remote still missing.
 
 ## Overnight log
 - 23:50 reference retests: PUB-06 3/3; ref-a full 9/10 (PUB-01 judge 'no verdict', ledger ok);
@@ -43,14 +37,11 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   rejected it (my bug: ignored the brief's call variables) -> fixed, finished by hand (logged
   in the trace as manual_finish), saved to slot ref-b.
 
-## Overnight plan (Sat 23:45 -> Sun morning, Claude alone; Mac kept awake)
-1. Reference retests: PUB-06 x3, PUB-12 x3, full A, full B (running) -> fix what fails.
-2. Builder run 1: build.py on Brief A, BUILD_SLOT=rehearsal-a (~$3). Score its agent: full A,
-   then --reps 3. Compare its spec.json with dev/specs/brief-a.spec.json.
-3. Fix what the run shows (skills, SPEC.md, reference), commit.
-4. Builder run 2: build.py on Brief B, BUILD_SLOT=rehearsal-b (~$3). Score it.
-5. Styles on the best agents. Morning report at the top of this file.
-Limits: max 2 builder runs; no Freya deletions; no GitHub; one simulation at a time.
+## Agents on Freya (slot: agent id)
+- brief-a: 41e5caa1 (hand A, dev/hand/build_a.py)    brief-b: ffcb39ae (hand B, dev/hand/build_b.py)
+- ref-a: cbc21b5c (reference from dev/specs/brief-a.spec.json)
+- ref-b: 7ca97613 (now holds builder run 2's V1 agent; regenerate ref-b from its spec if needed)
+- rehearsal-a: 1e3ff1a8 (builder run 1)        base: cb38a9f1 (kit example)
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |

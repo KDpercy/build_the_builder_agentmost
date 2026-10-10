@@ -82,8 +82,8 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 - dev/                                      these notes; never read by a run
 
 ## Status (update after every phase)
-- Phase: 1 and 2 done; Phase 3 (the real builder) well under way, ahead of plan
-- Last scores: hand A 10/10 --reps 3; hand B 3/3 --reps 3 + styles + 6 custom cases;
-  reference (generic) A 9/10, B being fixed
-- Next step: see dev/HANDOFF.md
-- Known problems: no GitHub remote (install gh .pkg); Freya slow at times (15-30 s turns)
+- Phase: 1-2 done; 3 done in a first version (build.py end to end works); 4 started (variant V1)
+- Last scores: hand A 10/10 --reps 3; hand B 3/3 --reps 3; reference A 9/10, B 3/3;
+  builder run 1 (A) 10/10 own test; builder run 2 (V1) spec matches answer key
+- Next step: see the MORNING REPORT in dev/HANDOFF.md
+- Known problems: Freya simulation stuck since 00:06 Sun (blocks all tests); no GitHub remote
