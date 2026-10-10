@@ -56,3 +56,8 @@ tts line says the sympathy + offer once; the node's prompt forbids repeating it 
 gives a neutral re-ask for unclear replies.
 v2: check the decline FIRST: a "no" anywhere in the node closes it; never re-ask after
 a no ("Is that a yes or a no?" after a no was judged as pressure, PUB-05).
+
+## 7. List responses arrive flattened  (status: confirmed in call logs)
+A response_mapping of a list (data.products) sets no variable. The engine writes
+`<node>_response.data.<list>.<index>.<field>` instead. Code that reads a tool's list must
+rebuild it from those keys (or flatten it in a post-hook).
