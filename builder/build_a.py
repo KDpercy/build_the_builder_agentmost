@@ -310,12 +310,19 @@ FLOOR_TASK = ("""The customer is verified and said the full amount is too much. 
 
 """ + ACCOUNT_BLOCK + "\n\n" + COMMON_RULES + "\n" + FLOOR_RULES + "\n\n" + CONFIRM_BLOCK)
 
+SPECIALS = ["hardship", "restructuring", "paid", "dispute", "human"]
+
 TOO_MUCH = [{
-    "name": "hardship",
+    "name": "special_case",
     "type": "string",
-    "enum_values": ["yes"],
-    "description": "yes as soon as the customer mentions illness, a death in the family or losing their job, in any words. "
-                   "Leave it empty otherwise.",
+    "enum_values": SPECIALS,
+    "description": "Set it as soon as the customer says one of these, in any words. Check in this order and take the first that fits. "
+                   "hardship: illness, a death in the family or losing their job. "
+                   "restructuring: asks for a new payment plan, lower or smaller instalments or monthly payments. "
+                   "paid: says they already paid this amount. "
+                   "dispute: says the debt is not theirs, they never had the product, or it was closed or paid off in the past. "
+                   "human: asks to speak to a person. "
+                   "Leave it empty for anything else.",
     "min_confidence": 0.6,
 }, {
     "name": "full_too_much",
@@ -326,14 +333,12 @@ TOO_MUCH = [{
     "min_confidence": 0.6,
 }]
 
-TO_FLOOR = {"target_node": "floor", "description": "the full amount is too much and no hardship was mentioned",
+TOO_MUCH_YES = {"variable": "full_too_much", "operator": "equals", "operand": "yes"}
+TO_FLOOR = {"target_node": "floor", "description": "the full amount is too much and no rule that comes first applies",
             "condition": {"logic": "or", "conditions": [
-                {"logic": "and", "conditions": [
-                    {"variable": "full_too_much", "operator": "equals", "operand": "yes"},
-                    {"variable": "hardship", "operator": "is_not_set"}]},
-                {"logic": "and", "conditions": [
-                    {"variable": "full_too_much", "operator": "equals", "operand": "yes"},
-                    {"variable": "hardship", "operator": "not_equals", "operand": "yes"}]}]}}
+                {"logic": "and", "conditions": [TOO_MUCH_YES, {"variable": "special_case", "operator": "is_not_set"}]},
+                {"logic": "and", "conditions": [TOO_MUCH_YES] + [
+                    {"variable": "special_case", "operator": "not_equals", "operand": v} for v in SPECIALS]}]}}
 
 SERVICE_TASK = """The bank's identity check is not working right now: it failed twice. Never say why you are calling and name no product, debt or amount. Tell the customer there is a technical problem and that Freya Bank will call again another time. Thank them, say goodbye, and in the same message call close_call with outcome no_promise and reason service_error."""
 

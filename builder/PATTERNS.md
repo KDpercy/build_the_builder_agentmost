@@ -11,12 +11,15 @@ is still allowed. The attempt plan (amount + date per attempt) is computed in co
 Evidence: Brief A PUB-06 failed 3 of 5 runs before; 3/3 after, fixed line said every
 time. Not yet seen: the attempt-1 path (customer gave a non-answer after the offer).
 
-## 2. A new route must yield to every rule that outranks it  (status: passed 3/3 once)
+## 2. A new route must yield to every rule that outranks it  (status: testing v2)
 Problem: the "full amount too much" route also fired on "I lost my job and cannot pay
 anything", so the agent offered the floor to a hardship customer (no persuasion allowed).
 Fix: extract each higher-priority trigger too (hardship) and AND it out of the route.
 When unsure whether an unextracted value is unset or "", test both (is_not_set OR
 not_equals). Evidence: Brief A PUB-05 3/3 before fix 1, 0/3 after it, 3/3 with the guard.
+Then PUB-09 ("can't pay that, I want lower instalments") hit the same route: guarding
+only hardship was not enough. Now one `special_case` enum covers every outranking rule
+(hardship, restructuring, paid, dispute, human) and the route requires it empty.
 Builder rule: when adding a route, list the brief's precedence rules ("comes before")
 and guard the route against each.
 

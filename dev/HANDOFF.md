@@ -16,14 +16,15 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   `--style pieces --only PUB-01,PUB-07,PUB-08,PUB-09,PUB-10` -> results/brief-a-pieces-rerun.json
 
 ## Next step (one, concrete)
-- Fix 2 (no 'recorded' in spoken lines) + fix 3 (retry caps: service_down,
-  callback_failed, close give-up) written, dry-run valid, not saved. Kerem: commit,
-  save, full `--reps 3` (results/fix23-reps3.json), then `--style pieces`.
+- Fixes 2+3 saved (v7, b563f22): full reps3 9/10 (10,10,9), PUB-10 now 3/3; PUB-09 1 fail:
+  floor offered to a restructuring request. Fix 1c (special_case guard) written,
+  dry-run valid, not saved. Kerem: commit, save, `--only PUB-05,PUB-06,PUB-08,PUB-09 --reps 3`,
+  then full `--reps 3`, then `--style pieces`.
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
 | --- | --- | --- | --- |
-| PUB-10 | Tool failure | judge: "recorded" said before success (2 of 8 runs) | the word is in the required opening line |
+| PUB-09 | Restructuring | floor offered before transfer (1 of 3) | floor route ignored rule 41; fix 1c |
 | outage | any | verify loops forever, no close_call | fix 3 caps it; failure paths can't be reproduced on demand |
 
 ## Patterns learned (copy to builder/PATTERNS.md when a fix proves it)
@@ -41,4 +42,5 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 ## Budgets
 - Freya: 99.60 after first run; one 10-customer run ~0.16 credits (~600 runs left)
 - Builder model: one example-builder run $2.09 / 15 min
+- 10 Oct ~17:30: bank mock returned Cloudflare 403/1010 to Python; Freya fixed it.
 - Claude plan: no limit hit yet

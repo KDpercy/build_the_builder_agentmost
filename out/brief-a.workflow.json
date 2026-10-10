@@ -1486,7 +1486,7 @@
     },
     {
      "target_node": "floor",
-     "description": "the full amount is too much and no hardship was mentioned",
+     "description": "the full amount is too much and no rule that comes first applies",
      "condition": {
       "logic": "or",
       "conditions": [
@@ -1499,7 +1499,7 @@
           "operand": "yes"
          },
          {
-          "variable": "hardship",
+          "variable": "special_case",
           "operator": "is_not_set"
          }
         ]
@@ -1513,9 +1513,29 @@
           "operand": "yes"
          },
          {
-          "variable": "hardship",
+          "variable": "special_case",
           "operator": "not_equals",
-          "operand": "yes"
+          "operand": "hardship"
+         },
+         {
+          "variable": "special_case",
+          "operator": "not_equals",
+          "operand": "restructuring"
+         },
+         {
+          "variable": "special_case",
+          "operator": "not_equals",
+          "operand": "paid"
+         },
+         {
+          "variable": "special_case",
+          "operator": "not_equals",
+          "operand": "dispute"
+         },
+         {
+          "variable": "special_case",
+          "operator": "not_equals",
+          "operand": "human"
          }
         ]
        }
@@ -1526,12 +1546,16 @@
    "max_node_turns": 60,
    "extraction_schema": [
     {
-     "name": "hardship",
+     "name": "special_case",
      "type": "string",
      "enum_values": [
-      "yes"
+      "hardship",
+      "restructuring",
+      "paid",
+      "dispute",
+      "human"
      ],
-     "description": "yes as soon as the customer mentions illness, a death in the family or losing their job, in any words. Leave it empty otherwise.",
+     "description": "Set it as soon as the customer says one of these, in any words. Check in this order and take the first that fits. hardship: illness, a death in the family or losing their job. restructuring: asks for a new payment plan, lower or smaller instalments or monthly payments. paid: says they already paid this amount. dispute: says the debt is not theirs, they never had the product, or it was closed or paid off in the past. human: asks to speak to a person. Leave it empty for anything else.",
      "min_confidence": 0.6
     },
     {
