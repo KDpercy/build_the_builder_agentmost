@@ -2,55 +2,42 @@
 
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
-## Where we are
-- Phase: 2 started. Example builder on Brief B (it saw builder/ + PATTERNS.md): agent
-  ffcb39ae-6222-4dfd-8d40-eaa0aab74316, wf d4076f50; runs B: 3/3, then reps3 2/3, 2/3, 3/3.
-  22 min, 35 turns, $3.26, trace traces/20261010-193830.jsonl (no keys). build_b.py
-  imports build_a/hooks_a: a change to A changes B.
-- (Phase 1 history) fix 1 saved v5: PUB-06 3/3, full reps3 9/10 but PUB-05 0/3 (floor offered
-  to hardship). Fix 1b (hardship guard) saved, commit bbc7086: PUB-05 3/3, PUB-06 3/3.
-  Full reps3 after 1b: 9/10 (runs 10,10,9), only PUB-10 2/3 on the opening 'recorded'.
-  Pre-fix workflow copy: scratchpad brief-a.before-fix1.json (regenerate via git if lost).
-- Commit: bcbb66f (kit + dev notes). No GitHub remote yet (brew can't build gh on
-  macOS 13; use the gh .pkg from github.com/cli/cli/releases).
-- Hand agent: slot brief-a, agent 41e5caa1-7cb6-4984-b177-b9ccc19bff1b, source
-  builder/build_a.py + hooks_a.py -> out/brief-a.workflow.json (Brief A values inside).
-- Scores (A): base 0/10 | example builder 9,9,9,10 (15 min, $2.09) | reps3 8/10
-  (PUB-06, PUB-10) | pieces 4/10, but PUB-01,07,08,09,10 hit `snekbox` outage; rerun
-  `--style pieces --only PUB-01,PUB-07,PUB-08,PUB-09,PUB-10` -> results/brief-a-pieces-rerun.json
+## Where we are (Sat 10 Oct, ~20:40)
+- Phase 1 DONE: Brief A hand agent 41e5caa1 (slot brief-a, builder/build_a.py + hooks_a.py)
+  10/10 --reps 3 plain (results/phase1-final.json); styles 1 run: pieces/corrects/asks_back/
+  in_words 10, talkative fixed by A-E. Score history: results/log.jsonl.
+- Phase 2 in progress: Brief B hand agent ffcb39ae (slot brief-b, build_b.py + hooks_b.py,
+  made by the example builder, $3.26 / 22 min; imports build_a, so A fixes reach B).
+  B: 3/3 --reps 3; pieces, corrects, talkative 3/3 each. On Brief A customers 8/10 and 7/10:
+  PUB-05/08 fail only on notes (Brief B notes, Brief A never notes: expected, not a bug);
+  PUB-07 was a real bug (vague date -> attempt 1), fixed in bc055ae, retest running.
+- Custom Brief B cases (same practice ids, new scripts): dev/cases/b-set1.json, b-set2.json
+  (rules 8-10, closing order, all paid, hardship, human). Running.
+- builder/validate.py + builder/tests (17 unittest fixtures, all pass). Both workflows clean.
+- Commits: latest bc055ae. No GitHub remote yet (gh .pkg from github.com/cli/cli/releases).
 
 ## Next step (one, concrete)
-- Fixes 2+3 saved (v7, b563f22): full reps3 9/10 (10,10,9), PUB-10 now 3/3; PUB-09 1 fail:
-  floor offered to a restructuring request. Fix 1c (special_case guard) saved, 150b060: PUB-05,06,08,09 all 3/3 (floor line only
-  in PUB-06). Full reps3 after 1c: 10/10. Styles (1 run each): pieces 10, corrects 10, asks_back 10,
-  in_words 10, talkative 7 (PUB-01,03,05; real, no outage). Fixes A-C saved (6fce695): PUB-01,03,05 3/3 talkative AND
-  3/3 plain. Full after A-C: plain reps3 9/10 (PUB-05 1 fail), talkative 7/10.
-  D+E saved (72fda28): PUB-05 plain 3/3, PUB-06+09 talkative 3/3. Phase 1 DONE:
-  final full reps3 10/10 (results/phase1-final.json, all 30 calls, turns < 5 s). Next: Phase 2, example builder baseline on Brief B
-  (Kerem approved the cost, 10 Oct ~19:35).
+- Read results/b-pub07.json, b-set1.json, b-set2.json; fix B failures; then B --reps 3 on
+  styles; then start Phase 3 design (builder/build.py) if time allows.
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
 | --- | --- | --- | --- |
-| PUB-09 talk | Restructuring | agent silent 60 s after user sent '"' -> hangup | empty model reply on junk input; simulator junk |
-| PUB-08 talk | Paid | customer hung up right after a correct re-ask | simulator side, not ours |
+| A PUB-08 talk | Paid | customer hung up right after a correct re-ask | simulator side |
+| A PUB-09 talk | Restr. | silent after user sent '"' | fixed by rule E (always reply) |
 
-| outage | any | verify loops forever, no close_call | fix 3 caps it; failure paths can't be reproduced on demand |
-
-## Patterns learned (copy to builder/PATTERNS.md when a fix proves it)
-- State the brief counts ("once", attempts) must live in variables, not prompts.
-- Keep words that a later check forbids out of mandatory lines.
-- Every retry loop needs a cap and an exit that still calls close_call.
+## Patterns learned (builder/PATTERNS.md has 6, with evidence)
+- Counted rules -> routes + fixed lines; new routes yield to outranking rules; no
+  restricted words in spoken lines; cap retries; fragments are not answers.
 
 ## Decisions made (do not reopen without a reason)
 - Move dev/ out of the kit folder during any builder run.
-- build_a.py/hooks_a.py are the Phase 1 hand agent only, never the shipped builder.
-- Opening paraphrased to 'a recording of this call is kept' (Kerem chose, 10 Oct).
-- Final briefs stay collections (README l.71-72: same kind of call, same 7 tools).
-  Variant briefs wait for Phase 4; keep going phase by phase.
+- build_a/b and hooks_a/b are hand agents only, never the shipped builder (Brief values).
+- Final briefs stay collections (README l.71-72). Variant briefs wait for Phase 4.
+- Opening says "a recording of this call is kept" (Kerem, 10 Oct).
+- Claude runs tests and builder runs itself (key only in a subshell); one sim at a time.
 
 ## Budgets
-- Freya: 99.60 after first run; one 10-customer run ~0.16 credits (~600 runs left)
-- Builder model: example builder A $2.09 / 15 min; B $3.26 / 22 min
-- 10 Oct ~17:30: bank mock returned Cloudflare 403/1010 to Python; Freya fixed it.
-- Claude plan: no limit hit yet
+- Freya: ~0.16 credits per 10-customer run; ~95 left.
+- Builder model: example builder A $2.09 / 15 min; B $3.26 / 22 min. Kerem added ~$10.
+- 10 Oct ~17:30: bank mock gave Cloudflare 403/1010 to Python; Freya fixed it.
