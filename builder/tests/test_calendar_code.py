@@ -24,6 +24,11 @@ class TestCalendar(unittest.TestCase):
         # 2030-03-01 is a Friday. Invented holidays: Monday 2030-03-04 and Friday 2030-03-15.
         self.c = env({"holidays": ["2030-03-04", "2030-03-15"], "weekend": [5, 6]})
 
+    def test_triple_closing_brace_is_split(self):
+        src = calendar_source({"a": {"b": {"c": 1}}})
+        self.assertNotIn("}}", src)
+        self.assertEqual(env({"a": {"b": {"c": 1}}})["CAL"]["a"]["b"]["c"], 1)
+
     def test_no_double_braces_even_with_nested_config(self):
         src = calendar_source({"bands": [{"a": {"b": 1}}], "holidays": []})
         self.assertNotIn("}}", src)

@@ -13,7 +13,7 @@ The generated code writes text variables and never raises. Nothing here is speci
 """
 import json
 
-from lib.calendar_code import calendar_source
+from lib.calendar_code import calendar_source, json_literal
 
 FACTS = r'''
 def date_expr(expr, today, deadline=None):
@@ -98,7 +98,6 @@ except Exception as e:
 
 def date_facts_source(spec: dict) -> str:
     """Source for the first code node. Defines date_expr, band_for, calendar_lines for later nodes too."""
-    text = json.dumps(spec, separators=(",", ":")).replace("}}", "} }").replace("{{", "{ {")
-    src = calendar_source(spec.get("calendar") or {}) + "\nSPEC = json.loads(" + repr(text) + ")\n" + FACTS
+    src = calendar_source(spec.get("calendar") or {}) + "\nSPEC = json.loads(" + json_literal(spec) + ")\n" + FACTS
     assert "{{" not in src and "}}" not in src
     return src

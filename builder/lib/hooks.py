@@ -7,7 +7,9 @@ identity_pre_source(config) cleans an identity answer before the bank sees it:
      "kinds": {"<question value>": "date" | "digits:4" | "year" | "text"},
      "numeric_date_order": "dmy" | "mdy" | "ymd"}   how to read a date said only in numbers
 """
-import json
+import json  # noqa: F401
+
+from lib.calendar_code import json_literal
 
 _PARSER = r'''
 import json, re
@@ -99,8 +101,7 @@ except Exception:
 
 
 def _config_literal(config: dict) -> str:
-    text = json.dumps(config, separators=(",", ":")).replace("}}", "} }").replace("{{", "{ {")
-    return repr(text)
+    return json_literal(config)
 
 
 def identity_parser_source(config: dict) -> str:

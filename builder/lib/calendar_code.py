@@ -56,9 +56,17 @@ def next_weekday(today, i):
 '''
 
 
+def json_literal(obj) -> str:
+    """A Python string literal holding obj as JSON, with no double brace anywhere (the platform
+    templates double braces). JSON allows a space between brackets, so the data is unchanged."""
+    text = json.dumps(obj, separators=(",", ":"))
+    while "}}" in text or "{{" in text:
+        text = text.replace("}}", "} }").replace("{{", "{ {")
+    return repr(text)
+
+
 def calendar_source(config: dict) -> str:
     """Python source for a code node. `config` holds only values read from the brief."""
-    text = json.dumps(config, separators=(",", ":")).replace("}}", "} }").replace("{{", "{ {")
-    src = TEMPLATE.replace("__CONFIG__", repr(text))
+    src = TEMPLATE.replace("__CONFIG__", json_literal(config))
     assert "{{" not in src and "}}" not in src
     return src
