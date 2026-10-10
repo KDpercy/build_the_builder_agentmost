@@ -185,7 +185,7 @@ Never record a promise or write a note in this step."""
 def product_task(spec: dict, k: int) -> str:
     p = spec.get("persuasion") or {}
     fo = p.get("floor_offer") or {}
-    rest = " and say that the rest stays overdue" if fo.get("say_rest_stays_overdue") else ""
+    rest = f' and say: "{fo["say_with_offer"]}"' if fo.get("say_with_offer") else ""
     return f"""You are now handling PRODUCT {k} only. Products before it are settled; do not reopen them. Do not talk about later products yet.
 
 {{{{p{k}_block}}}}

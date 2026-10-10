@@ -152,7 +152,7 @@
   ],
   "floor_offer": {
    "once": true,
-   "say_rest_stays_overdue": true
+   "say_with_offer": "the rest stays overdue"
   }
  },
  "callback": {
