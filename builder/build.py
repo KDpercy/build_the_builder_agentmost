@@ -164,7 +164,7 @@ def main(argv: list) -> int:
         print(__doc__)
         return 2
     api_file, briefs = pathlib.Path(argv[1]).resolve(), [str(pathlib.Path(b).resolve()) for b in argv[2:]]
-    slot = slot_name(briefs)
+    slot = os.environ.get("BUILD_SLOT") or slot_name(briefs)     # override only for practice runs
     start = time.time()
     trace = Trace(ROOT / "traces" / f"{slot}-{time.strftime('%Y%m%d-%H%M%S')}.jsonl")
     trace.log("start", slot=slot, commit=git_commit(), model=MODEL, budget_s=BUDGET_S,
