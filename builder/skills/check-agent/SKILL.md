@@ -25,6 +25,6 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
        python3 -c "import freya,json; print(freya.save_workflow('<slot>', json.load(open('work/workflow.json'))))"
        python3 tools/run_cases.py <agent_id> --brief <letter> --out work/run.json
    Read each FAIL line; read the call with freya.get_call(call_id) before changing anything.
-   Run in the foreground and wait. One simulation at a time.
+   Run in the foreground and wait: never nohup, & or a background job. One simulation at a time.
 
 Always leave work/good.workflow.json as the last version that passed step 1.

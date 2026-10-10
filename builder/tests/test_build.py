@@ -43,8 +43,9 @@ class TestBuild(unittest.TestCase):
             for hidden in ("dev", "out", "briefs", "submission", "traces"):
                 self.assertFalse((st / hidden).exists(), hidden)
             self.assertTrue((st / ".freya-agents.json").is_symlink())
+            self.assertFalse(str(st).startswith(str(B.ROOT)), "stage must be outside the repository")
         finally:
-            shutil.rmtree(B.ROOT / "out" / "unit-test-slot")
+            shutil.rmtree(st.parent)
 
     def test_pick_workflow_falls_back_to_last_good(self):
         with tempfile.TemporaryDirectory() as d:

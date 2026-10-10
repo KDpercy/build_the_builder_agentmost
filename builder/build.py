@@ -17,6 +17,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -75,10 +76,9 @@ def git_commit() -> str:
 
 
 def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
-    """A clean working folder: kit files, our library, the inputs. No dev/, results/ or other briefs."""
-    st = ROOT / "out" / slot / "stage"
-    if st.exists():
-        shutil.rmtree(st)
+    """A clean working folder OUTSIDE the repository (so no project memory, no parent CLAUDE.md, no
+    git history): kit files, our library, the inputs. No dev/, results/ or other briefs."""
+    st = pathlib.Path(tempfile.mkdtemp(prefix=f"bb-{slot}-")) / "stage"
     (st / "input").mkdir(parents=True)
     for rel in KIT_FILES + BUILDER_FILES:
         src = ROOT / rel
@@ -109,7 +109,8 @@ def prompt_for(slot: str, api_name: str, brief_names: list, deadline: float) -> 
         "Work only inside this folder. Write the final workflow to work/workflow.json and copy every version that "
         "passes builder/validate.py to work/good.workflow.json. "
         f"Hard time limit: finish before {time.strftime('%H:%M', time.localtime(deadline))} local time, "
-        "tests included. When in doubt, stop testing and leave a valid work/workflow.json."
+        "tests included. When in doubt, stop testing and leave a valid work/workflow.json. "
+        "Run every command in the foreground and wait for it: never use nohup, & or background jobs."
     )
 
 
@@ -179,6 +180,11 @@ def main(argv: list) -> int:
         trace.log("budget_exceeded", seconds=round(time.time() - start))
     except Exception as e:  # the model run failing must not stop the save of a valid workflow
         trace.log("model_error", error=repr(e)[:500])
+    keep = ROOT / "out" / slot
+    if keep.exists():
+        shutil.rmtree(keep)
+    shutil.copytree(st / "work", keep / "work")                  # everything the run made, kept with the repo
+    trace.log("work_kept", path=str(keep.relative_to(ROOT)))
     api = json.loads(api_file.read_text())
     wf = pick_workflow(st, api, trace)
     if wf is None:
