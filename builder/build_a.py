@@ -302,6 +302,13 @@ FLOOR_TASK = ("""The customer is verified and said the full amount is too much. 
 """ + ACCOUNT_BLOCK + "\n\n" + COMMON_RULES + "\n" + FLOOR_RULES + "\n\n" + CONFIRM_BLOCK)
 
 TOO_MUCH = [{
+    "name": "hardship",
+    "type": "string",
+    "enum_values": ["yes"],
+    "description": "yes as soon as the customer mentions illness, a death in the family or losing their job, in any words. "
+                   "Leave it empty otherwise.",
+    "min_confidence": 0.6,
+}, {
     "name": "full_too_much",
     "type": "string",
     "enum_values": ["yes"],
@@ -309,6 +316,15 @@ TOO_MUCH = [{
                    "Leave it empty for anything else, including a plain no to paying today, a date, an amount, or a request for a plan.",
     "min_confidence": 0.6,
 }]
+
+TO_FLOOR = {"target_node": "floor", "description": "the full amount is too much and no hardship was mentioned",
+            "condition": {"logic": "or", "conditions": [
+                {"logic": "and", "conditions": [
+                    {"variable": "full_too_much", "operator": "equals", "operand": "yes"},
+                    {"variable": "hardship", "operator": "is_not_set"}]},
+                {"logic": "and", "conditions": [
+                    {"variable": "full_too_much", "operator": "equals", "operand": "yes"},
+                    {"variable": "hardship", "operator": "not_equals", "operand": "yes"}]}]}}
 
 ERROR_TASK = """The account details could not be loaded. Tell the customer that you cannot access the details right now and that nothing was recorded. Thank them, say goodbye, and call close_call with outcome no_promise and reason service_error."""
 
@@ -383,8 +399,7 @@ def build() -> dict:
             always("account_error")]),
         "debt": conv(
             "debt", DEBT_TASK, [promise_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED, RETRY,
-             var_is("floor", "the customer said the full amount is too much", "full_too_much", ["yes"])],
+            [CLOSED, RETRY, TO_FLOOR],
             {"type": "tts", "text": DEBT_LINE}, extraction=TOO_MUCH),
         "floor": conv(
             "floor", FLOOR_TASK, [promise_tool(), transfer_tool(), close_call_tool()],

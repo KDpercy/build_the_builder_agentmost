@@ -1144,14 +1144,38 @@
     },
     {
      "target_node": "floor",
-     "description": "the customer said the full amount is too much",
+     "description": "the full amount is too much and no hardship was mentioned",
      "condition": {
       "logic": "or",
       "conditions": [
        {
-        "variable": "full_too_much",
-        "operator": "equals",
-        "operand": "yes"
+        "logic": "and",
+        "conditions": [
+         {
+          "variable": "full_too_much",
+          "operator": "equals",
+          "operand": "yes"
+         },
+         {
+          "variable": "hardship",
+          "operator": "is_not_set"
+         }
+        ]
+       },
+       {
+        "logic": "and",
+        "conditions": [
+         {
+          "variable": "full_too_much",
+          "operator": "equals",
+          "operand": "yes"
+         },
+         {
+          "variable": "hardship",
+          "operator": "not_equals",
+          "operand": "yes"
+         }
+        ]
        }
       ]
      }
@@ -1159,6 +1183,15 @@
    ],
    "max_node_turns": 60,
    "extraction_schema": [
+    {
+     "name": "hardship",
+     "type": "string",
+     "enum_values": [
+      "yes"
+     ],
+     "description": "yes as soon as the customer mentions illness, a death in the family or losing their job, in any words. Leave it empty otherwise.",
+     "min_confidence": 0.6
+    },
     {
      "name": "full_too_much",
      "type": "string",

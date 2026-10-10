@@ -3,7 +3,8 @@
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
 ## Where we are
-- Phase: 1, fix 1 (floor-once) written + dry-run valid; NOT yet saved or tested.
+- Phase: 1, fix 1 saved v5: PUB-06 3/3, full reps3 9/10 but PUB-05 0/3 (floor offered
+  to hardship). Fix 1b (hardship guard on floor route) written, dry-run valid, not saved.
   Pre-fix workflow copy: scratchpad brief-a.before-fix1.json (regenerate via git if lost).
 - Commit: bcbb66f (kit + dev notes). No GitHub remote yet (brew can't build gh on
   macOS 13; use the gh .pkg from github.com/cli/cli/releases).
@@ -14,8 +15,8 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   `--style pieces --only PUB-01,PUB-07,PUB-08,PUB-09,PUB-10` -> results/brief-a-pieces-rerun.json
 
 ## Next step (one, concrete)
-- Kerem: save slot brief-a, run `--only PUB-06 --reps 3`, then pieces on PUB-06,
-  then full `--reps 3` for regressions. Then fix 2/3 on Kerem's go.
+- Kerem: save fix 1b, run `--only PUB-05,PUB-06 --reps 3`, then full `--reps 3`,
+  then `--style pieces`. Then fix 2/3 on Kerem's go.
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
@@ -32,6 +33,8 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 ## Decisions made (do not reopen without a reason)
 - Move dev/ out of the kit folder during any builder run.
 - build_a.py/hooks_a.py are the Phase 1 hand agent only, never the shipped builder.
+- Final briefs stay collections (README l.71-72: same kind of call, same 7 tools).
+  Variant briefs wait for Phase 4; keep going phase by phase.
 
 ## Budgets
 - Freya: 99.60 after first run; one 10-customer run ~0.16 credits (~600 runs left)
