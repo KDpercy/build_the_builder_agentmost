@@ -137,8 +137,12 @@ class TestValidate(unittest.TestCase):
     def test_required_sentence_missing(self):
         self.assertCaught(mutate(lambda w: w["nodes"]["debt"]["on_enter"].update(text="Hi.")), "required sentence missing")
 
+    def test_claim_word_before_verification_is_an_error(self):
+        self.assertCaught(mutate(lambda w: w["nodes"]["opening"]["on_enter"].update(text="Hello, this call is recorded.")),
+                          "before any tool confirmed")
+
     def test_restricted_word_is_a_warning(self):
-        wf = mutate(lambda w: w["nodes"]["opening"]["on_enter"].update(text="This call is recorded."))
+        wf = mutate(lambda w: w["nodes"]["debt"]["on_enter"].update(text="About your debt. Nothing is recorded yet."))
         warns = [m for level, m in V.validate(wf, API, RULES) if level == V.WARN]
         self.assertTrue(any("restricted word 'recorded'" in m for m in warns), warns)
 

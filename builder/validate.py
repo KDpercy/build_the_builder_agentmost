@@ -15,6 +15,9 @@ import sys
 from collections import deque
 
 ERROR, WARN = "ERROR", "WARN"
+# Our generated agents must never claim an action succeeded before a tool confirmed it, and a
+# literal judge reads these words that way. A fixed line spoken before any tool runs must avoid them.
+CLAIM_WORDS = ("recorded", "booked", "saved", "transferred", "scheduled")
 ENGINE_SUFFIXES = ("_response", "_args", "_status_code", "_success_count", "_failure_count")
 CALL_VARIABLES = {"customer_id", "first_name", "last_name", "title", "now"}
 PLACEHOLDER = re.compile(r"\{\{\s*([\w.]+)\s*\}\}")
@@ -248,6 +251,11 @@ def check_rules(wf: dict, rules: dict) -> list:
             for line in spoken_lines(nodes[k]):
                 if pattern.search(line.lower()):
                     out.append((ERROR, f"{k}: says {word!r} before identity is verified"))
+    for k in pre_verification_nodes(wf):
+        for line in spoken_lines(nodes[k]):
+            for word in CLAIM_WORDS:
+                if re.search(r"\b" + word + r"\b", line.lower()):
+                    out.append((ERROR, f"{k}: fixed line says {word!r} before any tool confirmed anything; say it in other words"))
     for word in rules.get("restricted_words", []):
         for k, n in nodes.items():
             for line in spoken_lines(n):

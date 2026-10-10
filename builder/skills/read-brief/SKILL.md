@@ -62,6 +62,13 @@ and add a `gaps` list naming each missing item. Never invent a value.
     tools                 per tool: the API fields to fill from call variables, and which the
                           agent fills
 
+## 4b. Words with a condition
+Look for every rule that allows a word or a claim only after something happens (for example
+a claim allowed only after a tool succeeded). Put each such word in `restricted_words`. If a
+required sentence (the opening, a fixed line) needs the same idea, write it in other words in
+the spec, and note the paraphrase in rules.json. Never put such a word in a line spoken
+before the condition can be true.
+
 ## 5. Check before moving on
 - Every line of every brief file is covered by at least one rule or is plainly descriptive.
 - Every rule with a number, date or sentence has it in spec.json too.
