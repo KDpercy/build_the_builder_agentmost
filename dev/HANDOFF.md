@@ -21,11 +21,14 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
      product_k_done and readback closes with their codes (needs a refused-close spec key).
 - Invented-bank test proves the reference has no brief values.
 
-## Next step (one, concrete)
-- Fix reference bugs 1 and 2 above, retest PUB-06/PUB-12 x3, then full A and B.
-- Then the first end-to-end run of our builder (costs ~$3; key only in a subshell):
-  (source env.sh && source env.builder.sh && BUILD_SLOT=ref-a python3 builder/build.py tools/openapi.json briefs/brief-a.md)
-  then read traces/ref-a-*.jsonl and out/ref-a/stage/work/ (spec.json vs dev/specs/brief-a.spec.json).
+## Overnight plan (Sat 23:45 -> Sun morning, Claude alone; Mac kept awake)
+1. Reference retests: PUB-06 x3, PUB-12 x3, full A, full B (running) -> fix what fails.
+2. Builder run 1: build.py on Brief A, BUILD_SLOT=rehearsal-a (~$3). Score its agent: full A,
+   then --reps 3. Compare its spec.json with dev/specs/brief-a.spec.json.
+3. Fix what the run shows (skills, SPEC.md, reference), commit.
+4. Builder run 2: build.py on Brief B, BUILD_SLOT=rehearsal-b (~$3). Score it.
+5. Styles on the best agents. Morning report at the top of this file.
+Limits: max 2 builder runs; no Freya deletions; no GitHub; one simulation at a time.
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
