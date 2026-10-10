@@ -79,9 +79,10 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 - dev/                                      these notes; never read by a run
 
 ## Status (update after every phase)
-- Phase: 0 in progress (Sat 10 Oct). Machine: macOS 13 (Darwin 22.6, Intel), bash, Python 3.13
-- Last scores: none
-- Next step: Phase 0a, create env.sh (see dev/HANDOFF.md)
-- Known problems: no git repo yet; `gh` CLI not installed; claude-agent-sdk
-  not installed; the example builder runs with cwd = kit folder, so it can see
-  dev/ (move dev/ aside during builder runs)
+- Phase: 0 done except GitHub push (no `gh`); Phase 1 analysis done, no fix applied yet
+- Last scores (Brief A): base agent 0/10; example-builder agent 41e5caa1 10/10 once,
+  8/10 with --reps 3, pieces 4/10 (5 of 6 fails = Freya code-sandbox outage)
+- Next step: Kerem approves fixes 1-3 in dev/HANDOFF.md; rerun of spoiled pieces customers pending
+- Known problems: GitHub repo not created (install gh from the .pkg); builder/build_a.py and
+  hooks_a.py hold Brief A values (Phase 1 only, never ship); dev/ must be moved aside
+  during builder runs; results/ must exist before run_cases.py
