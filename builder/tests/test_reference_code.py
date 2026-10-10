@@ -72,5 +72,21 @@ class TestPromiseRetryFill(unittest.TestCase):
         self.assertEqual(cfg["body"]["day"], "2030-03-06")
 
 
+class TestCloseAfterRetry(unittest.TestCase):
+    def test_promise_saved_by_the_retry_step_counts(self):
+        from reference import hooks as RH
+        spec = {"tool_names": {"promise": "make_deal", "transfer": "hand_over", "verify": "check"},
+                "tool_fields": {"outcome": "result", "reason": "why"},
+                "outcome_logic": {"on_promise": "agreed", "promise_failed": ["none", "error"], "on_transfer": "moved"}}
+        v = {"make_deal_failure_count": 1, "make_deal_response.data.ok": "false", "retry_ok": "true"}
+        cfg = {"body": {"result": "agreed"}}
+        exec(RH.close_pre(spec), {"config": cfg, "vars": v})
+        self.assertEqual(cfg["body"], {"result": "agreed"})
+        v["retry_ok"] = "false"
+        cfg = {"body": {"result": "agreed"}}
+        exec(RH.close_pre(spec), {"config": cfg, "vars": v})
+        self.assertEqual(cfg["body"], {"result": "none", "why": "error"})
+
+
 if __name__ == "__main__":
     unittest.main()

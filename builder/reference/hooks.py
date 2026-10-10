@@ -221,7 +221,7 @@ try:
         tok = tv(vars.get(tr + '_response.data.ok'))
         q = str(vars.get(tr + '_args.' + (F.get('queue') or 'queue')) or '')
         pr = T.get('promise') or ''
-        pcount = int(float(str(vars.get('promise_ok_count') or '0')))
+        pcount = int(float(str(vars.get('promise_ok_count') or '0'))) + (1 if tv(vars.get('retry_ok')) else 0)
         last_ok = tv(vars.get(pr + '_response.data.ok'))
         tried = (pr + '_response.data.ok') in vars or (pr + '_failure_count') in vars
         R = CFG.get('response') or dict()

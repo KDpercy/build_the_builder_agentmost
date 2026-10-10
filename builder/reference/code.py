@@ -77,7 +77,8 @@ try:
                 lines.append('- Attempt ' + str(j + 1) + ': propose ' + money(offer(a.get('amount'), x, False)) + ' on ' + sp(x['dates'][j]) + '.'
                              + (' If they already said the full amount is too much, propose ' + money(x['floor']) + ' on ' + sp(x['dates'][j]) + ' instead.'
                                 if a.get('amount') == 'full_or_floor_if_too_much' else ''))
-        lines.append('- After that no attempts are left for this product: stop, and do not repeat any offer.')
+        lines.append('- After attempt ' + str(len(lines)) + ' no attempts are left: make NO other offer for this product, no floor, no lower amount, '
+                     'no other date. It is refused; do not repeat any offer.')
         vars['p' + k + '_attempts'] = '\n'.join(lines)
         vars['p' + k + '_block'] = '\n'.join([
             'PRODUCT ' + k + ' of ' + str(n) + ': ' + x['words'] + ' (product_id ' + x['pid'] + ')',
@@ -91,6 +92,23 @@ try:
         vars['p' + k + '_floor'] = money(x['floor'])
         vars['p' + k + '_past'] = money(x['past'])
         vars['p' + k + '_deadline'] = sp(x['deadline'])
+    vars['products_block'] = '\n\n'.join(vars['p' + str(x['n']) + '_block'] for x in prods)
+    last = max([x['deadline'] for x in prods] or [today])
+    cal, d = [], today
+    while d <= last + TD(days=21):
+        parts = []
+        for x in prods:
+            if d > x['deadline']:
+                act = 'after its deadline; the latest date for it is ' + sp(x['deadline'])
+            elif isbiz(d):
+                act = 'OK'
+            else:
+                nb = nextbiz(d)
+                act = 'not a business day; offer ' + sp(nb if nb <= x['deadline'] else x['deadline'])
+            parts.append(('product ' + str(x['n']) + ': ' if n > 1 else '') + act + '.')
+        cal.append('- ' + sp(d) + ' (' + d.isoformat() + ')' + (' [today]' if d == today else '') + ': ' + ' '.join(parts))
+        d = d + TD(days=1)
+    vars['all_calendar'] = '\n'.join(cal)
     vars['n_products'] = str(n)
     vars['product_ids'] = ','.join(x['pid'] for x in prods)
     vars['product_list'] = '; '.join('product ' + str(x['n']) + ' = ' + x['words'] + ' (' + x['pid'] + ')' for x in prods)

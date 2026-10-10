@@ -227,6 +227,16 @@ RULES. Check the customer's replies in this order:
 NEVER ask "how much can you pay?". You propose every amount. Never ask about paying today. Never record a promise or write a note in this step."""
 
 
+FACTS = """ACCOUNT
+{{products_block}}
+
+DATE WORDS
+{{week_table}}
+
+CALENDAR. Each line says, per product, what a named day means:
+{{all_calendar}}"""
+
+
 def _end_rules(spec: dict) -> str:
     rb = spec.get("read_back") or {}
     notes = spec.get("notes") or {}
@@ -261,6 +271,9 @@ For each product in order, work out from the conversation its status: agreed (am
 If the customer named one date for everything: each product is agreed at its full past-due amount on that date, except a product whose deadline is earlier: that product is agreed on its own deadline.
 
 YOUR FIRST MESSAGE IN THIS STEP: if at least one product is agreed, the single read-back of all agreed products. Otherwise go straight to closing.
+Use the DATE WORDS and the CALENDAR below for every date you say: never work out a weekday or a date yourself.
+
+{FACTS}
 
 {_end_rules(spec)}"""
 
@@ -275,11 +288,15 @@ Check these in order:
 - Their reply is cut off or about something else: say "Take your time." and nothing more.
 - They name a date or an amount THEMSELVES for a product: check it against that product's facts and record it after one read-back. Never suggest an amount or a date yourself.
 
+{FACTS}
+
 {_end_rules(spec)}"""
 
 
 def retry_ok_task(spec: dict) -> str:
     return f"""A payment promise just failed once and was then saved on the automatic retry. Tell the customer it is now saved and say exactly: "{(spec.get('sentences') or {}).get('after_promise', '')}" If another agreed product is not recorded yet, record it now with the promise tool. Do not read anything back again.
+
+{FACTS}
 
 {_end_rules(spec)}"""
 
@@ -289,5 +306,7 @@ def retry_failed_task(spec: dict) -> str:
     pf = (spec.get("outcome_logic") or {}).get("promise_failed")
     note = (f" Write a note for this product with reason {notes.get('service_error_reason', '')}." if notes.get("used") else "")
     return f"""A payment promise could NOT be saved: the bank's service failed twice. Never say it is saved. Tell the customer you could not save it because of a technical problem. Keep any promise that was saved. If another agreed product is not recorded yet, record it now with the promise tool.{note} If no promise was saved at all, close with {_close(pf)}.
+
+{FACTS}
 
 {_end_rules(spec)}"""
