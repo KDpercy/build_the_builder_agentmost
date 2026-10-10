@@ -16,7 +16,7 @@ import build_a as BA  # noqa: E402
 import hooks_a as HA  # noqa: E402
 import hooks_b as HB  # noqa: E402
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 NOTE_REASONS = ["refused", "hardship", "dispute", "paid", "service_error"]
 
 

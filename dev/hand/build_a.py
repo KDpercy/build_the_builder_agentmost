@@ -9,7 +9,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import hooks_a as H  # noqa: E402
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 BASE = "https://freya-bank-mock.freyavoice.workers.dev/v1"
 OUTCOMES = ["promise", "paid", "transferred", "no_promise", "not_verified", "not_reached"]
 REASONS = ["restructuring", "human", "support", "refused", "hardship", "dispute", "service_error",
