@@ -14,7 +14,10 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   (generate.py, code.py, hooks.py, prompts.py: spec + tool API -> workflow, no brief values),
   skills/read-brief, design-agent, check-agent, build.py (staging, trace, budget, fallback),
   DESIGN.md. dev/specs/brief-a.spec.json = hand-written answer key spec.
-- Reference agent from the Brief A spec: slot ref-a, agent cbc21b5c; first Brief A run going.
+- Reference agents (built only from dev/specs/*.spec.json by builder/reference): ref-a agent cbc21b5c
+  (run1 2/10: list flattening bug, fixed; run2 9/10, PUB-10 'not recorded' -> added deterministic
+  promise retry; retest running), ref-b agent 7ca97613 (saved, not yet tested).
+- Invented-bank test (builder/tests/test_generate.py) proves no brief values in the reference.
 
 ## Next step (one, concrete)
 - Read results/ref-a-run1.json; fix the reference until it matches the hand agent; then write
