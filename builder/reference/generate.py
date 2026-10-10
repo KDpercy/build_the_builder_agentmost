@@ -111,8 +111,26 @@ def build(spec: dict, api_spec: dict) -> dict:
                 "condition": {"logic": "or", "conditions": [{"variable": "n_products", "operator": "greater_than", "operand": k}]}}] \
             if k < C.MAX_PRODUCTS else []
         nodes[done] = N.code_node(done, f"vars['handled_products'] = '{k}'\n", nxt + [N.always("readback")])
+    # Deterministic retry of a failed promise (the model must not decide or talk before it).
+    tf = spec.get("tool_fields", {})
+    pr = tn["promise"]
+    args = {tf.get(k, k): "{{" + pr + "_args." + tf.get(k, k) + "}}" for k in ("product", "amount", "date")}
+    args[tf.get("customer", "customer_id")] = "{{" + spec.get("customer_variable", "customer_id") + "}}"
+    retry = N.api_tool(api, pr, "Retry the last failed promise once.", baked=args, pre=H.promise_pre(spec))
+    nodes["retry_promise"] = {
+        "name": "retry_promise", "node_type": "api_request", "passthrough": True,
+        "passthrough_default_transition": "promise_retry_failed", "on_enter": {"type": "silent"}, "disable_inactivity_monitor": True,
+        "pre_actions": [retry], "response_mapping": [{"path": "data.ok", "variable": "retry_ok"}],
+        "transitions": [N.var_is("promise_retry_ok", "the retry recorded the promise", "retry_ok", ["true", "True"]),
+                        N.always("promise_retry_failed")],
+    }
+    nodes["promise_retry_ok"] = N.conversation("promise_retry_ok", P.retry_ok_task(spec), end_tools, [closed, give_up], {"type": "llm"})
+    nodes["promise_retry_failed"] = N.conversation("promise_retry_failed", P.retry_failed_task(spec), end_tools, [closed, give_up],
+                                                   {"type": "llm"})
+    to_retry = N.failed_more_than("retry_promise", pr, 0)
+    nodes["readback"]["transitions"].insert(2, to_retry)
     for s in offer_nodes:
-        nodes["sc_" + s["name"]] = N.conversation("sc_" + s["name"], P.offer_task(spec, s), end_tools, [closed, give_up],
+        nodes["sc_" + s["name"]] = N.conversation("sc_" + s["name"], P.offer_task(spec, s), end_tools, [closed, give_up, to_retry],
                                                   N.says(s["line"]), max_turns=40)
     return {"initial_node": "setup", "system_prompt": P.system_prompt(spec), "nodes": nodes, "global_nodes": {},
             "test_variables": {"customer_id": "c_test", "first_name": "Alex", "last_name": "Doe", "title": "Mx",

@@ -273,3 +273,18 @@ Check these in order:
 - They name a date or an amount THEMSELVES for a product: check it against that product's facts and record it after one read-back. Never suggest an amount or a date yourself.
 
 {_end_rules(spec)}"""
+
+
+def retry_ok_task(spec: dict) -> str:
+    return f"""A payment promise just failed once and was then saved on the automatic retry. Tell the customer it is now saved and say exactly: "{(spec.get('sentences') or {}).get('after_promise', '')}" If another agreed product is not recorded yet, record it now with the promise tool. Do not read anything back again.
+
+{_end_rules(spec)}"""
+
+
+def retry_failed_task(spec: dict) -> str:
+    notes = spec.get("notes") or {}
+    pf = (spec.get("outcome_logic") or {}).get("promise_failed")
+    note = (f" Write a note for this product with reason {notes.get('service_error_reason', '')}." if notes.get("used") else "")
+    return f"""A payment promise could NOT be saved: the bank's service failed twice. Never say it is saved. Tell the customer you could not save it because of a technical problem. Keep any promise that was saved. If another agreed product is not recorded yet, record it now with the promise tool.{note} If no promise was saved at all, close with {_close(pf)}.
+
+{_end_rules(spec)}"""
