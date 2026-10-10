@@ -74,10 +74,9 @@ try:
         for j in range(x['attempts']):
             if j < len(ATTEMPTS):
                 a = ATTEMPTS[j]
-                lines.append('- Attempt ' + str(j + 1) + ': propose ' + money(offer(a.get('amount'), x, False)) + ' on ' + sp(x['dates'][j]) + '.'
-                             + (' If they already said the full amount is too much, propose ' + money(x['floor']) + ' on ' + sp(x['dates'][j]) + ' instead.'
-                                if a.get('amount') == 'full_or_floor_if_too_much' else ''))
-        lines.append('- After attempt ' + str(len(lines)) + ' no attempts are left: make NO other offer for this product, no floor, no lower amount, '
+                lines.append('- Attempt ' + str(j + 1) + ': propose ' + money(offer(a.get('amount'), x, False)) + ' on ' + sp(x['dates'][j]) + '.')
+        lines.insert(0, 'This product allows exactly ' + str(len(lines)) + ' persuasion attempt(s). Count them.')
+        lines.append('- After attempt ' + str(len(lines) - 1) + ' no attempts are left: make NO other offer for this product, no floor, no lower amount, '
                      'no other date. It is refused; do not repeat any offer.')
         vars['p' + k + '_attempts'] = '\n'.join(lines)
         vars['p' + k + '_block'] = '\n'.join([
