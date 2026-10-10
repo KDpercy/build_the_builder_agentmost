@@ -13,7 +13,9 @@ import pathlib
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent))
+# Works from builder/reference and from a copy in a run's work/ folder (lib stays in builder/).
+for p in (HERE.parent.parent / "builder", HERE.parent):
+    sys.path.insert(0, str(p))
 from lib import nodes as N  # noqa: E402
 from reference import code as C  # noqa: E402
 from reference import hooks as H  # noqa: E402

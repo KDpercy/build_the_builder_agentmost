@@ -26,7 +26,8 @@ sys.path.insert(0, str(ROOT / "builder"))
 BUDGET_S = int(os.environ.get("BUILD_BUDGET_S", str(25 * 60)))     # rule: 30 minutes per brief, tests included
 MODEL = os.environ.get("BUILDER_MODEL", "claude-opus-5-5")
 KIT_FILES = ["freya.py", "docs", "tools", "examples/base-agent.json", "public-test-set.json"]
-BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/reference", "builder/PATTERNS.md"]
+# builder/tests is staged for its invented example spec (test_generate.py); it has no brief values.
+BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
 SKILLS_DIR = ROOT / "builder" / "skills"
 SECRET_PATTERNS = [re.compile(r"fak_[A-Za-z0-9_\-]+"), re.compile(r"sk-ant-[A-Za-z0-9_\-]+")]
 

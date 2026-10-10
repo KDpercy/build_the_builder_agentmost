@@ -36,7 +36,7 @@ A list. One entry per atomic rule (one condition, one action):
 - Numbers, dates, limits, counts and exact sentences go in the rule, unchanged.
 
 ## 4. Write work/spec.json, the parameters
-Fill every field the inputs give; leave a field out when the inputs say nothing about it,
+The exact keys are in builder/reference/SPEC.md (read it in full). Fill every field the inputs give; leave a field out when the inputs say nothing about it,
 and add a `gaps` list naming each missing item. Never invent a value.
     call_variables        names and meaning of the variables every call starts with
     opening               the first sentence's required content; who to ask for and how
