@@ -13,7 +13,7 @@ def _close(pair) -> str:
 
 def _who(spec: dict) -> str:
     """How the customer is named, from the call variables the brief defines."""
-    return spec.get("address_as") or "{{title}} {{last_name}}"
+    return spec["address_as"]                       # required: the brief's call variables decide it
 
 
 def tool_move(target: str, description: str) -> dict:
@@ -268,7 +268,7 @@ def _end_rules(spec: dict) -> str:
     after = (spec.get("sentences") or {}).get("after_promise", "")
     note_part = (f"""
 NOTES (only when the call is NOT transferred)
-- After the promises, call the note tool once for every product without a recorded promise, one per message, with its product_id and its reason: {', '.join(notes.get('reasons') or [])}.
+- After the promises, call the note tool once for every product without a recorded promise, one per message, with its id and its reason: {', '.join(notes.get('reasons') or [])}.
 - After a transfer, never write a note.""" if notes.get("used") else "\nNOTES: this bank does not use notes. Never call a note tool.")
     ol = spec.get("outcome_logic") or {}
     return f"""NEVER ask "how much can you pay?". You propose every amount.

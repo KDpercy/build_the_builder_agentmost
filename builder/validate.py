@@ -5,8 +5,9 @@
 Prints one line per problem and exits 1 if any ERROR was found.
 `rules.json` is optional. Its brief-specific values come from the brief at run time:
     {"forbidden_before_verification": ["debt", ...],   words never spoken before the gate
-     "restricted_words": ["recorded", ...],             words no fixed spoken line may contain
-     "required_sentences": ["You will receive ...", ...]}
+     "restricted_words": ["<word>", ...],               words no fixed spoken line may contain
+     "required_sentences": ["<sentence>", ...],
+     "call_variables": ["<name>", ...]}                 variables every call starts with
 Nothing in this file is specific to one brief.
 """
 import json
@@ -19,7 +20,7 @@ ERROR, WARN = "ERROR", "WARN"
 # literal judge reads these words that way. A fixed line spoken before any tool runs must avoid them.
 CLAIM_WORDS = ("recorded", "booked", "saved", "transferred", "scheduled")
 ENGINE_SUFFIXES = ("_response", "_args", "_status_code", "_success_count", "_failure_count")
-CALL_VARIABLES = {"customer_id", "first_name", "last_name", "title", "now"}
+CALL_VARIABLES: set = set()          # the brief's call variables come from rules["call_variables"]
 PLACEHOLDER = re.compile(r"\{\{\s*([\w.]+)\s*\}\}")
 VAR_WRITE = re.compile(r"vars\[\s*['\"](\w+)['\"]\s*\]\s*=")
 DYNAMIC_WRITE = re.compile(r"vars\[([^\]]*\+[^\]]*)\]\s*=")

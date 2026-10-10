@@ -30,7 +30,7 @@ API = {"servers": [{"url": "https://other-bank.example/api"}], "paths": {
 
 SPEC = {
     "agent_identity": "the Northwind Credit assistant",
-    "opening": {"first_sentence": "Good morning, this is an automated assistant from Northwind Credit.", "ask": "Is this {{title}} {{last_name}}?"},
+    "opening": {"first_sentence": "Good morning, this is an automated assistant from Northwind Credit.", "ask": "Is this {{honorific}} {{family_name}}?"},
     "forbidden_before_verification": ["arrears", "balance"],
     "confirmation_words": {"confirms": ["yes"], "does_not_confirm": ["hi"], "asks": 2, "close_if_unclear": ["missed", "unclear"]},
     "identity": {"questions": [{"value": "postcode", "ask": "what is your postcode?", "kind": "text"},
@@ -42,7 +42,7 @@ SPEC = {
                  "on_declined": {"explain_once": "the questions keep their money safe", "close": ["unconfirmed", "declined"]}},
     "calendar": {"holidays": ["2030-01-01"], "weekend": [4, 5]},
     "bands": [{"name": "any", "min_days": 1, "max_days": 99, "deadline": "business_days_after_today:5", "attempts": 1}],
-    "products": {"type_field": "kind", "fields": {"id": "item", "past_due": "due", "days_late": "late"},
+    "products": {"type_field": "kind", "fields": {"id": "item", "due_amount": "due", "late_days": "late"},
                  "types": {"cardx": {"spoken": "card {last}", "floor_field": "min"}}},
     "debt_statement": "I am calling about your overdue balance",
     "first_ask": "Can you settle it today?",
@@ -52,10 +52,11 @@ SPEC = {
     "special_cases": [{"name": "people", "trigger": "asks for a person", "action": "ask once if you can help", "transfer": "people", "close": ["moved", "person"]}],
     "third_party": {"wrong_number": ["missed", "wrong"], "deceased": {"say": "My condolences.", "close": ["missed", "deceased"]}},
     "outcome_logic": {"on_transfer": "moved", "reason_by_queue": {"people": "person", "arrears": "plan"}, "on_promise": "agreed",
-                      "no_promise": "none", "verify_failed": ["unconfirmed", "failed"], "promise_failed": ["none", "error"]},
+                      "no_deal": "none", "verify_failed": ["unconfirmed", "failed"], "promise_failed": ["none", "error"]},
     "notes": {"used": False},
     "sentences": {"after_promise": "A letter will confirm this arrangement."},
     "read_back": {"ask": "Is that right?"},
+    "customer_variable": "client_ref", "now_variable": "stamp", "address_as": "{{honorific}} {{family_name}}",
     "tool_names": {"verify": "verify_identity", "account": "get_account", "promise": "create_promise", "callback": "schedule_callback",
                    "transfer": "transfer_to_agent", "note": "add_note", "close": "close_call"},
     "tool_fields": {"customer": "client", "product": "item", "amount": "sum", "date": "day", "queue": "desk", "note_reason": "why",
@@ -71,6 +72,7 @@ class TestGenerate(unittest.TestCase):
 
     def test_passes_the_validator(self):
         rules = {"forbidden_before_verification": SPEC["forbidden_before_verification"],
+                 "call_variables": ["client_ref", "honorific", "family_name", "stamp"],
                  "required_sentences": [SPEC["sentences"]["after_promise"], "My condolences."]}
         errors = [m for level, m in V.validate(self.wf, API, rules) if level == V.ERROR]
         self.assertEqual(errors, [])
@@ -90,7 +92,8 @@ class TestGenerate(unittest.TestCase):
         self.assertNotIn("add_note", tools)
 
     def test_no_value_from_any_practice_brief(self):
-        for word in ("Freya Bank", "collections", "minimum_payment", "instalment", "2026", "customer_id\": {\"type\": \"string\", \"default\": \"{{customer_id}}\"}, \"field"):
+        for word in ("Freya Bank", "collections", "minimum_payment", "instalment", "2026", "customer_id", "product_id",
+                     "past_due", "days_late", "no_promise", "not_reached", "{{now}}", "{{title}}"):
             self.assertNotIn(word, self.text, word)
 
 

@@ -25,7 +25,7 @@ from reference import prompts as P  # noqa: E402
 def tools_for(spec: dict, api: dict) -> dict:
     """Every tool the workflow may use, built from the tool API file."""
     tn, tf = spec["tool_names"], spec.get("tool_fields", {})
-    cust = {tf.get("customer", "customer_id"): "{{" + spec.get("customer_variable", "customer_id") + "}}"}
+    cust = {tf["customer"]: "{{" + spec["customer_variable"] + "}}"}       # required spec keys: fail loudly if missing
     notes_used = bool((spec.get("notes") or {}).get("used"))
     t = {
         "verify": N.api_tool(api, tn["verify"], "Checks one security answer. CALL it every time the customer gives a complete answer "
@@ -88,7 +88,7 @@ def build(spec: dict, api_spec: dict) -> dict:
         "load_account": {
             "name": "load_account", "node_type": "api_request", "passthrough": True,
             "passthrough_default_transition": "compute_debt", "on_enter": {"type": "silent"}, "disable_inactivity_monitor": True,
-            "pre_actions": [N.api_tool(api, tn["account"], "Get the late products.", baked={spec.get("tool_fields", {}).get("customer", "customer_id"): "{{" + spec.get("customer_variable", "customer_id") + "}}"},
+            "pre_actions": [N.api_tool(api, tn["account"], "Get the late products.", baked={spec["tool_fields"]["customer"]: "{{" + spec["customer_variable"] + "}}"},
                                        post=C.GET_ACCOUNT_POST, retries=2)],
             "response_mapping": C.products_mapping(spec), "transitions": [N.always("compute_debt")],
         },
@@ -119,7 +119,7 @@ def build(spec: dict, api_spec: dict) -> dict:
     pr = tn["promise"]
     # The engine stores call arguments under the placeholder name: <tool>_args.<tool>_<field>.
     args = {tf.get(k, k): "{{" + pr + "_args." + pr + "_" + tf.get(k, k) + "}}" for k in ("product", "amount", "date")}
-    args[tf.get("customer", "customer_id")] = "{{" + spec.get("customer_variable", "customer_id") + "}}"
+    args[tf["customer"]] = "{{" + spec["customer_variable"] + "}}"
     retry = N.api_tool(api, pr, "Retry the last failed promise once.", baked=args, pre=H.promise_pre(spec))
     nodes["retry_promise"] = {
         "name": "retry_promise", "node_type": "api_request", "passthrough": True,
@@ -137,8 +137,7 @@ def build(spec: dict, api_spec: dict) -> dict:
         nodes["sc_" + s["name"]] = N.conversation("sc_" + s["name"], P.offer_task(spec, s), end_tools, [closed, give_up, to_retry],
                                                   N.says(s["line"]), max_turns=40)
     return {"initial_node": "setup", "system_prompt": P.system_prompt(spec), "nodes": nodes, "global_nodes": {},
-            "test_variables": {"customer_id": "c_test", "first_name": "Alex", "last_name": "Doe", "title": "Mx",
-                               "now": "2030-01-07T11:00"}}
+            "test_variables": {spec["customer_variable"]: "c_test", spec.get("now_variable") or "now": "2030-01-07T11:00"}}
 
 
 def main(argv: list) -> int:

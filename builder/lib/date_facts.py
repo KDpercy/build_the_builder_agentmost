@@ -34,9 +34,9 @@ def date_expr(expr, today, deadline=None):
             d = deadline
         return d or today
     return today
-def band_for(days_late):
+def band_for(late):
     for b in SPEC.get('bands') or []:
-        if int(b.get('min_days', 0)) <= days_late <= int(b.get('max_days', 10 ** 6)):
+        if int(b.get('min_days', 0)) <= late <= int(b.get('max_days', 10 ** 6)):
             return b
     return None
 def week_table(today):

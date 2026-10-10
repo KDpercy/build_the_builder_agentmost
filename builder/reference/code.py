@@ -57,12 +57,12 @@ try:
     raw = products_from_vars()
     prods = []
     for i, p in enumerate(raw):
-        dl = int(float(str(p.get(PF.get('days_late') or 'days_late'))))
+        dl = int(float(str(p.get(PF.get('late_days') or ''))))
         band = band_for(dl) or dict()
         deadline = date_expr(band.get('deadline'), today)
         t = TYPES.get(str(p.get(TYPE_FIELD) or '')) or dict()
-        x = dict(n=i + 1, pid=str(p.get(PF.get('id') or 'product_id') or ''), words=spoken(p),
-                 past=num(p.get(PF.get('past_due') or 'past_due')), floor=num(p.get(t.get('floor_field') or '')),
+        x = dict(n=i + 1, pid=str(p.get(PF.get('id') or '') or ''), words=spoken(p),
+                 past=num(p.get(PF.get('due_amount') or '')), floor=num(p.get(t.get('floor_field') or '')),
                  dl=dl, band=str(band.get('name') or ''), attempts=int(band.get('attempts') or 0), deadline=deadline)
         x['dates'] = [date_expr(a.get('date'), today, deadline) for a in ATTEMPTS]
         prods.append(x)
@@ -80,7 +80,7 @@ try:
                      'no other date. It is refused; do not repeat any offer.')
         vars['p' + k + '_attempts'] = '\n'.join(lines)
         vars['p' + k + '_block'] = '\n'.join([
-            'PRODUCT ' + k + ' of ' + str(n) + ': ' + x['words'] + ' (product_id ' + x['pid'] + ')',
+            'PRODUCT ' + k + ' of ' + str(n) + ': ' + x['words'] + ' (id ' + x['pid'] + ')',
             '- Full past-due amount: ' + money(x['past']),
             '- Days late: ' + str(x['dl']) + ' (band: ' + x['band'] + ')',
             '- Floor, the lowest amount you may record: ' + money(x['floor']),
@@ -109,7 +109,7 @@ try:
         d = d + TD(days=1)
     vars['all_calendar'] = '\n'.join(cal)
     vars['n_products'] = str(n)
-    vars['product_ids'] = ','.join(x['pid'] for x in prods)
+    vars['prod_ids'] = ','.join(x['pid'] for x in prods)
     vars['product_list'] = '; '.join('product ' + str(x['n']) + ' = ' + x['words'] + ' (' + x['pid'] + ')' for x in prods)
     vars['deadlines_json'] = json.dumps(dict((x['pid'], x['deadline'].isoformat()) for x in prods))
     vars['limits_json'] = json.dumps(dict((x['pid'], [x['floor'], x['past']]) for x in prods))

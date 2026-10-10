@@ -11,7 +11,7 @@ SPEC = {
     "calendar": {"holidays": ["2030-03-04"], "weekend": [5, 6]},
     "bands": [{"name": "mild", "min_days": 1, "max_days": 9, "deadline": "business_days_after_today:10", "attempts": 1},
               {"name": "severe", "min_days": 10, "max_days": 90, "deadline": "business_days_after_today:3", "attempts": 2}],
-    "products": {"type_field": "kind", "fields": {"id": "ref", "past_due": "owed", "days_late": "late"},
+    "products": {"type_field": "kind", "fields": {"id": "ref", "due_amount": "owed", "late_days": "late"},
                  "types": {"overdraft": {"spoken": "overdraft on account {acct}", "floor_field": "min_due"},
                            "mortgage": {"spoken": "mortgage", "floor_field": "monthly"}}},
     "persuasion": {"attempts": [{"amount": "full_or_floor_if_too_much", "date": "last_business_day_this_week_or_next_if_today"},
@@ -54,7 +54,7 @@ class TestDebtFacts(unittest.TestCase):
              "load_x_response.data.products.0.monthly": 400}
         exec(debt_source(SPEC), {"vars": v})
         self.assertEqual(v["debt_state"], "ok")
-        self.assertEqual(v["product_ids"], "a1")
+        self.assertEqual(v["prod_ids"], "a1")
 
     def test_bad_account_reports_error(self):
         self.assertEqual(run([])["debt_state"], "error")
@@ -65,7 +65,7 @@ class TestPromiseRetryFill(unittest.TestCase):
     def test_missing_amount_and_date_come_from_stored_args(self):
         from reference import hooks as RH
         spec = dict(SPEC, tool_names={"promise": "make_deal"}, tool_fields={"product": "item", "amount": "sum", "date": "day"})
-        v = {"make_deal_args.make_deal_sum": 120, "make_deal_args.make_deal_day": "2030-03-06", "product_ids": "a1"}
+        v = {"make_deal_args.make_deal_sum": 120, "make_deal_args.make_deal_day": "2030-03-06", "prod_ids": "a1"}
         cfg = {"body": {"item": "a1"}}
         exec(RH.promise_pre(spec), {"config": cfg, "vars": v})
         self.assertEqual(cfg["body"]["sum"], 120.0)

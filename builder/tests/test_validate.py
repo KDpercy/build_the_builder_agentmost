@@ -54,7 +54,7 @@ CLEAN = {
     },
 }
 RULES = {"forbidden_before_verification": ["debt"], "restricted_words": ["recorded"],
-         "required_sentences": ["About your debt."]}
+         "required_sentences": ["About your debt."], "call_variables": ["title", "last_name"]}
 
 
 def errors(wf: dict, rules: dict = RULES) -> list:

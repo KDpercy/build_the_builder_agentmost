@@ -92,8 +92,8 @@ try:
                     if vars.get(cand) not in (None, ''):
                         b[f] = vars.get(cand)
                         break
-        ids = [s for s in str(vars.get('product_ids') or '').split(',') if s]
-        pf = F.get('product') or 'product_id'
+        ids = [s for s in str(vars.get('prod_ids') or '').split(',') if s]
+        pf = F.get('product') or ''
         pid = str(b.get(pf) or '').strip()
         if pid not in ids and ids:
             if len(ids) == 1:
@@ -171,7 +171,7 @@ try:
     b = config.get('body')
     F = CFG.get('fields') or dict()
     if isinstance(b, dict):
-        pf, rf = F.get('product') or 'product_id', F.get('note_reason') or 'reason'
+        pf, rf = F.get('product') or '', F.get('note_reason') or ''
         pid, r = str(b.get(pf) or '').strip(), str(b.get(rf) or '')
         seen = str(vars.get('notes_seen') or '')
         if pid and r:
@@ -229,7 +229,7 @@ try:
         left = str(vars.get(vf + '_response.data.' + (R.get('left') or 'left')))
         av = tv(vars.get(vf + '_response.data.' + (R.get('all_verified') or 'all_verified')))
         nt = notes()
-        ids = [s for s in str(vars.get('product_ids') or '').split(',') if s]
+        ids = [s for s in str(vars.get('prod_ids') or '').split(',') if s]
         rq = L.get('reason_by_queue') or dict()
         if tok and q in rq:
             b[of], b[rf] = L.get('on_transfer'), rq[q]
@@ -237,11 +237,11 @@ try:
             b[of] = L.get('on_promise')
         elif nt and L.get('all_notes_paid'):
             order = [p for p in ids if p in nt] + [p for p in nt if p not in ids]
-            if all(nt[p] == L.get('paid_note', 'paid') for p in order):
+            if all(nt[p] == L.get('paid_note') for p in order):
                 b[of] = L.get('all_notes_paid')
             else:
-                b[of] = L.get('no_promise')
-                b[rf] = [nt[p] for p in order if nt[p] != L.get('paid_note', 'paid')][0]
+                b[of] = L.get('no_deal')
+                b[rf] = [nt[p] for p in order if nt[p] != L.get('paid_note')][0]
         elif tried and b.get(of) == L.get('on_promise') and L.get('promise_failed'):
             b[of], b[rf] = L['promise_failed'][0], L['promise_failed'][1]
         elif left == '0' and not av and L.get('verify_failed'):

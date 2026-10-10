@@ -10,7 +10,8 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
 1. Validator (no model, no platform):
        python3 builder/validate.py work/workflow.json input/<tool api file> work/validate-rules.json
    Write work/validate-rules.json from spec.json first:
-       {"forbidden_before_verification": [...], "restricted_words": [...], "required_sentences": [...]}
+       {"forbidden_before_verification": [...], "restricted_words": [...], "required_sentences": [...],
+        "call_variables": [every variable the brief says a call starts with]}
    Also check the ledger: every rule in work/rules.json quotes the brief word for word and
    has `implemented_by` filled:
        python3 -c "import json,sys; sys.path.insert(0,'builder'); import validate as V; \

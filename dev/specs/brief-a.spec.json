@@ -133,8 +133,8 @@
   },
   "fields": {
    "id": "product_id",
-   "past_due": "past_due",
-   "days_late": "days_late"
+   "due_amount": "past_due",
+   "late_days": "days_late"
   }
  },
  "debt_statement": "I am calling from the collections team about a late payment",
@@ -385,7 +385,6 @@
   },
   "on_promise": "promise",
   "all_notes_paid": "paid",
-  "no_promise": "no_promise",
   "verify_failed": [
    "not_verified",
    "failed"
@@ -393,7 +392,8 @@
   "promise_failed": [
    "no_promise",
    "service_error"
-  ]
+  ],
+  "no_deal": "no_promise"
  },
  "first_ask_all": "Can you pay all of them today?",
  "tool_names": {
@@ -416,5 +416,8 @@
   "note_reason": "reason",
   "outcome": "outcome",
   "reason": "reason"
- }
+ },
+ "customer_variable": "customer_id",
+ "now_variable": "now",
+ "address_as": "{{title}} {{last_name}}"
 }
