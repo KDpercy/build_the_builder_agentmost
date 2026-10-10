@@ -54,7 +54,9 @@ def speaker_extraction(spec: dict) -> dict:
                            f"({', '.join(c.get('does_not_confirm') or [])}, a question, or an unclear answer)."}
 
 
-def _special_lines(spec: dict, close_word: str = "the closing tool") -> str:
+def _special_lines(spec: dict, close_word: str = "the closing tool", cont: str = "") -> str:
+    """One line per special case without a fixed line. `cont` says how to move on when the case
+    settles one product but does not end the call."""
     out = []
     for s in sorted(spec.get("special_cases") or [], key=lambda s: s.get("precedence", 99)):
         if s.get("line"):
@@ -62,7 +64,8 @@ def _special_lines(spec: dict, close_word: str = "the closing tool") -> str:
         act = s.get("action", "")
         tr = f" Call the transfer tool with queue {s['transfer']}." if s.get("transfer") else ""
         cl = f" Then thank them, say goodbye and call {close_word} with {_close(s['close'])}." if s.get("close") and not s.get("transfer") else ""
-        out.append(f"- They say {s.get('trigger', s['name'])}: {act}.{tr}{cl}")
+        mv = f" {cont}" if cont and not s.get("close") and not s.get("transfer") else ""
+        out.append(f"- Case {s['name']} ({s.get('trigger', s['name'])}): {act}.{tr}{cl}{mv}")
     return "\n".join(out)
 
 
@@ -178,7 +181,7 @@ Your only job in this step is the answer to that question. Never ask about today
 Check the customer's answer in this order:
 1. They can pay EVERYTHING today: say "Thank you." and in the same message call transition_to_readback.
 2. There are two or more products and they name ONE date for everything, with no other condition: if it is not a business day, offer the next business day and wait. If it is, say "Thank you." and in the same message call transition_to_readback. Never talk about deadlines here: a product with an earlier deadline is moved to its own deadline in the read-back.
-{_special_lines(spec)}
+{_special_lines(spec, cont='Then go through the products one by one (rule 3).')}
 3. Anything else (a no, a date or amount for one product, a vague period, too much, a question): with two or more products say "I understand, let us go through them one by one."; with one product say only "I understand." Then, in the same message, call transition_to_product_1. Never make an offer in this step.
 
 DATE WORDS
@@ -211,7 +214,7 @@ YOUR FIRST MESSAGE IN THIS STEP. Look at what the customer already said about TH
 
 RULES. Check the customer's replies in this order:
 1. Special cases:
-{_special_lines(spec)}
+{_special_lines(spec, cont=f'Say "Noted." and in the same message call transition_to_product_{k}_done.')}
 2. They name a date and/or an amount. This is NEVER a refusal.
    - Date: find it in the CALENDAR and do exactly what its line says. If they refuse the deadline after you offered it, that is a flat refusal (rule 4).
    - A vague period: ask once for the exact day. If they still give none, propose the deadline.
