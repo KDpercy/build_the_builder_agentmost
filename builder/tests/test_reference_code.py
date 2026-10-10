@@ -48,6 +48,14 @@ class TestDebtFacts(unittest.TestCase):
         self.assertIn("Could you settle all of them today?", v["debt_line"])
         self.assertEqual(json.loads(v["deadlines_json"])["a2"], "2030-03-08")
 
+    def test_products_from_flattened_response_variables(self):
+        v = {"now": "2030-03-05T10:00", "load_x_response.data.products.0.ref": "a1", "load_x_response.data.products.0.kind": "mortgage",
+             "load_x_response.data.products.0.owed": 1200, "load_x_response.data.products.0.late": 30,
+             "load_x_response.data.products.0.monthly": 400}
+        exec(debt_source(SPEC), {"vars": v})
+        self.assertEqual(v["debt_state"], "ok")
+        self.assertEqual(v["product_ids"], "a1")
+
     def test_bad_account_reports_error(self):
         self.assertEqual(run([])["debt_state"], "error")
         self.assertEqual(run([{"kind": "overdraft"}])["debt_state"], "error")

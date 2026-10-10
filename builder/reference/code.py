@@ -32,7 +32,16 @@ def products_from_vars():
                 pr = ast.literal_eval(pr)
             except Exception:
                 pr = None
-    return [p for p in pr if isinstance(p, dict)][:MAXP] if isinstance(pr, list) else []
+    if isinstance(pr, list) and pr:
+        return [p for p in pr if isinstance(p, dict)][:MAXP]
+    path = str((SPEC.get('products') or dict()).get('response_path') or 'data.products')
+    pat = re.compile(r'_response\.' + re.escape(path) + r'\.(\d+)\.(\w+)$')
+    by = dict()
+    for key, val in list(vars.items()):
+        m = pat.search(str(key))
+        if m:
+            by.setdefault(int(m.group(1)), dict())[m.group(2)] = val
+    return [by[i] for i in sorted(by)][:MAXP]
 def spoken(p):
     t = TYPES.get(str(p.get(TYPE_FIELD) or '')) or dict()
     s = str(t.get('spoken') or str(p.get(TYPE_FIELD) or 'product').replace('_', ' '))
