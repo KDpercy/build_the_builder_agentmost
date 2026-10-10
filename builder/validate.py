@@ -259,6 +259,25 @@ def check_rules(wf: dict, rules: dict) -> list:
     return out
 
 
+def squash(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def check_ledger(ledger: list, brief_texts: dict) -> list:
+    """Every rule quotes its brief word for word and says where the workflow implements it."""
+    out, briefs = [], {name: squash(t) for name, t in brief_texts.items()}
+    everything = " ".join(briefs.values())
+    for r in ledger:
+        rid, quote = r.get("id", "?"), squash(r.get("quote", ""))
+        if not quote:
+            out.append((ERROR, f"rule {rid}: no quote"))
+        elif quote not in briefs.get(r.get("file", ""), everything):
+            out.append((ERROR, f"rule {rid}: quote not found word for word in {r.get('file') or 'the brief'}"))
+        if not str(r.get("implemented_by", "")).strip():
+            out.append((ERROR, f"rule {rid}: not implemented anywhere"))
+    return out
+
+
 def validate(wf: dict, api_spec: dict, rules: dict | None = None) -> list:
     api = load_api(api_spec)
     problems = check_nulls(wf)

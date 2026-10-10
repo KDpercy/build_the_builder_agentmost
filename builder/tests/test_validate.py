@@ -142,6 +142,17 @@ class TestValidate(unittest.TestCase):
         warns = [m for level, m in V.validate(wf, API, RULES) if level == V.WARN]
         self.assertTrue(any("restricted word 'recorded'" in m for m in warns), warns)
 
+    def test_ledger_quotes_and_implementation(self):
+        briefs = {"b.md": "Rule one: say hello.\nRule two:   ask twice."}
+        good = [{"id": "R1", "quote": "say hello.", "file": "b.md", "implemented_by": "node opening"},
+                {"id": "R2", "quote": "Rule two: ask twice.", "file": "b.md", "implemented_by": "route"}]
+        self.assertEqual(V.check_ledger(good, briefs), [])
+        bad = [{"id": "R3", "quote": "say goodbye.", "file": "b.md", "implemented_by": "x"},
+               {"id": "R4", "quote": "say hello.", "file": "b.md", "implemented_by": ""}]
+        msgs = [m for _, m in V.check_ledger(bad, briefs)]
+        self.assertTrue(any("R3: quote not found" in m for m in msgs), msgs)
+        self.assertTrue(any("R4: not implemented" in m for m in msgs), msgs)
+
 
 if __name__ == "__main__":
     unittest.main()
