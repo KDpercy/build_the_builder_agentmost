@@ -102,6 +102,9 @@ def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
 
 
 def prompt_for(slot: str, api_name: str, brief_names: list, deadline: float) -> str:
+    practice = os.environ.get("BUILD_PRACTICE", "").strip()       # e.g. "A" when the bank has practice customers
+    tests = (f"The bank has practice customers for this brief: tools/run_cases.py --brief {practice}. "
+             if practice else "The bank has NO practice customers for this brief: do not run tools/run_cases.py at all. ")
     return (
         f"Build a Freya phone agent. Slot: {slot}. Tool API file: input/{api_name}. "
         f"Brief files: {', '.join('input/' + b for b in brief_names)}. "
@@ -110,7 +113,7 @@ def prompt_for(slot: str, api_name: str, brief_names: list, deadline: float) -> 
         "passes builder/validate.py to work/good.workflow.json. "
         f"Hard time limit: finish before {time.strftime('%H:%M', time.localtime(deadline))} local time, "
         "tests included. When in doubt, stop testing and leave a valid work/workflow.json. "
-        "Run every command in the foreground and wait for it: never use nohup, & or background jobs."
+        "Run every command in the foreground and wait for it: never use nohup, & or background jobs. " + tests
     )
 
 
