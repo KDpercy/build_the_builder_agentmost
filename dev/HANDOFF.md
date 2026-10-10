@@ -2,23 +2,25 @@
 
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
-## Where we are (Sat 10 Oct, ~20:40)
-- Phase 1 DONE: Brief A hand agent 41e5caa1 (slot brief-a, builder/build_a.py + hooks_a.py)
-  10/10 --reps 3 plain (results/phase1-final.json); styles 1 run: pieces/corrects/asks_back/
-  in_words 10, talkative fixed by A-E. Score history: results/log.jsonl.
-- Phase 2 in progress: Brief B hand agent ffcb39ae (slot brief-b, build_b.py + hooks_b.py,
-  made by the example builder, $3.26 / 22 min; imports build_a, so A fixes reach B).
-  B: 3/3 --reps 3; pieces, corrects, talkative 3/3 each. On Brief A customers 8/10 and 7/10:
-  PUB-05/08 fail only on notes (Brief B notes, Brief A never notes: expected, not a bug);
-  PUB-07 was a real bug (vague date -> attempt 1), fixed in bc055ae, retest running.
-- Custom Brief B cases (same practice ids, new scripts): dev/cases/b-set1.json, b-set2.json
-  (rules 8-10, closing order, all paid, hardship, human). Running.
-- builder/validate.py + builder/tests (17 unittest fixtures, all pass). Both workflows clean.
-- Commits: latest bc055ae. No GitHub remote yet (gh .pkg from github.com/cli/cli/releases).
+## Where we are (Sat 10 Oct, ~21:00)
+- Phase 1 DONE: Brief A hand agent 41e5caa1 10/10 --reps 3 (results/phase1-final.json).
+- Phase 2 nearly done: Brief B hand agent ffcb39ae (example builder + our A code) 3/3 --reps 3,
+  pieces/corrects/talkative 3/3, PUB-07 vague-date bug fixed (3/3), our 6 custom B cases
+  (dev/cases/b-set1/2.json: paid+dispute, restructuring, paid+refusal, all paid, hardship,
+  human) all pass. Brief A customers on B agent fail only on notes (Brief A never notes).
+- Phase 3 started early (all committed, 54+ unit tests green):
+  builder/validate.py (+ledger check), lib/calendar_code.py, lib/date_facts.py (matches hand
+  agent on 360 date cases), lib/nodes.py, lib/hooks.py (identity answers), reference/
+  (generate.py, code.py, hooks.py, prompts.py: spec + tool API -> workflow, no brief values),
+  skills/read-brief, design-agent, check-agent, build.py (staging, trace, budget, fallback),
+  DESIGN.md. dev/specs/brief-a.spec.json = hand-written answer key spec.
+- Reference agent from the Brief A spec: slot ref-a, agent cbc21b5c; first Brief A run going.
 
 ## Next step (one, concrete)
-- Read results/b-pub07.json, b-set1.json, b-set2.json; fix B failures; then B --reps 3 on
-  styles; then start Phase 3 design (builder/build.py) if time allows.
+- Read results/ref-a-run1.json; fix the reference until it matches the hand agent; then write
+  the Brief B spec and test the reference on B; then a full build.py run on Brief A.
+- Before freeze: move build_a/b + hooks_a/b to dev/hand/ (they hold brief values) and strip
+  brief examples from PATTERNS.md (it is staged into builder runs).
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
