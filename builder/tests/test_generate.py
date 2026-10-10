@@ -46,7 +46,8 @@ SPEC = {
                  "types": {"cardx": {"spoken": "card {last}", "floor_field": "min"}}},
     "debt_statement": "I am calling about your overdue balance",
     "first_ask": "Can you settle it today?",
-    "persuasion": {"attempts": [{"amount": "full", "date": "deadline"}], "floor_offer": {"once": True, "say_with_offer": "the remainder stays open"}},
+    "persuasion": {"attempts": [{"amount": "full", "date": "deadline"}], "floor_offer": {"once": True, "say_with_offer": "the remainder stays open"},
+                   "close_refused": ["none", "declined"]},
     "callback": {"days": ["next_business_day"], "from": "09:00", "to": "17:00", "close_booked": ["missed", "rebook"], "close_none": ["missed", "none"]},
     "special_cases": [{"name": "people", "trigger": "asks for a person", "action": "ask once if you can help", "transfer": "people", "close": ["moved", "person"]}],
     "third_party": {"wrong_number": ["missed", "wrong"], "deceased": {"say": "My condolences.", "close": ["missed", "deceased"]}},
@@ -78,6 +79,11 @@ class TestGenerate(unittest.TestCase):
         self.assertIn("https://other-bank.example/api/verify_identity", self.text)
         self.assertIn('"client"', self.text)
         self.assertIn("Northwind Credit", self.text)
+
+    def test_product_steps_cannot_close_the_call(self):
+        for name, n in self.wf["nodes"].items():
+            if name.startswith("product_") and n["node_type"] == "conversation":
+                self.assertNotIn("close_call", [t["function"]["name"] for t in n.get("tools", [])], name)
 
     def test_no_note_tool_when_notes_are_not_used(self):
         tools = {t["function"]["name"] for n in self.wf["nodes"].values() for t in n.get("tools", [])}

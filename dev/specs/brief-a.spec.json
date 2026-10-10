@@ -153,7 +153,11 @@
   "floor_offer": {
    "once": true,
    "say_with_offer": "the rest stays overdue"
-  }
+  },
+  "close_refused": [
+   "no_promise",
+   "refused"
+  ]
  },
  "callback": {
   "days": [

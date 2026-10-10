@@ -28,6 +28,7 @@ Text values are spoken or shown to the phone agent: copy required sentences word
 | `bands` | list of {name, min_days, max_days, deadline, attempts} | `deadline` is a date expression |
 | `persuasion.attempts` | list of {amount, date} | one per attempt; amount `full`, `floor` or `full_or_floor_if_too_much`; date is a date expression |
 | `persuasion.floor_offer` | {once: bool, say_with_offer: text} | the lower-amount offer |
+| `persuasion.close_refused` | [outcome, reason] | close codes when every product is refused after its attempts |
 | `products.type_field` | text | the account field holding the product type |
 | `products.fields` | {id, past_due, days_late} | account field names |
 | `products.types` | {type: {spoken, floor_field}} | `spoken` may use `{field}` from the account, e.g. `card {last}` |

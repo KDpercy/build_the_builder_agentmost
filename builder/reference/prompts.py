@@ -54,7 +54,7 @@ def speaker_extraction(spec: dict) -> dict:
                            f"({', '.join(c.get('does_not_confirm') or [])}, a question, or an unclear answer)."}
 
 
-def _special_lines(spec: dict, close_word: str = "the closing tool", cont: str = "") -> str:
+def _special_lines(spec: dict, close_word: str = "the closing tool", cont: str = "", in_product: bool = False) -> str:
     """One line per special case without a fixed line. `cont` says how to move on when the case
     settles one product but does not end the call."""
     out = []
@@ -63,8 +63,12 @@ def _special_lines(spec: dict, close_word: str = "the closing tool", cont: str =
             continue
         act = s.get("action", "")
         tr = f" Call the transfer tool with queue {s['transfer']}." if s.get("transfer") else ""
-        cl = f" Then thank them, say goodbye and call {close_word} with {_close(s['close'])}." if s.get("close") and not s.get("transfer") else ""
-        mv = f" {cont}" if cont and not s.get("close") and not s.get("transfer") else ""
+        if in_product:
+            cl = ""
+            mv = f" {cont}" if cont and not s.get("transfer") else ""
+        else:
+            cl = f" Then thank them, say goodbye and call {close_word} with {_close(s['close'])}." if s.get("close") and not s.get("transfer") else ""
+            mv = f" {cont}" if cont and not s.get("close") and not s.get("transfer") else ""
         out.append(f"- Case {s['name']} ({s.get('trigger', s['name'])}): {act}.{tr}{cl}{mv}")
     return "\n".join(out)
 
@@ -170,7 +174,18 @@ def transfer_description(spec: dict) -> str:
 def special_extraction(specials: list) -> str:
     parts = [f"{s['name']}: {s.get('trigger', '')}." for s in specials]
     return ("Set it as soon as the customer says one of these, in any words. Check in this order and take the first that fits. "
-            + " ".join(parts) + " Leave it empty for anything else, including small talk, a refusal, a date or an amount.")
+            + " ".join(parts) + " Leave it empty for anything else, including small talk, a refusal, a date or an amount. "
+            "Saying the full amount is too much, that they cannot pay it now, or that they can only pay less is NOT any of these: leave it empty.")
+
+
+def too_much_extraction() -> dict:
+    return {"name": "full_too_much", "type": "string", "enum_values": ["yes"], "min_confidence": 0.6,
+            "description": "yes when the customer says the full past-due amount is too much, more than they can afford, or that they "
+                           "can only pay part of it. Leave it empty for anything else."}
+
+
+NOT_SPECIAL = ("Saying the full amount is too much, that they cannot pay now, or that they can only pay less is NOT a special case: "
+               "it is handled by the amount and persuasion rules.")
 
 
 def debt_task(spec: dict) -> str:
@@ -182,6 +197,7 @@ Check the customer's answer in this order:
 1. They can pay EVERYTHING today: say "Thank you." and in the same message call transition_to_readback.
 2. There are two or more products and they name ONE date for everything, with no other condition: if it is not a business day, offer the next business day and wait. If it is, say "Thank you." and in the same message call transition_to_readback. Never talk about deadlines here: a product with an earlier deadline is moved to its own deadline in the read-back.
 {_special_lines(spec, cont='Then go through the products one by one (rule 3).')}
+   {NOT_SPECIAL}
 3. Anything else (a no, a date or amount for one product, a vague period, too much, a question): with two or more products say "I understand, let us go through them one by one."; with one product say only "I understand." Then, in the same message, call transition_to_product_1. Never make an offer in this step.
 
 DATE WORDS
@@ -214,7 +230,8 @@ YOUR FIRST MESSAGE IN THIS STEP. Look at what the customer already said about TH
 
 RULES. Check the customer's replies in this order:
 1. Special cases:
-{_special_lines(spec, cont=f'Say "Noted." and in the same message call transition_to_product_{k}_done.')}
+{_special_lines(spec, cont=f'Say "Noted." and in the same message call transition_to_product_{k}_done.', in_product=True)}
+   {NOT_SPECIAL}
 2. They name a date and/or an amount. This is NEVER a refusal.
    - Date: find it in the CALENDAR and do exactly what its line says. If they refuse the deadline after you offered it, that is a flat refusal (rule 4).
    - A vague period: ask once for the exact day. If they still give none, propose the deadline.
@@ -224,7 +241,15 @@ RULES. Check the customer's replies in this order:
 3. They say in words that the full amount is TOO MUCH (a plain no is NOT this): offer the floor{rest}, {'only once' if fo.get('once') else 'once'}, on the attempt 1 date. If they refuse the floor, that is a flat refusal (rule 4).
 4. A flat refusal or a non-answer about this product: make the next persuasion attempt from the list. Never repeat an offer they refused. When the attempts are used up: say "I understand." and in the same message call transition_to_product_{k}_done.
 
-NEVER ask "how much can you pay?". You propose every amount. Never ask about paying today. Never record a promise or write a note in this step."""
+NEVER ask "how much can you pay?". You propose every amount. Never ask about paying today. Never record a promise, write a note or close the call in this step: the call is closed after all products."""
+
+
+def _closing_codes(spec: dict) -> str:
+    rows = [f"  - {s['name']} ({s.get('trigger', '')}): {_close(s['close'])}" for s in spec.get("special_cases") or [] if s.get("close")]
+    ref = (spec.get("persuasion") or {}).get("close_refused")
+    if ref:
+        rows.append(f"  - every product refused after its attempts: {_close(ref)}")
+    return "\n".join(rows)
 
 
 FACTS = """ACCOUNT
@@ -261,7 +286,8 @@ RECORD
 
 CLOSE
 - Then thank the customer, say goodbye, and in the same message call the closing tool.
-- Outcome: {ol.get('on_promise', '')} if at least one promise was recorded; otherwise the outcome of the rule that ended the call."""
+- Outcome: {ol.get('on_promise', '')} if at least one promise was recorded. Otherwise use the codes of what settled the products:
+{_closing_codes(spec)}"""
 
 
 def readback_task(spec: dict) -> str:

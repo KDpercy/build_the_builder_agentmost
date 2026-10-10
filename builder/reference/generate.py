@@ -63,7 +63,7 @@ def build(spec: dict, api_spec: dict) -> dict:
     give_up = N.failed_more_than("end", tn["close"], 1)
     specials = sorted(spec.get("special_cases") or [], key=lambda s: s.get("precedence", 99))
     names = [s["name"] for s in specials]
-    extraction = [N.enum_extraction("special_case", names, P.special_extraction(specials))] if names else []
+    extraction = ([N.enum_extraction("special_case", names, P.special_extraction(specials))] if names else []) + [P.too_much_extraction()]
     offer_nodes = [s for s in specials if s.get("line")]
     to_offer = [N.var_is("sc_" + s["name"], "the customer said: " + s.get("trigger", s["name"]), "special_case", [s["name"]])
                 for s in offer_nodes]
@@ -105,7 +105,7 @@ def build(spec: dict, api_spec: dict) -> dict:
     for k in range(1, C.MAX_PRODUCTS + 1):
         done = f"product_{k}_done"
         nodes[f"product_{k}"] = N.conversation(
-            f"product_{k}", P.product_task(spec, k), [T["transfer"], T["close"]],
+            f"product_{k}", P.product_task(spec, k), [T["transfer"]],      # no close tool: closing happens after read-back
             [closed, give_up] + to_offer + [P.tool_move(done, f"CALL it when product {k} is settled: agreed amount and date, refused after its "
                                                               "attempts, or settled by a special case.")],
             {"type": "llm"}, extraction=extraction, max_turns=40)
