@@ -11,12 +11,19 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   PATTERNS.md (generic; evidence in dev/PATTERNS-evidence.md), DESIGN.md.
 - Reference agents built only from dev/specs/brief-{a,b}.spec.json (answer-key specs):
   ref-a (agent cbc21b5c): 9/10 twice; PUB-10 retry fixed (args naming, close count): 3/3.
-  ref-b (agent 7ca97613): 0/3 -> 2/3 after giving read-back the facts; PUB-12 early-band
-  extra offer -> attempt lines no longer mention the floor; PUB-12 and PUB-06 x3 running.
+  ref-b (agent 7ca97613): 0/3 -> 2/3 after giving read-back the facts. Latest retest
+  (22:13, after removing the floor from attempt lines) found two real reference bugs:
+  1. PUB-06 0/3: "full amount is too much" is extracted as a special case (hardship once,
+     restructuring twice) because the reference has no separate too-much value. Fix: add a
+     `full_too_much` extraction and exclude it in the special_case description (pattern 2).
+  2. PUB-12 2 of 3 runs: product_3 called close_call itself, skipping read-back and notes.
+     Fix: remove the close tool from product steps; special cases there move on to
+     product_k_done and readback closes with their codes (needs a refused-close spec key).
 - Invented-bank test proves the reference has no brief values.
 
 ## Next step (one, concrete)
-- First end-to-end run of our builder (costs ~$3; key only in a subshell):
+- Fix reference bugs 1 and 2 above, retest PUB-06/PUB-12 x3, then full A and B.
+- Then the first end-to-end run of our builder (costs ~$3; key only in a subshell):
   (source env.sh && source env.builder.sh && BUILD_SLOT=ref-a python3 builder/build.py tools/openapi.json briefs/brief-a.md)
   then read traces/ref-a-*.jsonl and out/ref-a/stage/work/ (spec.json vs dev/specs/brief-a.spec.json).
 
@@ -41,3 +48,4 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 - Freya: ~0.16 credits per 10-customer run; ~95 left.
 - Builder model: example builder A $2.09 / 15 min; B $3.26 / 22 min. Kerem added ~$10.
 - 10 Oct ~17:30: bank mock gave Cloudflare 403/1010 to Python; Freya fixed it.
+- 10 Oct 22:02: Freya API 503 'API key validation temporarily unavailable' for ~1 min.
