@@ -11,7 +11,7 @@ is still allowed. The attempt plan (amount + date per attempt) is computed in co
 Evidence: Brief A PUB-06 failed 3 of 5 runs before; 3/3 after, fixed line said every
 time. Not yet seen: the attempt-1 path (customer gave a non-answer after the offer).
 
-## 2. A new route must yield to every rule that outranks it  (status: testing v2)
+## 2. A new route must yield to every rule that outranks it  (status: v2 passed 3/3 on 4 cases)
 Problem: the "full amount too much" route also fired on "I lost my job and cannot pay
 anything", so the agent offered the floor to a hardship customer (no persuasion allowed).
 Fix: extract each higher-priority trigger too (hardship) and AND it out of the route.
@@ -38,3 +38,16 @@ Fix: route on `<tool>_failure_count greater_than 1` to a short node that apologi
 calls close_call; route `close_call_failure_count greater_than 1` straight to end.
 Only HTTP 500 counts as a failure (ok:false comes back as 200), so customer mistakes
 cannot trip the cap. Not done: an end-of-call lifecycle close_call (may double-close).
+
+## 5. Rambling, cut-off or junk replies are never answers or refusals  (status: testing)
+Problem: talkative customers send half-sentences and off-topic talk. The agent counted
+them as refusals (closed as declined), gave up before the brief's wrong-answer limit,
+used sympathy words for small talk, and repeated a one-time offer after a junk reply.
+Fix: global prompt lines: a fragment is not an answer; reply briefly and re-ask; end
+the call only on the brief's own conditions; sympathy words only for the brief's
+hardship triggers. Evidence: Brief A talkative 7/10 (PUB-01, 03, 05), all else 10/10.
+
+## 6. One-time offers get their own node with a fixed line  (status: testing)
+Same as pattern 1, applied to hardship: route on the extracted trigger to a node whose
+tts line says the sympathy + offer once; the node's prompt forbids repeating it and
+gives a neutral re-ask ("Is that a yes or a no?") for unclear replies.

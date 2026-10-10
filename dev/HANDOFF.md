@@ -17,14 +17,17 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 
 ## Next step (one, concrete)
 - Fixes 2+3 saved (v7, b563f22): full reps3 9/10 (10,10,9), PUB-10 now 3/3; PUB-09 1 fail:
-  floor offered to a restructuring request. Fix 1c (special_case guard) written,
-  dry-run valid, not saved. Kerem: commit, save, `--only PUB-05,PUB-06,PUB-08,PUB-09 --reps 3`,
-  then full `--reps 3`, then `--style pieces`.
+  floor offered to a restructuring request. Fix 1c (special_case guard) saved, 150b060: PUB-05,06,08,09 all 3/3 (floor line only
+  in PUB-06). Full reps3 after 1c: 10/10. Styles (1 run each): pieces 10, corrects 10, asks_back 10,
+  in_words 10, talkative 7 (PUB-01,03,05; real, no outage). Fixes A-C (fragments not refusals; hardship
+  node; no small-talk sympathy) written, dry-run valid, not saved.
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
 | --- | --- | --- | --- |
-| PUB-09 | Restructuring | floor offered before transfer (1 of 3) | floor route ignored rule 41; fix 1c |
+| PUB-01 talk | Happy path | closed not_verified/declined after 4 rambles | treats off-topic/cut-off talk as refusal (rule 15 misapplied) |
+| PUB-03 talk | Identity | closed after 2 wrong answers, not 3 | gives up on rambling; no rule allows that |
+| PUB-05 talk | Hardship | sympathy twice, support offered twice | 'sorry to hear' used for small talk; offer repeated after unclear reply |
 | outage | any | verify loops forever, no close_call | fix 3 caps it; failure paths can't be reproduced on demand |
 
 ## Patterns learned (copy to builder/PATTERNS.md when a fix proves it)

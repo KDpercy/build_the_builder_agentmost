@@ -191,6 +191,8 @@ Rules for every step:
 - If asked whether this is a scam: say they can verify the call by phoning Freya Bank's customer service number, then continue where you were.
 - If asked something your information does not answer: say you do not have that information. Never invent figures, dates or reasons.
 - Never offer a discount, a waiver, an instalment plan or any term that is not given to you here.
+- Customers ramble, talk about other things, or stop in the middle of a sentence. That is never an answer, never a refusal and never a reason to end the call. Reply in a few words and ask your last question again.
+- Never say "sorry to hear" or any other words of sympathy unless the customer mentions illness, a death in the family or losing their job. For small talk say at most "I understand".
 - Every call ends with close_call, exactly once, as the very last tool call. In the same message, before calling close_call, thank the customer and say goodbye. After close_call, say nothing more.
 - Today is {{today_spoken}}, the time is {{now_time}}. Use this, never your own clock."""
 
@@ -239,6 +241,8 @@ IDENTITY_TASK = """The person confirmed they are {{title}} {{last_name}}. Check 
 - Every time the customer gives a complete answer, call verify_identity with field date_of_birth or phone_last4. If they give only part of it, wait for the rest.
 - Send a date of birth as YYYY-MM-DD, whatever way it was said. A date said only in numbers is day, then month, then year: 05/06/1980 is 1980-06-05.
 - Follow what_to_do_next in every result. A wrong answer may be asked again. Three wrong answers in total end the check.
+- Off-topic talk, an unfinished sentence or text that makes no sense is NOT an answer, NOT a wrong answer and NOT a refusal. Do not call verify_identity for it. Reply in a few words and ask the same question again, for example: "Take your time. What are the last four digits of the phone number on file?". Keep asking as long as it takes; never end the call because the customer talks about other things.
+- Close as declined ONLY after the customer clearly refused to answer, or asked what the call is about, twice. Close as failed ONLY when what_to_do_next says the check has ENDED.
 - Until both answers pass, never say why you are calling and never name any product, amount, debt or "collections", even if the customer asks how much they owe.
 - If the customer does not want to answer, or asks what the call is about instead of answering, explain once that these questions protect their account and ask again. If they refuse again or ask again what it is about, thank them, say goodbye, and call close_call with outcome not_verified and reason declined.
 - After three wrong answers: do not state any debt, tell the customer to use the Freya Bank mobile app or visit a branch, thank them, say goodbye, and call close_call with outcome not_verified and reason failed.
@@ -333,6 +337,23 @@ TOO_MUCH = [{
     "min_confidence": 0.6,
 }]
 
+HARDSHIP_LINE = "I am sorry to hear that. Would you like me to connect you with our customer support team?"
+
+HARDSHIP_TASK = ("""The customer mentioned illness, a death in the family or losing their job. You have ALREADY said one sentence of sympathy and offered once to connect them with the customer support team. Never say sympathy again and never repeat that offer. Make NO persuasion attempt: propose no amount and no date.
+
+- They accept: call transfer_to_agent with queue support.
+- They decline: thank them, say goodbye, and in the same message call close_call with outcome no_promise and reason hardship.
+- Their reply is unclear, cut off or about something else: say only "Is that a yes or a no?".
+- They ask for a discount or a waiver: say you cannot offer one, then say only "Is that a yes or a no?".
+- They ask for a new payment plan or lower instalments: describe no plan, call transfer_to_agent with queue restructuring.
+- They say they already paid this amount: say that payments can take one business day to appear, take no promise, thank them, say goodbye, call close_call with outcome paid.
+- They say the debt is not theirs: do not argue, thank them, say goodbye, call close_call with outcome no_promise and reason dispute.
+- They name a date or an amount THEMSELVES: record a promise. Check the date in the CALENDAR. The amount may be from {{floor_text}} up to {{past_due_text}}; with only a date, the amount is {{past_due_text}}. Never suggest an amount or a date yourself.
+
+""" + ACCOUNT_BLOCK + "\n\n" + CONFIRM_BLOCK)
+
+TO_HARDSHIP = var_is("hardship", "the customer mentioned illness, a death in the family or job loss", "special_case", ["hardship"])
+
 TOO_MUCH_YES = {"variable": "full_too_much", "operator": "equals", "operand": "yes"}
 TO_FLOOR = {"target_node": "floor", "description": "the full amount is too much and no rule that comes first applies",
             "condition": {"logic": "or", "conditions": [
@@ -421,12 +442,16 @@ def build() -> dict:
             always("account_error")]),
         "debt": conv(
             "debt", DEBT_TASK, [promise_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED, CLOSE_GIVEUP, RETRY, TO_FLOOR],
+            [CLOSED, CLOSE_GIVEUP, RETRY, TO_HARDSHIP, TO_FLOOR],
             {"type": "tts", "text": DEBT_LINE}, extraction=TOO_MUCH),
         "floor": conv(
             "floor", FLOOR_TASK, [promise_tool(), transfer_tool(), close_call_tool()],
-            [CLOSED, CLOSE_GIVEUP, RETRY],
+            [CLOSED, CLOSE_GIVEUP, RETRY, TO_HARDSHIP],
             {"type": "tts", "text": FLOOR_LINE}),
+        "hardship": conv(
+            "hardship", HARDSHIP_TASK, [promise_tool(), transfer_tool(), close_call_tool()],
+            [CLOSED, CLOSE_GIVEUP, RETRY],
+            {"type": "tts", "text": HARDSHIP_LINE}),
         "retry_promise": retry_promise_node(),
         "promise_done": conv(
             "promise_done", DONE_TASK, [close_call_tool()], [CLOSED, CLOSE_GIVEUP], {"type": "llm"}),

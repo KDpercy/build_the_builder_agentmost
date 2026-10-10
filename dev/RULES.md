@@ -79,10 +79,9 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 - dev/                                      these notes; never read by a run
 
 ## Status (update after every phase)
-- Phase: 0 done except GitHub push (no `gh`); Phase 1 analysis done, no fix applied yet
-- Last scores (Brief A): base agent 0/10; example-builder agent 41e5caa1 10/10 once,
-  8/10 with --reps 3, pieces 4/10 (5 of 6 fails = Freya code-sandbox outage)
-- Next step: Kerem approves fixes 1-3 in dev/HANDOFF.md; rerun of spoiled pieces customers pending
-- Known problems: GitHub repo not created (install gh from the .pkg); builder/build_a.py and
-  hooks_a.py hold Brief A values (Phase 1 only, never ship); dev/ must be moved aside
-  during builder runs; results/ must exist before run_cases.py
+- Phase: 1 (hand agent for Brief A). Fixes 1, 1b, 1c, 2, 3 in; commit 150b060, Freya v8
+- Last scores (Brief A, agent 41e5caa1): base 0/10 -> example builder 8/10 reps3 ->
+  now 10/10 with --reps 3 (plain). Styles not yet measured cleanly.
+- Next step: --style pieces, then corrects / talkative / asks_back / in_words
+- Known problems: no GitHub remote (install gh .pkg); build_a.py/hooks_a.py hold Brief A
+  values (Phase 1 only); move dev/ aside during builder runs; results/log.jsonl not in git
