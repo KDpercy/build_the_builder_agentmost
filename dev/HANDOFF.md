@@ -19,15 +19,19 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 - Fixes 2+3 saved (v7, b563f22): full reps3 9/10 (10,10,9), PUB-10 now 3/3; PUB-09 1 fail:
   floor offered to a restructuring request. Fix 1c (special_case guard) saved, 150b060: PUB-05,06,08,09 all 3/3 (floor line only
   in PUB-06). Full reps3 after 1c: 10/10. Styles (1 run each): pieces 10, corrects 10, asks_back 10,
-  in_words 10, talkative 7 (PUB-01,03,05; real, no outage). Fixes A-C (fragments not refusals; hardship
-  node; no small-talk sympathy) written, dry-run valid, not saved.
+  in_words 10, talkative 7 (PUB-01,03,05; real, no outage). Fixes A-C saved (6fce695): PUB-01,03,05 3/3 talkative AND
+  3/3 plain. Full after A-C: plain reps3 9/10 (PUB-05 1 fail), talkative 7/10.
+  Fixes D+E written, dry-run valid, not saved. Kerem: commit, save, PUB-05 plain
+  reps3 + PUB-06,09 talkative reps3. Then Phase 2 (Brief B).
 
 ## Failing customers and what we think causes them
 | Case | Family | Symptom | Suspected cause |
 | --- | --- | --- | --- |
-| PUB-01 talk | Happy path | closed not_verified/declined after 4 rambles | treats off-topic/cut-off talk as refusal (rule 15 misapplied) |
-| PUB-03 talk | Identity | closed after 2 wrong answers, not 3 | gives up on rambling; no rule allows that |
-| PUB-05 talk | Hardship | sympathy twice, support offered twice | 'sorry to hear' used for small talk; offer repeated after unclear reply |
+| PUB-05 plain | Hardship | 'Is that a yes or a no?' after customer already declined -> judged as pressure | my hardship prompt: discount line runs before decline check (fix D) |
+| PUB-06 talk | Amounts | floor amount repeated 10x to fragments | my fix A says 're-ask last question' -> repeats offer (fix E) |
+| PUB-09 talk | Restructuring | agent silent 60 s after user sent '"' -> hangup | empty model reply on junk input; simulator junk |
+| PUB-08 talk | Paid | customer hung up right after a correct re-ask | simulator side, not ours |
+
 | outage | any | verify loops forever, no close_call | fix 3 caps it; failure paths can't be reproduced on demand |
 
 ## Patterns learned (copy to builder/PATTERNS.md when a fix proves it)

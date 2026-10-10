@@ -39,15 +39,20 @@ calls close_call; route `close_call_failure_count greater_than 1` straight to en
 Only HTTP 500 counts as a failure (ok:false comes back as 200), so customer mistakes
 cannot trip the cap. Not done: an end-of-call lifecycle close_call (may double-close).
 
-## 5. Rambling, cut-off or junk replies are never answers or refusals  (status: testing)
+## 5. Rambling, cut-off or junk replies are never answers or refusals  (status: 3/3 on 3 cases)
 Problem: talkative customers send half-sentences and off-topic talk. The agent counted
 them as refusals (closed as declined), gave up before the brief's wrong-answer limit,
 used sympathy words for small talk, and repeated a one-time offer after a junk reply.
 Fix: global prompt lines: a fragment is not an answer; reply briefly and re-ask; end
 the call only on the brief's own conditions; sympathy words only for the brief's
 hardship triggers. Evidence: Brief A talkative 7/10 (PUB-01, 03, 05), all else 10/10.
+v2: "re-ask your last question" made the agent repeat an OFFER to each fragment (floor
+said 10x, PUB-06). Reply to fragments with a neutral line only; re-ask only questions
+that carry no offer (security questions). Always reply, even to one character.
 
-## 6. One-time offers get their own node with a fixed line  (status: testing)
+## 6. One-time offers get their own node with a fixed line  (status: 3/3 plain + talkative)
 Same as pattern 1, applied to hardship: route on the extracted trigger to a node whose
 tts line says the sympathy + offer once; the node's prompt forbids repeating it and
-gives a neutral re-ask ("Is that a yes or a no?") for unclear replies.
+gives a neutral re-ask for unclear replies.
+v2: check the decline FIRST: a "no" anywhere in the node closes it; never re-ask after
+a no ("Is that a yes or a no?" after a no was judged as pressure, PUB-05).
