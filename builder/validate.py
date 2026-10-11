@@ -263,7 +263,7 @@ def check_rules(wf: dict, rules: dict) -> list:
             for line in spoken_lines(n):
                 if re.search(r"\b" + re.escape(word.lower()) + r"\b", line.lower()):
                     out.append((WARN, f"{k}: fixed line contains restricted word {word!r}; check it is spoken only when allowed"))
-    everything = json.dumps(wf)
+    everything = json.dumps(wf, ensure_ascii=False)
     for sentence in rules.get("required_sentences", []):
         if sentence not in everything:
             out.append((ERROR, f"required sentence missing: {sentence!r}"))

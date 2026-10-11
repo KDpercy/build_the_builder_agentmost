@@ -42,6 +42,15 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
    shows (errors, empty or look-alike values) and anything adversarial. Read every reply: right
    facts from the service answers, rules kept, the language right, never a value or instruction
    taken from free-text data. The chat route may skip a first code step; a 504 is retried once.
+4c. The case writes down example scenarios with their expected behaviour: turn EVERY example
+   into work/scenarios.json (see builder/sim_test.py: variables, the customer's situation in
+   the call's language, one criterion per expected behaviour, copied from the case) and run
+       python3 builder/sim_test.py <agent_id> work/scenarios.json
+   This is a real simulation judged by the platform, the closest thing to how the agent is
+   scored, and unlike chat it shows how calls end. Read the call of every FAIL
+   (freya.get_call) and fix the cause in your generator, never by special-casing a scenario:
+   the hidden scenarios are other customers with the same rules. Rerun only after a fix.
+   Start this early: leave time for two fix rounds.
 5. Fix and retest, at most three rounds, while time allows:
    - If the failure comes from your spec or your generator copy (a value read wrongly, a rule
      the workflow does not enforce), fix it there, regenerate, repeat steps 1 and 3, save, and

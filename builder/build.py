@@ -192,7 +192,9 @@ def case_prompt(slot: str, api_rel, deadline: float) -> str:
         "Run every command in the foreground and wait for it: never use nohup, & or background jobs. "
         "The bank has NO practice customers on Freya for this case: do not run run_tests.py. Check with the validator, "
         "smoke checks you write for your code steps, the platform dry run, and conversations through "
-        "builder/chat_test.py (see check-agent) against the bank's test customers, whose answers the services return."
+        "builder/chat_test.py (see check-agent) against the bank's test customers, whose answers the services return. "
+        "If the case has example scenarios with expected behaviour, check-agent step 4c (builder/sim_test.py) is the "
+        "most important test: reach it with at least 15 minutes left."
     )
 
 
