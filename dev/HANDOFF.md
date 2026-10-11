@@ -23,6 +23,14 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   3.7 min, $0.52, 1/3. The builder did not guess Brief A's values: listed them as gaps and
   refused to tune to test answers. Correct command for B passes both files:
   python3 builder/build.py tools/openapi.json briefs/brief-a.md briefs/brief-b.md
+- 11:12 BUILDER RUN 5 (Brief A, all fixes): 17 min, $1.04. Self-test 9/10 twice; fixed a missing
+  sympathy line itself; PUB-04 once recorded 20 Oct instead of the deadline -> after-deadline
+  offers now name the exact date and a yes agrees it (generic fix in date_facts/code).
+- 11:13 BUILDER RUN 6 on variant V2 (rules the generator could not express): 3.8 min, $1.01.
+  58 rules; edited its own generator copy for the split-payment link case and the special
+  closing order; validator, smoke and dry run clean; opening paraphrased plainly.
+- Parallel work: calendar-day deadlines, % floors, mark_agreed tool (agreements in variables,
+  read-back from them), notes-before-close guidance, run_tests.py (outage-tolerant), RUNBOOK.md.
 - 11:10 GitHub repo created and pushed: github.com/KDpercy/build_the_builder_agentmost (private).
 - 10:16 BUILDER RUN 4: Brief A + B files, BUILD_PRACTICE=B, slot ref-b: 11 min, $0.92, valid,
   51 rules, but its test hit a Freya 504 -> simulation f9473ed6 stuck again (needs a stop in
@@ -77,6 +85,7 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 ## Budgets
 - Freya: ~0.16 credits per 10-customer run; ~95 left.
 - Builder model: example builder A $2.09 / 15 min; B $3.26 / 22 min. Kerem added ~$10.
-  Our builder: run 1 (A) $0.79 / 7.5 min; run 2 (V1) $0.81 / 2.7 min.
+  Our builder: run 1 (A) $0.79; run 2 (V1) $0.81; run 3 (B only) $0.52; run 4 (A+B) $0.92;
+  run 5 (A) $1.04; run 6 (V2) $1.01. Total ~$5.09 of ~$10.
 - 10 Oct ~17:30: bank mock gave Cloudflare 403/1010 to Python; Freya fixed it.
 - 10 Oct 22:02: Freya API 503 'API key validation temporarily unavailable' for ~1 min.
