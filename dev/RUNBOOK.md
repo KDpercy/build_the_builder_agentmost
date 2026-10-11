@@ -38,6 +38,9 @@ the final exports.
      BUILD_PRACTICE=<letter>
    With practice customers a build runs simulations (one at a time, ~10-20 min): build the two
    briefs one after the other, never at the same time.
+   If Freya is giving 504s at that moment (11 Oct 12:52-13:31 it did, for 40 min), build WITHOUT
+   BUILD_PRACTICE: the build then needs the platform only for the save and the dry run (~3 min),
+   and a simulation that hangs can no longer eat the 30 minutes.
 3. Build each brief, one at a time (≈5-15 min each). A brief made of several files: pass all of
    them, in a sensible order (earlier documents first, memos last):
        (source env.sh && source env.builder.sh && python3 builder/build.py briefs/final1/<tool api>.json briefs/final1/<file1> [<file2> ...])
