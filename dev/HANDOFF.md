@@ -15,7 +15,8 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 - Then: 16:00 rehearsal of the runbook (fresh builds of A and A+B), 17:00 freeze.
 - Platform tips adopted (dev/KIT_NOTES.md): retry 5xx, never kill run_cases, cancel stuck
   simulations via POST /api/v2/simulations/{id}/cancel, outage != agent bug.
-- Kerem to do: top up the Anthropic key a little; ask Freya about practice customers for the
+- Anthropic key: $9.53 at 12:07 (topped up; ~$1 per build = room for rehearsal + finals + reruns).
+- Kerem to do: ask Freya about practice customers for the
   final briefs and who supplies model credentials on their rerun.
 
 ## Sunday log
