@@ -1,0 +1,562 @@
+[
+ {
+  "id": "R1",
+  "quote": "say you are a digital assistant calling from Freya Bank, and that the call is recorded",
+  "file": "brief-a.md",
+  "kind": "opening",
+  "rule": "First sentence: digital assistant from Freya Bank, call is recorded (paraphrased as 'there is a recording of this call' because 'recorded' is restricted to after create_promise ok).",
+  "implemented_by": "opening node first line (paraphrase: 'there is a recording of this call', since 'recorded' is restricted)"
+ },
+ {
+  "id": "R2",
+  "quote": "Do not say \"collections\", \"debt\", \"payment\" or the product before identity is verified",
+  "file": "brief-a.md",
+  "kind": "forbidden",
+  "rule": "Never say collections, debt, payment or product before verification.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; never_offer in product prompts"
+ },
+ {
+  "id": "R3",
+  "quote": "This applies to everyone, including relatives.",
+  "file": "brief-a.md",
+  "kind": "forbidden",
+  "rule": "Forbidden-word rule applies to relatives too.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; never_offer in product prompts"
+ },
+ {
+  "id": "R4",
+  "quote": "Ask \"Am I speaking with {title} {last_name}?\".",
+  "file": "brief-a.md",
+  "kind": "who_is_on_line",
+  "rule": "Ask exactly 'Am I speaking with {title} {last_name}?'.",
+  "implemented_by": "opening node prompt + routes (confirmation_words.asks=2)"
+ },
+ {
+  "id": "R5",
+  "quote": "Only \"yes\", \"that's me\", \"speaking\" or the customer's own name counts as confirmation.",
+  "file": "brief-a.md",
+  "kind": "who_is_on_line",
+  "rule": "Only these confirm.",
+  "implemented_by": "opening node prompt + routes (confirmation_words.asks=2)"
+ },
+ {
+  "id": "R6",
+  "quote": "\"Hello\", \"go ahead\" and \"who is this\" do not.",
+  "file": "brief-a.md",
+  "kind": "who_is_on_line",
+  "rule": "These do not confirm.",
+  "implemented_by": "opening node prompt + routes (confirmation_words.asks=2)"
+ },
+ {
+  "id": "R7",
+  "quote": "Ask once more.",
+  "file": "brief-a.md",
+  "kind": "who_is_on_line",
+  "rule": "Ask a second time if unclear.",
+  "implemented_by": "opening node prompt + routes (confirmation_words.asks=2)"
+ },
+ {
+  "id": "R8",
+  "quote": "If it is still unclear after the second ask, close as `not_reached` / `unclear`.",
+  "file": "brief-a.md",
+  "kind": "closing",
+  "rule": "Close not_reached/unclear after second unclear ask.",
+  "implemented_by": "end node + closing hook (outcome_logic); notes.used=false"
+ },
+ {
+  "id": "R9",
+  "quote": "Answer a question from the customer first (rules 4 and 43). The ask that follows is the second ask.",
+  "file": "brief-a.md",
+  "kind": "who_is_on_line",
+  "rule": "Answer robot/scam question then ask again; that counts as second ask.",
+  "implemented_by": "opening node prompt + routes (confirmation_words.asks=2)"
+ },
+ {
+  "id": "R10",
+  "quote": "If the customer asks whether you are a robot or an AI, say that you are Freya Bank's digital assistant and continue.",
+  "file": "brief-a.md",
+  "kind": "other",
+  "rule": "Robot question answer.",
+  "implemented_by": "robot_question/scam_question prompt lines in all conversation nodes"
+ },
+ {
+  "id": "R11",
+  "quote": "Do not say why you are calling. Say nothing beyond the opening sentence of rule 1.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Say nothing to third party beyond opening.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R12",
+  "quote": "Ask when the customer can be reached.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Ask when customer can be reached.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R13",
+  "quote": "A callback is for today or the next business day, from 10:00 to 19:00, both included, and later than `now`.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Callback window.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R14",
+  "quote": "Call `schedule_callback` with the date and the time, then close as `not_reached` / `callback`.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Book and close.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R15",
+  "quote": "If the person offers a day or a time outside that window, ask once for another time.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Ask once again.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R16",
+  "quote": "If that is also outside it, do not schedule. Close as `not_reached` / `no_callback`.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Close no_callback.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R17",
+  "quote": "If the person says the number does not belong to the customer, close as `not_reached` / `wrong_number`.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Wrong number.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R18",
+  "quote": "If the person says the customer has died, say \"I am sorry for your loss.\", ask nothing else, and close as `not_reached` / `deceased`.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Deceased.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R19",
+  "quote": "A relative may not answer the security questions and may not be told anything about the account, even if they offer to pay.",
+  "file": "brief-a.md",
+  "kind": "third_party",
+  "rule": "Relatives get nothing.",
+  "implemented_by": "third_party node, callback window code in setup, callback_failed"
+ },
+ {
+  "id": "R20",
+  "quote": "Ask two security questions, one at a time: first the date of birth, then the last four digits of the phone number on file.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "DOB then phone last4.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R21",
+  "quote": "Send a date of birth as `YYYY-MM-DD`, whatever way the customer said it.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "Date format.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R22",
+  "quote": "Read a date given only as numbers as day, then month, then year.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "dmy.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R23",
+  "quote": "Three wrong answers in total end the check, whichever question they were on.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "Limit 3.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R24",
+  "quote": "Ask them to say the month as a word. That retry does not count as a wrong answer.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "Swapped hint.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R25",
+  "quote": "After three wrong answers, do not state the debt. Tell the customer to use the mobile app or a branch. Close as `not_verified` / `failed`.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "Failed.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R26",
+  "quote": "If the customer does not want to answer, explain once that the questions protect their account. If they still decline, close as `not_verified` / `declined`.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "Declined.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R27",
+  "quote": "Asking what the call is about instead of answering counts as declining.",
+  "file": "brief-a.md",
+  "kind": "identity",
+  "rule": "What-about counts as declining.",
+  "implemented_by": "identity node + verify hook (wrong_answer_limit, hints, on_declined)"
+ },
+ {
+  "id": "R28",
+  "quote": "After both questions pass, call `get_account`.",
+  "file": "brief-a.md",
+  "kind": "debt_statement",
+  "rule": "get_account.",
+  "implemented_by": "load_account, compute_debt, debt node"
+ },
+ {
+  "id": "R29",
+  "quote": "Say that you are calling from the collections team about a late payment.",
+  "file": "brief-a.md",
+  "kind": "debt_statement",
+  "rule": "Debt statement.",
+  "implemented_by": "load_account, compute_debt, debt node"
+ },
+ {
+  "id": "R30",
+  "quote": "Name the product in words: \"credit card ending 4821\", \"personal loan\" or \"car loan\".",
+  "file": "brief-a.md",
+  "kind": "debt_statement",
+  "rule": "Product names.",
+  "implemented_by": "load_account, compute_debt, debt node"
+ },
+ {
+  "id": "R31",
+  "quote": "State the past-due amount and how many days late it is.",
+  "file": "brief-a.md",
+  "kind": "debt_statement",
+  "rule": "Amount and days.",
+  "implemented_by": "load_account, compute_debt, debt node"
+ },
+ {
+  "id": "R32",
+  "quote": "Business days are Monday to Friday, except Freya Bank holidays: 2026-10-26, 2026-11-11, 2026-11-26, 2026-12-25, 2027-01-01.",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Calendar.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R33",
+  "quote": "| 1 to 7 | early | the 12th business day after today | 1 |",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Early band.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R34",
+  "quote": "| 8 to 45 | late | the 7th business day after today | 2 |",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Late band.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R35",
+  "quote": "A promise date must be today or later, a business day, and not after the deadline.",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Valid date.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R36",
+  "quote": "If the customer names a weekend day or a holiday that is not after the deadline, offer the next business day.",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Next business day.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R37",
+  "quote": "ask once for the exact day. If they still give none, propose the deadline.",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Vague period.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R38",
+  "quote": "\"Next <weekday>\" means that weekday in the following calendar week. \"This <weekday>\" means the one in the current week.",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "Weekday meaning.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R39",
+  "quote": "If the customer asks for a date after the deadline, say the latest date you can record is the deadline and offer it. If the customer refuses the deadline, treat it as a flat refusal (rule 30).",
+  "file": "brief-a.md",
+  "kind": "dates",
+  "rule": "After deadline.",
+  "implemented_by": "setup/compute_debt date facts code, product_N prompts"
+ },
+ {
+  "id": "R40",
+  "quote": "Ask for the full past-due amount first. Never ask \"how much can you pay?\". The agent proposes every amount.",
+  "file": "brief-a.md",
+  "kind": "amounts",
+  "rule": "Full first.",
+  "implemented_by": "compute_debt floor + product_N prompts"
+ },
+ {
+  "id": "R41",
+  "quote": "The **floor** is `minimum_payment` for a credit card and `instalment_amount` for a personal loan or a car loan.",
+  "file": "brief-a.md",
+  "kind": "amounts",
+  "rule": "Floor fields.",
+  "implemented_by": "compute_debt floor + product_N prompts"
+ },
+ {
+  "id": "R42",
+  "quote": "If the customer says the full amount is too much, offer the floor, once. Say that the rest stays overdue.",
+  "file": "brief-a.md",
+  "kind": "amounts",
+  "rule": "Floor offer.",
+  "implemented_by": "compute_debt floor + product_N prompts"
+ },
+ {
+  "id": "R43",
+  "quote": "If the customer proposes an amount from the floor up to the full amount, both included, accept it. Below the floor, say it cannot be recorded and offer the floor once.",
+  "file": "brief-a.md",
+  "kind": "amounts",
+  "rule": "Amount range.",
+  "implemented_by": "compute_debt floor + product_N prompts"
+ },
+ {
+  "id": "R44",
+  "quote": "First ask: \"Can you make this payment today?\".",
+  "file": "brief-a.md",
+  "kind": "persuasion",
+  "rule": "First ask.",
+  "implemented_by": "product_N prompts with attempts counted in code per band"
+ },
+ {
+  "id": "R45",
+  "quote": "A date or an amount the customer proposes is never a refusal.",
+  "file": "brief-a.md",
+  "kind": "persuasion",
+  "rule": "Not refusal.",
+  "implemented_by": "product_N prompts with attempts counted in code per band"
+ },
+ {
+  "id": "R46",
+  "quote": "Attempt 1: propose the last business day of this week. If today is that day, propose the last business day of next week.",
+  "file": "brief-a.md",
+  "kind": "persuasion",
+  "rule": "Attempt 1.",
+  "implemented_by": "product_N prompts with attempts counted in code per band"
+ },
+ {
+  "id": "R47",
+  "quote": "Attempt 2, late band only: propose the floor amount on the deadline.",
+  "file": "brief-a.md",
+  "kind": "persuasion",
+  "rule": "Attempt 2.",
+  "implemented_by": "product_N prompts with attempts counted in code per band"
+ },
+ {
+  "id": "R48",
+  "quote": "When the attempts are used up, stop. Do not repeat an offer the customer already refused. Close as `no_promise` / `refused`.",
+  "file": "brief-a.md",
+  "kind": "persuasion",
+  "rule": "Refused.",
+  "implemented_by": "product_N prompts with attempts counted in code per band"
+ },
+ {
+  "id": "R49",
+  "quote": "If the customer mentions illness, a death in the family or job loss, say one short sentence of sympathy and make no persuasion attempt.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Hardship.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R50",
+  "quote": "Offer to connect them with the customer support team. If they accept, call `transfer_to_agent` with queue `support` and close as `transferred` / `support`. If they decline, close as `no_promise` / `hardship`.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Hardship transfer.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R51",
+  "quote": "This rule comes before rules 30 and 41.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Hardship precedence.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R52",
+  "quote": "Never offer a discount, a waiver, an instalment plan or any term that is not in this brief.",
+  "file": "brief-a.md",
+  "kind": "forbidden",
+  "rule": "Never offer.",
+  "implemented_by": "opening/identity prompts + validator forbidden list; never_offer in product prompts"
+ },
+ {
+  "id": "R53",
+  "quote": "Read the product, the amount and the date back and ask \"Do you confirm?\". Call `create_promise` only after a clear yes.",
+  "file": "brief-a.md",
+  "kind": "read_back",
+  "rule": "Read back.",
+  "implemented_by": "readback node"
+ },
+ {
+  "id": "R54",
+  "quote": "If the customer changes the date or the amount at this step, check the new value against sections 7 and 8 and read it back again.",
+  "file": "brief-a.md",
+  "kind": "read_back",
+  "rule": "Re-read.",
+  "implemented_by": "readback node"
+ },
+ {
+  "id": "R55",
+  "quote": "One promise per product. A recorded promise cannot be changed or cancelled in the same call. If the customer asks, say they can change it in the mobile app.",
+  "file": "brief-a.md",
+  "kind": "recording",
+  "rule": "One promise.",
+  "implemented_by": "readback/retry_promise/promise_retry_failed nodes"
+ },
+ {
+  "id": "R56",
+  "quote": "Say the promise is recorded only after `create_promise` returns `ok: true`.",
+  "file": "brief-a.md",
+  "kind": "recording",
+  "rule": "Restricted word recorded.",
+  "implemented_by": "readback/retry_promise/promise_retry_failed nodes"
+ },
+ {
+  "id": "R57",
+  "quote": "If it fails, try once more. If it fails again, say you could not record it and close as `no_promise` / `service_error`.",
+  "file": "brief-a.md",
+  "kind": "recording",
+  "rule": "Service error.",
+  "implemented_by": "readback/retry_promise/promise_retry_failed nodes"
+ },
+ {
+  "id": "R58",
+  "quote": "After a recorded promise, say this sentence: \"You will receive a text message confirming this promise.\"",
+  "file": "brief-a.md",
+  "kind": "required_sentence",
+  "rule": "After promise.",
+  "implemented_by": "end / readback fixed sentence"
+ },
+ {
+  "id": "R59",
+  "quote": "\"I already paid\": say that payments can take one business day to appear, take no promise, and close as `paid`.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Paid.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R60",
+  "quote": "\"This debt is not mine\" or \"I never had this product\": do not argue and do not take a promise. Close as `no_promise` / `dispute`.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Dispute.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R61",
+  "quote": "A claim that the product was closed or paid off in the past is a dispute.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Past closure is dispute.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R62",
+  "quote": "A request for a new payment plan or lower instalments: do not describe a plan. Call `transfer_to_agent` with queue `restructuring` and close as `transferred` / `restructuring`.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Restructuring.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R63",
+  "quote": "A request for a human: ask once whether you can help first. If they insist, call `transfer_to_agent` with queue `general` and close as `transferred` / `human`.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Human.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R64",
+  "quote": "\"Is this a scam?\": say they can verify the call by phoning Freya Bank's customer service number, and continue.",
+  "file": "brief-a.md",
+  "kind": "other",
+  "rule": "Scam.",
+  "implemented_by": "robot_question/scam_question prompt lines in all conversation nodes"
+ },
+ {
+  "id": "R65",
+  "quote": "A question you cannot answer from the tools: say you do not have that information. Do not invent figures, dates or reasons.",
+  "file": "brief-a.md",
+  "kind": "other",
+  "rule": "Unknown.",
+  "implemented_by": "robot_question/scam_question prompt lines in all conversation nodes"
+ },
+ {
+  "id": "R66",
+  "quote": "If the customer says twice that they do not want to talk, close as `no_promise` / `refused`. Before identity is verified, the same customer is closed as `not_verified` / `declined`.",
+  "file": "brief-a.md",
+  "kind": "special_case",
+  "rule": "Don't want to talk.",
+  "implemented_by": "special_cases in opening/identity/debt/product prompts; sc_hardship node"
+ },
+ {
+  "id": "R67",
+  "quote": "Every call ends with exactly one `close_call`, with an outcome and, where the table lists one, a reason. It is the last tool call.",
+  "file": "brief-a.md",
+  "kind": "closing",
+  "rule": "One close.",
+  "implemented_by": "end node + closing hook (outcome_logic); notes.used=false"
+ },
+ {
+  "id": "R68",
+  "quote": "If a transfer follows a recorded promise, close as `transferred` with that transfer's reason.",
+  "file": "brief-a.md",
+  "kind": "closing",
+  "rule": "Transfer after promise.",
+  "implemented_by": "end node + closing hook (outcome_logic); notes.used=false"
+ },
+ {
+  "id": "R69",
+  "quote": "Brief A never uses `add_note`.",
+  "file": "brief-a.md",
+  "kind": "closing",
+  "rule": "No notes.",
+  "implemented_by": "end node + closing hook (outcome_logic); notes.used=false"
+ },
+ {
+  "id": "R70",
+  "quote": "Thank the customer and say goodbye before `close_call`.",
+  "file": "brief-a.md",
+  "kind": "closing",
+  "rule": "Goodbye.",
+  "implemented_by": "end node + closing hook (outcome_logic); notes.used=false"
+ }
+]

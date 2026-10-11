@@ -25,6 +25,8 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   Freya back. Practice 3/5 -> builder fixed its generator copy (who-is-on-the-line asked 3-4x,
   "another time" asked twice) -> 5/5. Fix ported to builder/reference with spec-counted limits
   (543b78f). Key now ~$6.05.
+- 15:19-15:26 frozen-commit check: plain build of A at 9b33faa (BUILD_SLOT=frozen-check, 2.4 min,
+  $0.68) scored on dev/cases/a-set1.json: 5/5 (PUB-01, PUB-02 included). Key now ~$5.40.
 - 15:20 FREEZE (see top). submission/ emptied (rehearsal exports in out/rehearsal-exports/).
 - 12:50-14:40 Freya mostly down (504/500/503, calls hanging). Measurements: ref-A rep1 8/9 judge-pass
   (10th never ran), rep2 hung -> no score; rehearsal1 scoring: no simulation could be created; ref-B
