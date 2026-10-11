@@ -34,8 +34,41 @@ function byCard(table, card) {
   return keys.length === 1 ? table[keys[0]] : undefined;
 }
 
+// Contract section 4: error answers have only `result`.
+function guid() {
+  return [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function errorAnswer(http, code, type, message, rootCause) {
+  const g = guid();
+  return Response.json({ result: { guid: g, returnCode: code, messageText: message, code, message, type,
+    details: { guid: g, rootCause: rootCause || null, errorOrigin: "ivr-gateway-test:ivr-channel-v0" } } },
+    { status: http, headers: CORS });
+}
 function notFound(message) {
-  return Response.json({ data: null, result: { returnCode: "0", messageText: message, code: "0", message, type: "E" } }, { status: 404, headers: CORS });
+  return errorAnswer(404, "NOT_FOUND", "ERROR", message);
+}
+// Required `data` fields per service (contract section 5) and how the 400 names them.
+const REQUIRED = {
+  "cards.list": ["customerNo"],
+  "cards.balance": ["cardNumber"],
+  "statement.week.get": ["cardNumber"],
+  "statement.week.decide": ["cardNumber", "newStatementWeek", "statementDay"],
+  "statement.week.change": ["cardNumber", "newStatementWeek", "statementDay"],
+  "contact.email.get": ["customerNo", "intAddressInfoType"],
+  "statement.pdf.send": ["customerNo", "cardNumber", "currencyType", "statementDate", "emailAddress"],
+};
+const FIELD_WORDS = { customerNo: "customer number", cardNumber: "card number" };
+// The service's own "not found" (contract section 4); services without one answer 400.
+const NOT_FOUND = {
+  "cards.list": [404, "FB_IVR_CHANNEL_102", "Müşteriye ait geçerli kart bilgisi bulunamadı."],
+  "cards.balance": [404, "FB_IVR_CHANNEL_120", "Kart bilgisi bulunamadı."],
+  "statement.week.get": [404, "FB_IVR_CHANNEL_121", "Kart bilgisi bulunamadı."],
+  "statement.pdf.send": [404, "FB_IVR_CHANNEL_107", "Pdf dokümanı bulunamadı"],
+};
+function missingAnswer(service) {
+  const nf = NOT_FOUND[service];
+  if (nf) return errorAnswer(nf[0], nf[1], "WARNING", nf[2]);
+  return errorAnswer(400, "INVALID_ARGUMENTS_ERROR", "ERROR", "no record for the given arguments", "InvalidArguments");
 }
 
 // The panel's "Test API Request" button sends variables unfilled, e.g. "{{customerNumber}}".
@@ -86,14 +119,21 @@ export default {
       card: pick(sources, CARD_FIELDS),
       week: pick(sources, WEEK_FIELDS),
     };
-    if (isTemplate(keys.customer)) {
+    if (isTemplate(keys.customer) || isTemplate(keys.card)) {
       keys.customer = FIRST;
       const cards = DATA[FIRST]["cards.list"].response.data.cards;
       if (!keys.card || isTemplate(keys.card)) keys.card = cards[0].cardNumber;
       if (!keys.week || isTemplate(keys.week)) keys.week = "2";
     }
+    const data = (body && typeof body.data === "object" && body.data) || {};
+    for (const f of REQUIRED[service]) {
+      const v = data[f];
+      if (v === undefined || v === null || String(v).trim() === "") {
+        return errorAnswer(400, "INVALID_ARGUMENTS_ERROR", "ERROR", `${FIELD_WORDS[f] || f} cannot be empty`, "InvalidArguments");
+      }
+    }
     const ans = answerFor(route.service, keys);
-    if (ans.missing) return notFound(`No test data (${ans.missing})`);
+    if (ans.missing) return missingAnswer(service);
     if (ans.delaySeconds) await new Promise((r) => setTimeout(r, ans.delaySeconds * 1000));
     return new Response(JSON.stringify(ans.response), { status: ans.http, headers: { ...CORS, "content-type": "application/json; charset=utf-8" } });
   },
