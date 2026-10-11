@@ -5,10 +5,12 @@ data = json.load(open(sys.argv[2]))["customers"]
 CUST = {"cards.list": {"aiFlow": "CardOps"}, "contact.email.get": {"intAddressInfoType": "E"}}
 ok = bad = 0
 def call(service, body):
-    req = urllib.request.Request(BASE + service, json.dumps({"data": body, "call": {"lang": "tr"}}).encode(), {"content-type": "application/json"})
+    req = urllib.request.Request(BASE + service, json.dumps({"data": body, "call": {"lang": "tr"}}).encode(), {"content-type": "application/json", "User-Agent": "mock-sweep/1.0"})
     try:
-        with urllib.request.urlopen(req, timeout=40) as r: return r.status, json.load(r)
-    except urllib.error.HTTPError as e: return e.code, json.load(e)
+        with urllib.request.urlopen(req, timeout=40) as r: st, raw = r.status, r.read()
+    except urllib.error.HTTPError as e: st, raw = e.code, e.read()
+    try: return st, json.loads(raw)
+    except ValueError: return st, "NOT JSON: " + raw[:200].decode(errors="replace")
 for c in data:
     no, svcs = c["customerNo"], c["services"]
     cards = (svcs["cards.list"]["response"].get("data") or {}).get("cards", [])
