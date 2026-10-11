@@ -16,6 +16,11 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 - First thing today: if unblocked, `--reps 3` on rehearsal-a; then a builder run on Brief B
   (BUILD_PRACTICE=B); then Phase 5 rehearsal (section 7 of PLAN). GitHub remote still missing.
 
+## Sunday log
+- 09:55 rehearsal-a (builder run 1, Brief A) --reps 3: 9/10. Only PUB-10 1/3: its opening said
+  "this call is recorded" (fixed in the validator after run 1). Ledger right in all 30 calls.
+- 10:00 BUILDER RUN 3: Brief B, BUILD_PRACTICE=B, slot ref-b (overwrites the V1 agent).
+
 ## Overnight log
 - 23:50 reference retests: PUB-06 3/3; ref-a full 9/10 (PUB-01 judge 'no verdict', ledger ok);
   ref-b full 3/3; PUB-12 2/3 -> read-back now finds agreements by their "Noted" line.
