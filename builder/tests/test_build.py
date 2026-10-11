@@ -17,8 +17,14 @@ GOOD = {"initial_node": "a", "system_prompt": "", "nodes": {
 
 class TestBuild(unittest.TestCase):
     def test_slot_name(self):
-        self.assertEqual(B.slot_name(["/x/Final Brief 1.md"]), "final-brief-1")
-        self.assertEqual(B.slot_name(["a/mail.txt", "a/Memo (v2).md"]), "mail-memo-v2")
+        self.assertEqual(B.slot_name(["/x/briefs/Final Brief 1.md"]), "final-brief-1")
+        self.assertEqual(B.slot_name(["/x/briefs/a/mail.txt", "/x/briefs/a/Memo (v2).md"]), "a-mail-memo-v2")
+
+    def test_same_file_names_in_two_folders_get_two_slots(self):
+        one = B.slot_name(["/x/briefs/final1/brief.md"])
+        two = B.slot_name(["/x/briefs/final2/brief.md"])
+        self.assertNotEqual(one, two)
+        self.assertEqual(one, "final1-brief")
 
     def test_trace_scrubs_keys(self):
         with tempfile.TemporaryDirectory() as d:

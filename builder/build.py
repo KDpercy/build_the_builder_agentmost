@@ -60,8 +60,13 @@ class Trace:
 
 
 def slot_name(briefs: list) -> str:
-    stems = [re.sub(r"[^a-z0-9]+", "-", pathlib.Path(b).stem.lower()).strip("-") for b in briefs]
-    return "-".join(stems)[:60] or "brief"
+    """Brief file names, prefixed by their folder unless it is briefs/ itself, so two briefs that
+    share file names (final1/brief.md, final2/brief.md) never overwrite each other's agent."""
+    clean = lambda text: re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    stems = [clean(pathlib.Path(b).stem) for b in briefs]
+    folder = pathlib.Path(briefs[0]).parent.name if briefs else ""
+    parts = ([clean(folder)] if folder and folder != "briefs" else []) + stems
+    return "-".join(p for p in parts if p)[:60] or "brief"
 
 
 def sha(path: pathlib.Path) -> str:

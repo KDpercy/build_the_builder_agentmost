@@ -4,6 +4,18 @@ All commands from the kit folder:
 
     cd /Users/macbookpro/Desktop/AgentMost/build-the-builder
 
+## Rehearsal (before the freeze)
+Exactly the 19:00 commands on practice material, no BUILD_PRACTICE (worst case: no practice
+customers). They start no simulations, so they may run while a measurement is going. One at a time:
+
+    (source env.sh && source env.builder.sh && python3 builder/build.py briefs/rehearsal1/openapi.json briefs/rehearsal1/brief-a.md)
+    (source env.sh && source env.builder.sh && python3 builder/build.py briefs/rehearsal2/openapi.json briefs/rehearsal2/brief-a.md briefs/rehearsal2/brief-b.md)
+    (source env.sh && source env.builder.sh && python3 builder/build.py briefs/rehearsal3/tools-api.json briefs/rehearsal3/01-mail.md briefs/rehearsal3/02-policy.md briefs/rehearsal3/03-memo.md briefs/rehearsal3/04-codes.md)
+
+After each: dev/check_build.sh <slot>. Then score rehearsal1 on the practice customers (A, --reps 3)
+with builder/run_tests.py. Afterwards move submission/rehearsal* to out/ so submission/ holds only
+the final exports.
+
 ## 17:00 freeze
 1. All unit tests green:
        python3 -m unittest discover -s builder/tests
@@ -23,9 +35,9 @@ All commands from the kit folder:
    them, in a sensible order (earlier documents first, memos last):
        (source env.sh && source env.builder.sh && python3 builder/build.py briefs/final1/<tool api>.json briefs/final1/<file1> [<file2> ...])
        (source env.sh && source env.builder.sh && python3 builder/build.py briefs/final2/<tool api>.json briefs/final2/<file1> [<file2> ...])
-   No BUILD_SLOT on final runs: the slot is the brief's file name, and the export goes to
-   submission/<slot>.workflow.json.
-4. Check each run:
+   No BUILD_SLOT on final runs: the slot is the folder name plus the brief file names
+   (e.g. final1-brief), and the export goes to submission/<slot>.workflow.json.
+4. Check each run (one command does all of this: `dev/check_build.sh <slot>`, exit 0 = fine):
    - it printed "saved <slot>: workflow ..., agent ..."
    - submission/<slot>.workflow.json exists
    - the trace has no keys:
