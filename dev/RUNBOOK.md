@@ -1,0 +1,45 @@
+# Final-day runbook (Sun 11 Oct)
+
+All commands from the kit folder:
+
+    cd /Users/macbookpro/Desktop/AgentMost/build-the-builder
+
+## 17:00 freeze
+1. All unit tests green:
+       python3 -m unittest discover -s builder/tests
+2. Commit, push, note the hash in dev/HANDOFF.md:
+       git add -A && git commit -m "chore: freeze" && git push && git log --oneline | head -1
+3. Anthropic credit covers at least 4 builder runs (~$1 each, plus margin).
+4. No simulation stuck in "running" on the Simulation page of the web app.
+
+## 19:00 final briefs arrive
+1. Save every file exactly as sent, one folder per brief:
+       briefs/final1/   (brief file(s) + its tool API file)
+       briefs/final2/
+   Do not edit them. Commit them as received.
+2. Practice customers? If Freya says yes and gives a brief letter for run_cases, set
+   BUILD_PRACTICE=<letter> on that build. Otherwise leave it unset.
+3. Build each brief, one at a time (≈5-15 min each). A brief made of several files: pass all of
+   them, in a sensible order (earlier documents first, memos last):
+       (source env.sh && source env.builder.sh && python3 builder/build.py briefs/final1/<tool api>.json briefs/final1/<file1> [<file2> ...])
+       (source env.sh && source env.builder.sh && python3 builder/build.py briefs/final2/<tool api>.json briefs/final2/<file1> [<file2> ...])
+   No BUILD_SLOT on final runs: the slot is the brief's file name, and the export goes to
+   submission/<slot>.workflow.json.
+4. Check each run:
+   - it printed "saved <slot>: workflow ..., agent ..."
+   - submission/<slot>.workflow.json exists
+   - the trace has no keys:
+         grep -c "fak_\|sk-ant" traces/<slot>-*.jsonl      # must print 0
+   - read out/<slot>/work/spec.json "gaps" and rules.json: anything surprising?
+5. Commit and push: briefs/, out/, traces/, submission/
+       git add -A && git commit -m "final: builds of final briefs" && git push
+6. Submit following Freya's emailed steps. Command for the form:
+       python3 builder/build.py <tool_api_file> <brief_file> [<brief_file> ...]
+
+## If something breaks
+- Builder crashes or saves nothing: read the end of traces/<slot>-*.jsonl. Fix the bug in
+  builder code only (no value, rule or sentence from a final brief), commit, then rebuild
+  BOTH briefs from the new commit so commit, workflows and traces match.
+- Freya API 502/503/504: wait a minute and rerun the same command (the slot is reused).
+- A simulation stuck in "running": stop it on the Simulation page.
+- Never edit an agent in the Freya editor. Never edit a workflow file by hand.
