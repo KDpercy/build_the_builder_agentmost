@@ -27,7 +27,8 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
        python3 -c "import freya,json; print(freya.validate_workflow('<slot>', json.load(open('work/workflow.json'))))"
 4. Platform tests, only if the bank has practice customers for this brief:
        python3 -c "import freya,json; print(freya.save_workflow('<slot>', json.load(open('work/workflow.json'))))"
-       python3 tools/run_cases.py <agent_id> --brief <letter> --out work/run.json
+       python3 builder/run_tests.py <agent_id> --brief <letter> --out work/run.json
+   (run_tests.py wraps tools/run_cases.py and survives short platform outages; use it, not run_cases.py directly)
    Read each FAIL line; read the call with freya.get_call(call_id) before changing anything.
    Run in the foreground and wait: never nohup, & or a background job. One simulation at a time.
 5. Fix and retest, at most three rounds, while time allows:

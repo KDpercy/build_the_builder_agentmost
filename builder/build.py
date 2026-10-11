@@ -28,7 +28,7 @@ BUDGET_S = int(os.environ.get("BUILD_BUDGET_S", str(25 * 60)))     # rule: 30 mi
 MODEL = os.environ.get("BUILDER_MODEL", "claude-opus-5-5")
 KIT_FILES = ["freya.py", "docs", "tools", "examples/base-agent.json", "public-test-set.json"]
 # builder/tests is staged for its invented example spec (test_generate.py); it has no brief values.
-BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/smoke.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
+BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/smoke.py", "builder/run_tests.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
 SKILLS_DIR = ROOT / "builder" / "skills"
 SECRET_PATTERNS = [re.compile(r"fak_[A-Za-z0-9_\-]+"), re.compile(r"sk-ant-[A-Za-z0-9_\-]+")]
 
@@ -103,8 +103,8 @@ def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
 
 def prompt_for(slot: str, api_name: str, brief_names: list, deadline: float) -> str:
     practice = os.environ.get("BUILD_PRACTICE", "").strip()       # e.g. "A" when the bank has practice customers
-    tests = (f"The bank has practice customers for this brief: tools/run_cases.py --brief {practice}. "
-             if practice else "The bank has NO practice customers for this brief: do not run tools/run_cases.py at all. ")
+    tests = (f"The bank has practice customers for this brief: python3 builder/run_tests.py <agent_id> --brief {practice}. "
+             if practice else "The bank has NO practice customers for this brief: do not run any practice test at all. ")
     return (
         f"Build a Freya phone agent. Slot: {slot}. Tool API file: input/{api_name}. "
         f"Brief files: {', '.join('input/' + b for b in brief_names)}. "
