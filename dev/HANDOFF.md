@@ -20,6 +20,11 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   final briefs and who supplies model credentials on their rerun.
 
 ## Sunday log
+- 12:15-12:27 rehearsal (no BUILD_PRACTICE, final-day commands, dev/check_build.sh): r1 A 3 min $0.74,
+  r2 A+B 2.5 min $0.69, r3 V1 4 docs $0.52 -> found hardship `line` without the required sympathy
+  sentence (fixed lines are spoken verbatim); fixed in read-brief + SPEC.md (ea5d33e), r3 rerun $0.70: ok.
+  Also fixed: slot now includes the brief folder (final1/brief.md vs final2/brief.md), BUILD_PRACTICE
+  takes a cases file. Rehearsal spend $2.65 -> key ~$6.90.
 - 09:55 rehearsal-a (builder run 1, Brief A) --reps 3: 9/10. Only PUB-10 1/3: its opening said
   "this call is recorded" (fixed in the validator after run 1). Ledger right in all 30 calls.
 - 10:11 BUILDER RUN 3: Brief B ONLY (my mistake: Brief B says "every rule of Brief A applies").
