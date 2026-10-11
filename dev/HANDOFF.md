@@ -8,7 +8,8 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   answer key, both memo overrides applied. Total builder spend tonight $1.60.
 - Reference agents (generic code from a spec): A 9/10 (the 1 fail was a judge glitch),
   B 3/3, PUB-06/PUB-10 3/3 each. 69 unit tests green. No practice-brief names in builder code.
-- BLOCKER: Freya simulation ba5fc132 stuck in 'running' since 00:06; every new simulation is
+- (RESOLVED 09:55: Kerem stopped it on the Simulation page of the web app. A stuck
+  simulation can be stopped there.) WAS BLOCKER: Freya simulation ba5fc132 stuck in 'running' since 00:06; every new simulation is
   refused. Ask Freya (dev@freyavoice.ai) to clear it. The waiting client was stopped at 00:55
   (no polling overnight). When clear, run Brief A on the run-1 agent:
   source env.sh && python3 tools/run_cases.py 1e3ff1a8-4477-4b94-a6e5-54054a299c0a --brief A --reps 3 --out results/rehearsal-a-reps3.json

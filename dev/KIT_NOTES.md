@@ -42,7 +42,9 @@ routing events. `POST /api/v2/chat/message` runs one turn in seconds. [api.md]
   `verify_identity` or `get_account` when the expected outcome is "not reached".
 - Conversation checks: a judge model reads the transcript against the case's
   `checks` list. One failed check fails the customer.
-- One simulation at a time per workspace. Ten customers take 3 to 11 minutes.
+- One simulation at a time per workspace. Ten customers take 3 to 11 minutes. A simulation
+  can get stuck in 'running' after all its calls end and then blocks every new one; stop it
+  on the Simulation page of the web app (no API for this).
   A slow model can fail a run that is not our fault; run_cases prints a
   warning when the median slowest turn is above 10 seconds.
 
