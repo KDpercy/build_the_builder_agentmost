@@ -1,0 +1,466 @@
+[
+ {
+  "id": "R1",
+  "quote": "Good day, this is the virtual assistant of Kestrel Mutual, and this call is recorded.",
+  "file": "brief.md",
+  "kind": "opening",
+  "rule": "First sentence word for word. Paraphrased in the workflow as '...and there is a recording of this call.' because 'recorded' is a claim word the validator forbids before any tool succeeded.",
+  "implemented_by": "opening node first line / opening_task"
+ },
+ {
+  "id": "R2",
+  "quote": "never say \"arrears\", \"overdue\", \"repayment\", \"owe\", \"revolving line\" or \"equipment lease\", whoever is on the line",
+  "file": "brief.md",
+  "kind": "forbidden",
+  "rule": "Forbidden words before identity passes.",
+  "implemented_by": "validator forbidden list; system prompt never_offer; pre-verification nodes"
+ },
+ {
+  "id": "R3",
+  "quote": "May I speak with {courtesy_title} {family_name}?",
+  "file": "brief.md",
+  "kind": "opening",
+  "rule": "Ask for owner.",
+  "implemented_by": "opening node first line / opening_task"
+ },
+ {
+  "id": "R4",
+  "quote": "Only \"yes\", \"speaking\", \"it's me\" or the person giving the owner's family name as their own confirms.",
+  "file": "brief.md",
+  "kind": "who_is_on_line",
+  "rule": "Confirmation words.",
+  "implemented_by": "opening node confirmation routes (asks=2, close no_contact/unconfirmed)"
+ },
+ {
+  "id": "R5",
+  "quote": "Ask a second time. If it is still not confirmed, close as `no_contact` / `unconfirmed`.",
+  "file": "brief.md",
+  "kind": "who_is_on_line",
+  "rule": "Ask twice then no_contact/unconfirmed.",
+  "implemented_by": "opening node confirmation routes (asks=2, close no_contact/unconfirmed)"
+ },
+ {
+  "id": "R6",
+  "quote": "say you are Kestrel Mutual's virtual assistant and carry on",
+  "file": "brief.md",
+  "kind": "other",
+  "rule": "Machine question.",
+  "implemented_by": "system prompt rules"
+ },
+ {
+  "id": "R7",
+  "quote": "say they can phone back on the number printed on any Kestrel Mutual statement, and carry on",
+  "file": "brief.md",
+  "kind": "other",
+  "rule": "Genuine question.",
+  "implemented_by": "system prompt rules"
+ },
+ {
+  "id": "R8",
+  "quote": "Give no reason for the call. Ask when the owner can be reached.",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "Third party: no reason, ask when.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R9",
+  "quote": "A callback can only be booked for today, between 12:00 and 15:00, both included, and later than `local_time`.",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "Callback window.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R10",
+  "quote": "Call `schedule_callback`, then close as `no_contact` / `callback_set`.",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "Callback set close.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R11",
+  "quote": "If the second answer also misses the window, book nothing and close as `no_contact` / `callback_none`.",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "One retry then callback_none.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R12",
+  "quote": "close as `no_contact` / `wrong_party`",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "Wrong party.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R13",
+  "quote": "If the owner has died, say \"Please accept our sincere sympathy.\", ask nothing more, and close as `no_contact` / `deceased`.",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "Deceased.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R14",
+  "quote": "A partner, employee or relative who wants to settle the arrears is still told nothing.",
+  "file": "brief.md",
+  "kind": "third_party",
+  "rule": "Only owner.",
+  "implemented_by": "third_party node + callback window code (date facts) and callback routes"
+ },
+ {
+  "id": "R15",
+  "quote": "the company registration number of the business, then the year the business was founded, then the last three digits of the business current account",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "Question order.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R16",
+  "quote": "Call `verify_identity` after each answer",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "Verify after each.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R17",
+  "quote": "Send the registration number as said, letters and digits only, without spaces. Send the year as four digits. Send exactly three digits for the account.",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "Answer formats.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R18",
+  "quote": "That retry is not a wrong answer.",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "two_digit_year hint.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R19",
+  "quote": "Two wrong answers in total, across all three questions, end the check.",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "Wrong answer limit 2.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R20",
+  "quote": "Close as `id_failed` / `wrong_answers`.",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "ID failed close.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R21",
+  "quote": "If they refuse again, close as `id_failed` / `refused`.",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "Refusal.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R22",
+  "quote": "Replying with \"why are you calling?\" in place of an answer is a refusal too.",
+  "file": "brief.md",
+  "kind": "identity",
+  "rule": "Why calling = refusal.",
+  "implemented_by": "identity node, verify_identity tool, answer cleaning code, wrong-answer counter route"
+ },
+ {
+  "id": "R23",
+  "quote": "I am calling from Kestrel Mutual's arrears team about a missed repayment.",
+  "file": "brief.md",
+  "kind": "debt_statement",
+  "rule": "Debt statement.",
+  "implemented_by": "compute_debt code debt_line spoken in debt node"
+ },
+ {
+  "id": "R24",
+  "quote": "Working days are Sunday to Thursday. Friday and Saturday are the weekend.",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Weekend Fri/Sat.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R25",
+  "quote": "Kestrel Mutual is also closed on 2026-11-19, 2026-12-02 and 2026-12-17.",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Holidays.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R26",
+  "quote": "| 1 to 14 | amber | 9 | 1 |",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Amber band.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R27",
+  "quote": "| 15 to 40 | red | 5 | 2 |",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Red band.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R28",
+  "quote": "| 41 to 75 | black | 3 | 3 |",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Black band.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R29",
+  "quote": "moved back to the previous working day if it falls on a non-working day. Today itself is not counted.",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Deadline rule.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R30",
+  "quote": "Only a working day can be booked, from today onwards, and not after that facility's latest promise date.",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Bookable dates.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R31",
+  "quote": "If that next working day is after the latest promise date, offer the latest promise date instead.",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Non-working day handling.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R32",
+  "quote": "tell them nothing later can be booked and propose the latest promise date",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Beyond deadline.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R33",
+  "quote": "ask once for an exact date. If none comes, propose the latest promise date.",
+  "file": "brief.md",
+  "kind": "dates",
+  "rule": "Vague time.",
+  "implemented_by": "date facts code (calendar, bands deadline, all_calendar)"
+ },
+ {
+  "id": "R34",
+  "quote": "The floor is 25% of the facility's overdue amount, rounded up to a whole currency unit.",
+  "file": "brief.md",
+  "kind": "amounts",
+  "rule": "Floor.",
+  "implemented_by": "compute_debt limits (floor 25% up_whole), product prompts"
+ },
+ {
+  "id": "R35",
+  "quote": "The remainder will stay in arrears.",
+  "file": "brief.md",
+  "kind": "amounts",
+  "rule": "Floor sentence.",
+  "implemented_by": "compute_debt limits (floor 25% up_whole), product prompts"
+ },
+ {
+  "id": "R36",
+  "quote": "An amount under the floor cannot be booked: say so and propose the floor a single time.",
+  "file": "brief.md",
+  "kind": "amounts",
+  "rule": "Under floor.",
+  "implemented_by": "compute_debt limits (floor 25% up_whole), product prompts"
+ },
+ {
+  "id": "R37",
+  "quote": "Could you pay both of these by the end of today?",
+  "file": "brief.md",
+  "kind": "persuasion",
+  "rule": "First ask two.",
+  "implemented_by": "debt node first ask; product_N nodes attempts per band"
+ },
+ {
+  "id": "R38",
+  "quote": "Could you pay this by the end of today?",
+  "file": "brief.md",
+  "kind": "persuasion",
+  "rule": "First ask one.",
+  "implemented_by": "debt node first ask; product_N nodes attempts per band"
+ },
+ {
+  "id": "R39",
+  "quote": "that is a counter-offer, not a refusal",
+  "file": "brief.md",
+  "kind": "persuasion",
+  "rule": "Counter-offer.",
+  "implemented_by": "debt node first ask; product_N nodes attempts per band"
+ },
+ {
+  "id": "R40",
+  "quote": "Attempt 2, red and black bands: the same amount on the latest promise date.",
+  "file": "brief.md",
+  "kind": "persuasion",
+  "rule": "Attempts.",
+  "implemented_by": "debt node first ask; product_N nodes attempts per band"
+ },
+ {
+  "id": "R41",
+  "quote": "I am sorry to hear that. Would you like me to connect you with our business welfare team?",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Hardship.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R42",
+  "quote": "Hardship outranks rules 32 and 44.",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Hardship precedence.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R43",
+  "quote": "I can send you a secure payment link by text message, so you can pay in parts.",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Split.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R44",
+  "quote": "Never offer a discount, a fee waiver, an interest freeze, a payment holiday or any term this brief does not give.",
+  "file": "brief.md",
+  "kind": "forbidden",
+  "rule": "Never offer.",
+  "implemented_by": "validator forbidden list; system prompt never_offer; pre-verification nodes"
+ },
+ {
+  "id": "R45",
+  "quote": "Shall I record that?",
+  "file": "brief.md",
+  "kind": "read_back",
+  "rule": "Read-back question.",
+  "implemented_by": "readback node"
+ },
+ {
+  "id": "R46",
+  "quote": "Each facility takes at most one promise.",
+  "file": "brief.md",
+  "kind": "recording",
+  "rule": "One promise per facility.",
+  "implemented_by": "readback node + promise retry nodes"
+ },
+ {
+  "id": "R47",
+  "quote": "On a failure, send the same request a second time.",
+  "file": "brief.md",
+  "kind": "recording",
+  "rule": "Retry once.",
+  "implemented_by": "readback node + promise retry nodes"
+ },
+ {
+  "id": "R48",
+  "quote": "write a `system_fault` note and close as `no_agreement` / `system_fault`",
+  "file": "brief.md",
+  "kind": "recording",
+  "rule": "System fault.",
+  "implemented_by": "readback node + promise retry nodes"
+ },
+ {
+  "id": "R49",
+  "quote": "A text message with the details of this promise will reach you shortly.",
+  "file": "brief.md",
+  "kind": "required_sentence",
+  "rule": "After promise.",
+  "implemented_by": "sentences.after_promise in readback/retry prompts"
+ },
+ {
+  "id": "R50",
+  "quote": "write a `settled` note for each facility and close as `settled_claim`",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Already paid.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R51",
+  "quote": "write a `contested` note and close as `no_agreement` / `contested`",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Contested.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R52",
+  "quote": "Call `transfer_to_agent` with team `workout` and close as `handed_off` / `workout`.",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Workout.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R53",
+  "quote": "If they repeat the request, transfer to team `staff` and close as `handed_off` / `staff`.",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Staff.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R54",
+  "quote": "An owner who twice refuses to continue the conversation",
+  "file": "brief.md",
+  "kind": "special_case",
+  "rule": "Refuses to continue.",
+  "implemented_by": "special_cases in spec: extraction routes, sc_hardship offer node, product prompts"
+ },
+ {
+  "id": "R55",
+  "quote": "Make up no figure, date or reason.",
+  "file": "brief.md",
+  "kind": "other",
+  "rule": "Unknown question.",
+  "implemented_by": "system prompt rules"
+ },
+ {
+  "id": "R56",
+  "quote": "Calls closed as `handed_off`, and calls closed before `get_account`, write no note.",
+  "file": "brief.md",
+  "kind": "other",
+  "rule": "Notes rule.",
+  "implemented_by": "notes spec + end rules (no note on handed_off / before get_account)"
+ },
+ {
+  "id": "R57",
+  "quote": "call `close_call` exactly once, as the last tool call",
+  "file": "brief.md",
+  "kind": "closing",
+  "rule": "Close once.",
+  "implemented_by": "closing hook + end rules"
+ },
+ {
+  "id": "R58",
+  "quote": "Order of precedence when several apply: `handed_off`, then `pay_link`, then `agreed`.",
+  "file": "brief.md",
+  "kind": "closing",
+  "rule": "Precedence.",
+  "implemented_by": "closing hook + end rules"
+ }
+]

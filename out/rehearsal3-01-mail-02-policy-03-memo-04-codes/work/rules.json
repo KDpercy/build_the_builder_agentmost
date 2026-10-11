@@ -1,0 +1,382 @@
+[
+ {
+  "id": "R1",
+  "quote": "member_ref (pass it on every request)",
+  "file": "01-mail.md",
+  "kind": "other",
+  "rule": "Pass member_ref on every tool request.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R2",
+  "quote": "Always use call_time, never your own clock.",
+  "file": "01-mail.md",
+  "kind": "dates",
+  "rule": "Use call_time as today/now.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R3",
+  "quote": "Speak to the member as salutation plus surname.",
+  "file": "01-mail.md",
+  "kind": "other",
+  "rule": "Address member as {salutation} {surname}.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R4",
+  "quote": "The first thing the assistant says: that it is an automated assistant phoning on behalf of Harbour Lane Bank, and that calls are monitored for quality.",
+  "file": "02-policy.md",
+  "kind": "opening",
+  "rule": "First sentence: automated assistant on behalf of Harbour Lane Bank; calls monitored for quality.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R5",
+  "quote": "Then: \"Could I speak to {salutation} {surname}, please?\"",
+  "file": "02-policy.md",
+  "kind": "opening",
+  "rule": "Then ask 'Could I speak to {salutation} {surname}, please?'",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R6",
+  "quote": "Before the member has passed security, never mention arrears, balance, overdue, money owed, or any account type.",
+  "file": "02-policy.md",
+  "kind": "forbidden",
+  "rule": "No arrears/balance/overdue/money owed/account type before security passes.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R7",
+  "quote": "Confirmation means the person says yes or gives the member's name as their own.",
+  "file": "02-policy.md",
+  "kind": "who_is_on_line",
+  "rule": "Only yes or own name confirms.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R8",
+  "quote": "Anything else, ask once more; still unclear after that, end the contact with code NC-UNC.",
+  "file": "02-policy.md",
+  "kind": "who_is_on_line",
+  "rule": "Ask once more, then close NC-UNC.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R9",
+  "quote": "If the number is not the member's: NC-WRG.",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Wrong number closes NC-WRG.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R10",
+  "quote": "If the member has passed away: say \"Please accept my condolences.\" and end with NC-DEC, asking nothing else.",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Deceased: say condolence sentence, ask nothing, close NC-DEC.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R11",
+  "quote": "Third parties: say nothing about why you call.",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Never tell third parties the reason.",
+  "implemented_by": "opening"
+ },
+ {
+  "id": "R12",
+  "quote": "Offer a call-back on the next working day between 09:30 and 17:30.",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Offer call-back next working day (window replaced by memo: 10:00-16:00).",
+  "implemented_by": "third_party"
+ },
+ {
+  "id": "R13",
+  "quote": "Book it if they agree a time in that window, then end with NC-CBK. If they cannot, end with NC-NCB.",
+  "file": "02-policy.md",
+  "kind": "third_party",
+  "rule": "Booked -> NC-CBK; otherwise NC-NCB.",
+  "implemented_by": "third_party"
+ },
+ {
+  "id": "R14",
+  "quote": "Two questions, in this order: the postcode on the account, then the member's year of birth.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "Ask postcode then year of birth.",
+  "implemented_by": "identity"
+ },
+ {
+  "id": "R15",
+  "quote": "Send the postcode exactly as said, the year of birth as four digits.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "Postcode verbatim; year as 4 digits.",
+  "implemented_by": "identity"
+ },
+ {
+  "id": "R16",
+  "quote": "Then: direct the member to online banking and end with SEC-FAIL.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "After failed security, direct to online banking, close SEC-FAIL.",
+  "implemented_by": "identity"
+ },
+ {
+  "id": "R17",
+  "quote": "Never state any arrears after a failed check.",
+  "file": "02-policy.md",
+  "kind": "forbidden",
+  "rule": "No arrears after failed check.",
+  "implemented_by": "identity"
+ },
+ {
+  "id": "R18",
+  "quote": "A member who refuses to answer is told once that the questions keep their savings safe. A second refusal ends with SEC-REF.",
+  "file": "02-policy.md",
+  "kind": "identity",
+  "rule": "Explain once; second refusal close SEC-REF.",
+  "implemented_by": "identity"
+ },
+ {
+  "id": "R19",
+  "quote": "three wrong answers in total end security, not two.",
+  "file": "03-memo.md",
+  "kind": "identity",
+  "rule": "Wrong-answer limit is 3 (overrides 2).",
+  "implemented_by": "identity"
+ },
+ {
+  "id": "R20",
+  "quote": "After security, fetch the accounts and say, for each account, its name, the overdue sum and how many days overdue.",
+  "file": "02-policy.md",
+  "kind": "debt_statement",
+  "rule": "State each account name, overdue sum, days overdue.",
+  "implemented_by": "debt"
+ },
+ {
+  "id": "R21",
+  "quote": "Working days are Monday to Friday except bank holidays: 2026-11-30, 2026-12-25, 2026-12-28, 2027-01-01.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Working days Mon-Fri minus listed holidays.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R22",
+  "quote": "1-10 \"light\": latest promise date 10 working days after today, one persuasion attempt.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "1-10 days: deadline 10 working days, 1 attempt.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R23",
+  "quote": "11-30 \"medium\": 6 working days, two attempts.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "11-30 days: 6 working days, 2 attempts.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R24",
+  "quote": "31-90 \"heavy\": 3 working days, two attempts.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "31-90 days: 3 working days, 2 attempts.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R25",
+  "quote": "A promise date must be a working day, not before today and not after the band's latest date.",
+  "file": "02-policy.md",
+  "kind": "dates",
+  "rule": "Promise date: working day, today..deadline.",
+  "implemented_by": "setup"
+ },
+ {
+  "id": "R26",
+  "quote": "Ask for the full overdue sum first. Never ask the member to name an amount.",
+  "file": "02-policy.md",
+  "kind": "amounts",
+  "rule": "Ask full sum first; never ask member for an amount.",
+  "implemented_by": "debt"
+ },
+ {
+  "id": "R27",
+  "quote": "The lowest acceptable amount is the account's min_due.",
+  "file": "02-policy.md",
+  "kind": "amounts",
+  "rule": "Floor is min_due.",
+  "implemented_by": "product_k"
+ },
+ {
+  "id": "R28",
+  "quote": "Offer it once, only if the member says the full sum is too much, adding: \"anything left stays in arrears.\"",
+  "file": "02-policy.md",
+  "kind": "amounts",
+  "rule": "Offer min_due once only if full sum too much, with the sentence.",
+  "implemented_by": "product_k"
+ },
+ {
+  "id": "R29",
+  "quote": "Attempt 1: the full overdue sum (or min_due if already said too much) on the last working day of the current week; if today is that day, the last working day of next week.",
+  "file": "02-policy.md",
+  "kind": "persuasion",
+  "rule": "Attempt 1 amount/date.",
+  "implemented_by": "product_k"
+ },
+ {
+  "id": "R30",
+  "quote": "Attempt 2: min_due on the latest promise date.",
+  "file": "02-policy.md",
+  "kind": "persuasion",
+  "rule": "Attempt 2: min_due on deadline.",
+  "implemented_by": "product_k"
+ },
+ {
+  "id": "R31",
+  "quote": "When attempts are used up: end with code PTP-NO / REFUSED.",
+  "file": "02-policy.md",
+  "kind": "persuasion",
+  "rule": "Close PTP-NO/REFUSED.",
+  "implemented_by": "product_k"
+ },
+ {
+  "id": "R32",
+  "quote": "Read every agreed promise back in one go and ask \"Is that correct?\"; record each promise only after a clear yes.",
+  "file": "02-policy.md",
+  "kind": "read_back",
+  "rule": "One read-back, ask 'Is that correct?', record after yes.",
+  "implemented_by": "readback"
+ },
+ {
+  "id": "R33",
+  "quote": "Only say a promise is in place after the system confirms it.",
+  "file": "02-policy.md",
+  "kind": "recording",
+  "rule": "No 'in place' claim before confirmation.",
+  "implemented_by": "readback"
+ },
+ {
+  "id": "R34",
+  "quote": "If recording fails, try once more; if it fails again, say so and use PTP-NO / SYSERR.",
+  "file": "02-policy.md",
+  "kind": "recording",
+  "rule": "One retry; then PTP-NO/SYSERR.",
+  "implemented_by": "readback, retry_promise"
+ },
+ {
+  "id": "R35",
+  "quote": "After a recorded promise say: \"We will send you a letter confirming this arrangement.\"",
+  "file": "02-policy.md",
+  "kind": "required_sentence",
+  "rule": "Say letter sentence after recorded promise.",
+  "implemented_by": "readback"
+ },
+ {
+  "id": "R36",
+  "quote": "Illness, bereavement or redundancy: one sentence of sympathy, no persuasion, offer the Member Care team once (queue CARE).",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Hardship: sympathy, offer CARE once.",
+  "implemented_by": "sc_hardship"
+ },
+ {
+  "id": "R37",
+  "quote": "Accepted: transfer, XFER / CARE. Declined: PTP-NO / CARE-DECL.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Accept XFER/CARE; decline PTP-NO/CARE-DECL.",
+  "implemented_by": "sc_hardship"
+ },
+ {
+  "id": "R38",
+  "quote": "Request for a lower monthly amount or a new plan: transfer to queue PLAN, XFER / PLAN.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Plan request -> PLAN.",
+  "implemented_by": "special cases prompt"
+ },
+ {
+  "id": "R39",
+  "quote": "Says already paid: tell them payments show within two working days, take no promise; PAID.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Already paid -> PAID.",
+  "implemented_by": "special cases prompt"
+ },
+ {
+  "id": "R40",
+  "quote": "Disputes the account: do not argue, no promise; PTP-NO / DISPUTE.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Dispute -> PTP-NO/DISPUTE.",
+  "implemented_by": "special cases prompt"
+ },
+ {
+  "id": "R41",
+  "quote": "Asks for a person: ask once if you can help; if they insist, queue DESK, XFER / DESK.",
+  "file": "02-policy.md",
+  "kind": "special_case",
+  "rule": "Person -> ask once, then DESK.",
+  "implemented_by": "special cases prompt"
+ },
+ {
+  "id": "R42",
+  "quote": "One end-contact call per conversation, the last action, after thanking the member and saying goodbye.",
+  "file": "02-policy.md",
+  "kind": "closing",
+  "rule": "Single close_call last, after thanks and goodbye.",
+  "implemented_by": "close_call hook"
+ },
+ {
+  "id": "R43",
+  "quote": "the window is 10:00 to 16:00, still the next working day only.",
+  "file": "03-memo.md",
+  "kind": "third_party",
+  "rule": "Call-back window 10:00-16:00 next working day.",
+  "implemented_by": "third_party"
+ },
+ {
+  "id": "R44",
+  "quote": "Promises are recorded per account. Notes are not used.",
+  "file": "04-codes.md",
+  "kind": "other",
+  "rule": "Per-account promises; never call add_note.",
+  "implemented_by": "close_call hook (notes.used=false: no add_note tool)"
+ },
+ {
+  "id": "C1",
+  "quote": "three wrong answers in total end security, not two.",
+  "file": "03-memo.md",
+  "kind": "other",
+  "rule": "Conflict on wrong-answer limit: memo wins over policy ('Two wrong answers in total end security.').",
+  "conflicts": {
+   "topic": "wrong-answer limit",
+   "earlier": "Two wrong answers in total end security.",
+   "later": "three wrong answers in total end security, not two.",
+   "winner": "03-memo.md (3)"
+  },
+  "implemented_by": "spec: identity.wrong_answer_limit=3"
+ },
+ {
+  "id": "C2",
+  "quote": "the window is 10:00 to 16:00, still the next working day only.",
+  "file": "03-memo.md",
+  "kind": "other",
+  "rule": "Conflict on call-back window: memo wins over policy ('Offer a call-back on the next working day between 09:30 and 17:30.').",
+  "conflicts": {
+   "topic": "call-back window",
+   "earlier": "Offer a call-back on the next working day between 09:30 and 17:30.",
+   "later": "the window is 10:00 to 16:00, still the next working day only.",
+   "winner": "03-memo.md (10:00-16:00)"
+  },
+  "implemented_by": "spec: callback from 10:00 to 16:00"
+ }
+]

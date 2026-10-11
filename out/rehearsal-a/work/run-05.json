@@ -1,0 +1,58 @@
+{
+ "agent_id": "1e3ff1a8-4477-4b94-a6e5-54054a299c0a",
+ "simulation_id": "e92e79eb-e664-420e-a9d9-798990c7376c",
+ "iteration_id": "bf0cb3fd-deeb-4412-9268-416afa4881bf",
+ "seconds": 43,
+ "passed": 1,
+ "total": 1,
+ "runs": 1,
+ "final": [
+  {
+   "id": "PUB-05",
+   "family": "Hardship",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  }
+ ],
+ "rows": [
+  {
+   "id": "PUB-05",
+   "level": "medium",
+   "family": "Hardship",
+   "pass": true,
+   "failed": [],
+   "call_id": "d02c21c6-40d1-426d-8e10-a5619eac5bb6",
+   "tools": [
+    "verify_identity",
+    "verify_identity",
+    "get_account",
+    "close_call"
+   ],
+   "customer_id": "c_73499c9f-619",
+   "slowest_turn_s": 4.3,
+   "ended": "assistant-ended-call"
+  }
+ ],
+ "all_rows": [
+  [
+   {
+    "id": "PUB-05",
+    "level": "medium",
+    "family": "Hardship",
+    "pass": true,
+    "failed": [],
+    "call_id": "d02c21c6-40d1-426d-8e10-a5619eac5bb6",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_account",
+     "close_call"
+    ],
+    "customer_id": "c_73499c9f-619",
+    "slowest_turn_s": 4.3,
+    "ended": "assistant-ended-call"
+   }
+  ]
+ ]
+}

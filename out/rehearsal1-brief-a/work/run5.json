@@ -1,0 +1,210 @@
+{
+ "agent_id": "0bf914b7-b8ea-4370-be83-9b8dc494941a",
+ "simulation_id": "9a216abf-3855-4267-b1d6-414ff18d1a7c",
+ "iteration_id": "dbbefc7c-0323-44cc-82ac-9c97a524fb71",
+ "seconds": 267,
+ "passed": 5,
+ "total": 5,
+ "runs": 1,
+ "final": [
+  {
+   "id": "PUB-01",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-02",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-04",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-06",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-08",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  }
+ ],
+ "rows": [
+  {
+   "id": "PUB-01",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "9df71090-c1b7-43a8-a494-b37925281128",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_b10d3484-3a8",
+   "slowest_turn_s": 1.9,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-02",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "8cb3f0c9-05e0-4cac-b5ba-38c658922558",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_d8a0fa83-2c3",
+   "slowest_turn_s": 10.7,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-04",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "2ae5c7a1-6bc9-49a1-8c5c-d2ced952a717",
+   "tools": [
+    "verify_identity",
+    "verify_identity",
+    "get_account",
+    "create_promise",
+    "close_call"
+   ],
+   "customer_id": "c_67965e3f-b40",
+   "slowest_turn_s": 33.8,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-06",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "ad92bf84-2492-4f98-865f-e162b6975b02",
+   "tools": [
+    "verify_identity",
+    "verify_identity",
+    "get_account",
+    "transfer_to_agent",
+    "close_call",
+    "close_call"
+   ],
+   "customer_id": "c_ef6d3dfc-d8e",
+   "slowest_turn_s": 12.7,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-08",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "5ce70e06-94b4-48bf-a704-94cf5133a946",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_39dbb227-74b",
+   "slowest_turn_s": 1.7,
+   "ended": "assistant-ended-call"
+  }
+ ],
+ "all_rows": [
+  [
+   {
+    "id": "PUB-01",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "9df71090-c1b7-43a8-a494-b37925281128",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_b10d3484-3a8",
+    "slowest_turn_s": 1.9,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-02",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "8cb3f0c9-05e0-4cac-b5ba-38c658922558",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_d8a0fa83-2c3",
+    "slowest_turn_s": 10.7,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-04",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "2ae5c7a1-6bc9-49a1-8c5c-d2ced952a717",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_account",
+     "create_promise",
+     "close_call"
+    ],
+    "customer_id": "c_67965e3f-b40",
+    "slowest_turn_s": 33.8,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-06",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "ad92bf84-2492-4f98-865f-e162b6975b02",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_account",
+     "transfer_to_agent",
+     "close_call",
+     "close_call"
+    ],
+    "customer_id": "c_ef6d3dfc-d8e",
+    "slowest_turn_s": 12.7,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-08",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "5ce70e06-94b4-48bf-a704-94cf5133a946",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_39dbb227-74b",
+    "slowest_turn_s": 1.7,
+    "ended": "assistant-ended-call"
+   }
+  ]
+ ]
+}

@@ -1,0 +1,87 @@
+{
+ "agent_id": "0bf914b7-b8ea-4370-be83-9b8dc494941a",
+ "simulation_id": "79dd2458-dcd2-4eb4-9bf5-ba1c63e09994",
+ "iteration_id": "7cdd57d9-d9e2-4216-8cd3-5cad0dd4f741",
+ "seconds": 82,
+ "passed": 2,
+ "total": 2,
+ "runs": 1,
+ "final": [
+  {
+   "id": "PUB-01",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-08",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  }
+ ],
+ "rows": [
+  {
+   "id": "PUB-01",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "20b55686-8314-4064-95cc-2d570ec5a438",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_a8f56b5f-0bd",
+   "slowest_turn_s": 11.2,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-08",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "6ea4b186-affb-4d83-8ca4-25ed1e7ab4cb",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_68dff248-c06",
+   "slowest_turn_s": 6.8,
+   "ended": "assistant-ended-call"
+  }
+ ],
+ "all_rows": [
+  [
+   {
+    "id": "PUB-01",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "20b55686-8314-4064-95cc-2d570ec5a438",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_a8f56b5f-0bd",
+    "slowest_turn_s": 11.2,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-08",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "6ea4b186-affb-4d83-8ca4-25ed1e7ab4cb",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_68dff248-c06",
+    "slowest_turn_s": 6.8,
+    "ended": "assistant-ended-call"
+   }
+  ]
+ ]
+}

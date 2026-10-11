@@ -1,0 +1,26 @@
+{
+ "forbidden_before_verification": [
+  "collections",
+  "debt",
+  "payment",
+  "credit card",
+  "personal loan",
+  "car loan"
+ ],
+ "restricted_words": [
+  "recorded"
+ ],
+ "required_sentences": [
+  "You will receive a text message confirming this promise.",
+  "I am sorry for your loss.",
+  "Can you make this payment today?",
+  "Do you confirm?"
+ ],
+ "call_variables": [
+  "customer_id",
+  "first_name",
+  "last_name",
+  "title",
+  "now"
+ ]
+}

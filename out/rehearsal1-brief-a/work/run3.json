@@ -1,0 +1,56 @@
+{
+ "agent_id": "0bf914b7-b8ea-4370-be83-9b8dc494941a",
+ "simulation_id": "f2e4bf86-1015-4233-9408-e456083c7460",
+ "iteration_id": "f9a28a85-ed96-4427-800b-78aaa7e81b06",
+ "seconds": 41,
+ "passed": 0,
+ "total": 1,
+ "runs": 1,
+ "final": [
+  {
+   "id": "PUB-01",
+   "family": "Custom",
+   "passes": 0,
+   "runs": 1,
+   "pass": false
+  }
+ ],
+ "rows": [
+  {
+   "id": "PUB-01",
+   "level": "hard",
+   "family": "Custom",
+   "pass": false,
+   "failed": [
+    "conversation: The agent asked the user's identity three times (Messages 0, 2, and 4), which exceeds the success criterion of asking 'who is on the line twice at most'. The agent correctly avoided stating the reason for the call and did not ask any security questions. The call ended properly via an assistant-initiated hang up."
+   ],
+   "call_id": "dab60367-6897-4be9-903d-3b31445bacc4",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_9942a11c-b05",
+   "slowest_turn_s": 6.8,
+   "ended": "assistant-ended-call"
+  }
+ ],
+ "all_rows": [
+  [
+   {
+    "id": "PUB-01",
+    "level": "hard",
+    "family": "Custom",
+    "pass": false,
+    "failed": [
+     "conversation: The agent asked the user's identity three times (Messages 0, 2, and 4), which exceeds the success criterion of asking 'who is on the line twice at most'. The agent correctly avoided stating the reason for the call and did not ask any security questions. The call ended properly via an assistant-initiated hang up."
+    ],
+    "call_id": "dab60367-6897-4be9-903d-3b31445bacc4",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_9942a11c-b05",
+    "slowest_turn_s": 6.8,
+    "ended": "assistant-ended-call"
+   }
+  ]
+ ]
+}

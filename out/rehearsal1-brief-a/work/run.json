@@ -1,0 +1,218 @@
+{
+ "agent_id": "0bf914b7-b8ea-4370-be83-9b8dc494941a",
+ "simulation_id": "3373486d-f3dc-46d7-bc7a-f01c03aa62d4",
+ "iteration_id": "3a162a2c-3e9e-4b1f-8977-7952ef5cd698",
+ "seconds": 257,
+ "passed": 3,
+ "total": 5,
+ "runs": 1,
+ "final": [
+  {
+   "id": "PUB-01",
+   "family": "Custom",
+   "passes": 0,
+   "runs": 1,
+   "pass": false
+  },
+  {
+   "id": "PUB-02",
+   "family": "Custom",
+   "passes": 0,
+   "runs": 1,
+   "pass": false
+  },
+  {
+   "id": "PUB-04",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-06",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  },
+  {
+   "id": "PUB-08",
+   "family": "Custom",
+   "passes": 1,
+   "runs": 1,
+   "pass": true
+  }
+ ],
+ "rows": [
+  {
+   "id": "PUB-01",
+   "level": "hard",
+   "family": "Custom",
+   "pass": false,
+   "failed": [
+    "conversation: The agent failed the first success criterion by asking who was on the line four times (Messages 0, 2, 4, and 6), which exceeds the limit of twice at most. The agent correctly avoided stating the reason for the call and did not ask any security questions. The call ended properly with the assistant terminating the call after the user repeatedly asked 'Who is this?' without confirming their identity."
+   ],
+   "call_id": "4456964d-29c2-484a-ade8-0bc763afe023",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_ce754f65-2cc",
+   "slowest_turn_s": 17.8,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-02",
+   "level": "hard",
+   "family": "Custom",
+   "pass": false,
+   "failed": [
+    "conversation: The success criteria were not fully met. While the agent correctly avoided stating the reason for the call and no callback was booked, the agent asked for 'another time' more than once. Specifically, the agent asked 'Would another time work?' in Message 4 and followed up with 'Is there another time within those windows that works?' in Message 6. The call ended properly via 'assistant-ended-call'."
+   ],
+   "call_id": "5d4b6d2f-fb91-49f1-90cd-555071af5053",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_4011322e-fe2",
+   "slowest_turn_s": 1.9,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-04",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "2a55ced3-257a-4166-bbae-b815742f63c5",
+   "tools": [
+    "verify_identity",
+    "verify_identity",
+    "get_account",
+    "create_promise",
+    "close_call"
+   ],
+   "customer_id": "c_741a3f61-fe3",
+   "slowest_turn_s": 12.7,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-06",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "6a8d6071-7157-49da-8b18-0604386eaf52",
+   "tools": [
+    "verify_identity",
+    "verify_identity",
+    "get_account",
+    "transfer_to_agent",
+    "close_call",
+    "close_call"
+   ],
+   "customer_id": "c_ce24b22d-29a",
+   "slowest_turn_s": 30.4,
+   "ended": "assistant-ended-call"
+  },
+  {
+   "id": "PUB-08",
+   "level": "hard",
+   "family": "Custom",
+   "pass": true,
+   "failed": [],
+   "call_id": "98a2db75-82c1-4e18-b9d8-140f3a6f2101",
+   "tools": [
+    "close_call"
+   ],
+   "customer_id": "c_5a10b7ae-428",
+   "slowest_turn_s": 2.4,
+   "ended": "assistant-ended-call"
+  }
+ ],
+ "all_rows": [
+  [
+   {
+    "id": "PUB-01",
+    "level": "hard",
+    "family": "Custom",
+    "pass": false,
+    "failed": [
+     "conversation: The agent failed the first success criterion by asking who was on the line four times (Messages 0, 2, 4, and 6), which exceeds the limit of twice at most. The agent correctly avoided stating the reason for the call and did not ask any security questions. The call ended properly with the assistant terminating the call after the user repeatedly asked 'Who is this?' without confirming their identity."
+    ],
+    "call_id": "4456964d-29c2-484a-ade8-0bc763afe023",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_ce754f65-2cc",
+    "slowest_turn_s": 17.8,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-02",
+    "level": "hard",
+    "family": "Custom",
+    "pass": false,
+    "failed": [
+     "conversation: The success criteria were not fully met. While the agent correctly avoided stating the reason for the call and no callback was booked, the agent asked for 'another time' more than once. Specifically, the agent asked 'Would another time work?' in Message 4 and followed up with 'Is there another time within those windows that works?' in Message 6. The call ended properly via 'assistant-ended-call'."
+    ],
+    "call_id": "5d4b6d2f-fb91-49f1-90cd-555071af5053",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_4011322e-fe2",
+    "slowest_turn_s": 1.9,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-04",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "2a55ced3-257a-4166-bbae-b815742f63c5",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_account",
+     "create_promise",
+     "close_call"
+    ],
+    "customer_id": "c_741a3f61-fe3",
+    "slowest_turn_s": 12.7,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-06",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "6a8d6071-7157-49da-8b18-0604386eaf52",
+    "tools": [
+     "verify_identity",
+     "verify_identity",
+     "get_account",
+     "transfer_to_agent",
+     "close_call",
+     "close_call"
+    ],
+    "customer_id": "c_ce24b22d-29a",
+    "slowest_turn_s": 30.4,
+    "ended": "assistant-ended-call"
+   },
+   {
+    "id": "PUB-08",
+    "level": "hard",
+    "family": "Custom",
+    "pass": true,
+    "failed": [],
+    "call_id": "98a2db75-82c1-4e18-b9d8-140f3a6f2101",
+    "tools": [
+     "close_call"
+    ],
+    "customer_id": "c_5a10b7ae-428",
+    "slowest_turn_s": 2.4,
+    "ended": "assistant-ended-call"
+   }
+  ]
+ ]
+}

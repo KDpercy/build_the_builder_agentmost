@@ -1,3 +1,0 @@
-{"forbidden_before_verification": ["collections", "debt", "payment", "credit card", "personal loan", "car loan"],
- "restricted_words": [],
- "required_sentences": ["You will receive a text message confirming this promise.", "I am sorry for your loss.", "Am I speaking with {{title}} {{last_name}}?", "Can you make this payment today?", "Do you confirm?"]}

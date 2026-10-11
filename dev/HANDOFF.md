@@ -3,6 +3,7 @@
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
 ## NOW (Sun 11 Oct ~12:10) - read this first after a compaction
+- FROZEN 11 Oct ~15:20 Madrid at the commit "chore: freeze" (git log). After this: bug fixes only.
 - Final briefs at 19:00 Madrid (17:00 UTC per RULES); our freeze 16:00 Madrid (= 17:00 Istanbul), code changes stop 15:30. Runbook: dev/RUNBOOK.md. Repo pushed to
   github.com/KDpercy/build_the_builder_agentmost (git push works from Claude's shell).
 - Builder works end to end (builder/README.md). Last runs: A (run 5) 9/10 self-test, $1.04;
@@ -20,6 +21,11 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   final briefs and who supplies model credentials on their rerun.
 
 ## Sunday log
+- 14:55-15:12 CASES-FILE BUILD (rehearsal1, BUILD_PRACTICE=dev/cases/a-set1.json): 17 min, $0.85.
+  Freya back. Practice 3/5 -> builder fixed its generator copy (who-is-on-the-line asked 3-4x,
+  "another time" asked twice) -> 5/5. Fix ported to builder/reference with spec-counted limits
+  (543b78f). Key now ~$6.05.
+- 15:20 FREEZE (see top). submission/ emptied (rehearsal exports in out/rehearsal-exports/).
 - 12:50-14:40 Freya mostly down (504/500/503, calls hanging). Measurements: ref-A rep1 8/9 judge-pass
   (10th never ran), rep2 hung -> no score; rehearsal1 scoring: no simulation could be created; ref-B
   reps3 failed on 503; B set1 0/3 = outage (0 s turns, no verdict); B set2 2/3: PUB-12, PUB-13 pass,

@@ -1,0 +1,28 @@
+{
+ "forbidden_before_verification": [
+  "arrears",
+  "overdue",
+  "repayment",
+  "owe",
+  "revolving line",
+  "equipment lease"
+ ],
+ "restricted_words": [],
+ "required_sentences": [
+  "Good day, this is the virtual assistant of Kestrel Mutual, and there is a recording of this call.",
+  "Please accept our sincere sympathy.",
+  "I am calling from Kestrel Mutual's arrears team about a missed repayment.",
+  "The remainder will stay in arrears.",
+  "Shall I record that?",
+  "A text message with the details of this promise will reach you shortly.",
+  "I am sorry to hear that. Would you like me to connect you with our business welfare team?",
+  "I can send you a secure payment link by text message, so you can pay in parts."
+ ],
+ "call_variables": [
+  "ref_no",
+  "forename",
+  "family_name",
+  "courtesy_title",
+  "local_time"
+ ]
+}
