@@ -73,6 +73,16 @@ class TestGenerate(unittest.TestCase):
         self.wf = build(SPEC, API)
         self.text = json.dumps(self.wf)
 
+    def test_ask_limits_are_counted_from_the_spec(self):
+        self.assertIn("after the opening line you get exactly 1 more ask", self.text)
+        self.assertNotIn("another time only ONE time", self.text)
+        spec = json.loads(json.dumps(SPEC))
+        spec["confirmation_words"]["asks"] = 3
+        spec["callback"]["ask_again_once"] = True
+        text = json.dumps(build(spec, API))
+        self.assertIn("after the opening line you get exactly 2 more asks", text)
+        self.assertIn("another time only ONE time", text)
+
     def test_passes_the_validator(self):
         rules = {"forbidden_before_verification": SPEC["forbidden_before_verification"],
                  "call_variables": ["client_ref", "honorific", "family_name", "stamp"],

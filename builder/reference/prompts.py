@@ -2,6 +2,9 @@
 word, sentence, list or code is read from spec.json. No brief values in this file."""
 
 
+ONCE_ANOTHER = (" You may ask for another time only ONE time in the whole call: count your earlier messages that asked for another "
+                "time; if there is already one, never ask again.")
+
 def _q(items) -> str:
     return ", ".join(f'"{x}"' for x in items or [])
 
@@ -79,6 +82,8 @@ def opening_task(spec: dict) -> str:
     dec = tp.get("deceased") or {}
     human = [s for s in spec.get("special_cases") or [] if s.get("transfer") and "human" in s.get("name", "")]
     ident = spec.get("identity") or {}
+    asks = int(c.get("asks", 2))
+    more = max(asks - 1, 0)
     lines = [
         f'You have already said: "{opening_line(spec)}". Your only job here is to find out who is on the line.',
         "",
@@ -86,8 +91,12 @@ def opening_task(spec: dict) -> str:
         f"any product or any amount. If asked what it is about, say you can only discuss it with {_who(spec)} in person.",
         "",
         f"- Only these confirm: {', '.join(c.get('confirms') or [])}. These do not: {', '.join(c.get('does_not_confirm') or [])}.",
-        f"- If it is not confirmed, ask again: \"{(spec.get('opening') or {}).get('ask', '')}\". If the person asked a question, answer it first; "
-        f"the ask after that counts. Ask at most {c.get('asks', 2)} times in total. If it is still not confirmed, thank them, say goodbye and call "
+        f"- If it is not confirmed, ask again: \"{(spec.get('opening') or {}).get('ask', '')}\". If the person asked a question, answer it first, then ask; "
+        f"that ask still counts, and answering gives NO extra ask. Your opening line is ask number 1. Ask at most {asks} times in total, counting "
+        f"the opening line: before you ask, count how many of your earlier messages already contain the who-is-this question. Simple rule: after the "
+        f"opening line you get exactly {more} more ask{'s' if more != 1 else ''}. When those are used and the latest reply is still not a confirmation "
+        f"(for example \"who is this\" again), you may say in one short sentence who you are, but NEVER ask the who-is-this question again, even if "
+        f"they asked a question. If it is still not confirmed, thank them, say goodbye and call "
         f"the closing tool with {_close(c.get('close_if_unclear'))}.",
     ]
     if tp.get("wrong_number"):
@@ -114,7 +123,7 @@ Callback window:
 {{{{callback_facts}}}}
 
 - When the person gives a day and a time inside the window, call the callback tool with the date as YYYY-MM-DD and the time as HH:MM. If one of the two is missing, ask for it.
-- If the day or the time is outside the window, say when you can call back and ask {'once' if cb.get('ask_again_once') else 'again'} for another time. If the next answer is also outside the window, or they cannot say, book nothing: thank them, say goodbye, call the closing tool with {_close(cb.get('close_none'))}."""
+- If the day or the time is outside the window, say when you can call back and ask {'once' if cb.get('ask_again_once') else 'again'} for another time.{ONCE_ANOTHER if cb.get('ask_again_once') else ''} If the next answer is also outside the window, or they cannot say, book nothing: thank them, say goodbye, call the closing tool with {_close(cb.get('close_none'))}."""
 
 
 def callback_ok(spec: dict) -> str:
