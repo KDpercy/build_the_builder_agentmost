@@ -1,0 +1,33 @@
+{
+ "forbidden_before_verification": [],
+ "restricted_words": [
+  "gönderildi",
+  "değiştirildi"
+ ],
+ "call_variables": [
+  "customerNumber",
+  "now"
+ ],
+ "required_sentences_checked_by_own_script": [
+  "Sizi ana menüye yönlendiriyorum.",
+  "Size şu anda yardımcı olamıyorum. Sizi ana menüye aktarıyorum.",
+  "Ekstre borcunu sorgulayabileceğiniz uygun bir kredi kartınız bulunmuyor. Sizi ana menüye aktarıyorum.",
+  "Şu anda işleminizi gerçekleştiremiyorum, sizi müşteri temsilcimize aktarıyorum.",
+  "Şu anda hesap kesim tarihinizi değiştiremiyorum, sizi müşteri temsilcimize aktarıyorum.",
+  "Sizi müşteri temsilcimize aktarıyorum.",
+  "Borç ödeme işleminiz için sizi müşteri temsilcimize aktarıyorum.",
+  "Bu konuda size müşteri temsilcimiz yardımcı olacak, sizi aktarıyorum.",
+  "Sizi ana menüye aktarıyorum.",
+  "Sesinizi alamadığım için görüşmeyi sonlandırıyorum.",
+  "Ekstreniz kayıtlı e-posta adresinize gönderildi.",
+  "Size bu konuda yardımcı olamıyorum. Sizi ana menüye aktarmamı ister misiniz?",
+  "Başka bir kartınızın borcunu öğrenmek ister misiniz?",
+  "Hesap kesim tarihinizi değiştirebilirim ya da ekstrenizi kayıtlı mail adresinize gönderebilirim.",
+  "Bankamızda kayıtlı bir e-posta adresiniz bulunmadığı için ekstrenizi gönderemiyorum.",
+  "Borçlarınız için son ödeme tarihiniz bugündür.",
+  "Son altı hanesi aynı olan birden fazla kartınız var. Kart numaranızı söyler misiniz?",
+  "Minimum ödemenizi yaptığınız için teşekkür ederiz.",
+  "Onaylıyor musunuz?"
+ ],
+ "required_sentences": []
+}
