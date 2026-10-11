@@ -38,7 +38,7 @@ Text values are spoken or shown to the phone agent: copy required sentences word
 | `first_ask` / `first_ask_all` | text | the first question for one product / several products |
 | `callback` | {days, from, to, later_than_now, ask_again_once, close_booked, close_none} | days are date expressions |
 | `third_party` | {wrong_number: [o, r], deceased: {say, close}} | someone else answers |
-| `special_cases` | list of {name, trigger, precedence, action, transfer?, close?, line?, accept?, decline?} | `line` = a fixed sentence said once (a one-time offer); then `accept`/`decline` |
+| `special_cases` | list of {name, trigger, precedence, action, transfer?, close?, line?, accept?, decline?} | `line` = the fixed words said once, word for word (a one-time offer); it must contain everything the action requires saying (e.g. a sympathy sentence, then the offer); then `accept`/`decline` |
 | `outcome_logic` | {on_transfer, reason_by_queue, on_promise, all_notes_paid, paid_note, no_deal, verify_failed, promise_failed} | closing codes the hook enforces; `no_deal` = the outcome when no promise was recorded |
 | `notes` | {used: bool, reasons: [...], service_error_reason} | whether and how notes are written |
 | `sentences.after_promise` | text | required sentence after a recorded promise |

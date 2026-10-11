@@ -74,5 +74,9 @@ before the condition can be true.
 ## 5. Check before moving on
 - Every line of every brief file is covered by at least one rule or is plainly descriptive.
 - Every rule with a number, date or sentence has it in spec.json too.
+- Every fixed line (`line`, `say`, `first_line`, the opening) is spoken word for word and the
+  model adds nothing to it. So it must hold EVERYTHING the brief requires at that moment, in
+  the brief's order: a special case whose action is "one sentence of sympathy, then offer X"
+  needs a `line` with the sympathy sentence AND the offer. Read each line next to its rule.
 - `gaps` lists anything the design step must handle without a value. Prefer the safe
   behaviour: do less, record nothing uncertain, close honestly.
