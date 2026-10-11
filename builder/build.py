@@ -1,6 +1,12 @@
 """Build a Freya phone agent from a bank's brief files and its tool API file. One command.
 
     python3 builder/build.py <tool_api_file> <brief_file> [<brief_file> ...]
+    python3 builder/build.py <case_folder>
+
+A case folder holds everything the bank sent (documents, mails, an integration document, test
+customers), in any layout. If it has no OpenAPI file, the run writes one (work/tool-api.json) from
+the integration document, with BUILD_TOOL_BASE_URL (the bank's services, or a mock of them) as
+its server.
 
 Needs FREYA_API_KEY, FREYA_BANK_TEAM_KEY and ANTHROPIC_API_KEY (or a Claude login).
 Writes: out/<slot>/ (everything the run made), traces/<slot>-<time>.jsonl (the trace),
@@ -81,7 +87,28 @@ def git_commit() -> str:
         return "unknown"
 
 
-def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
+def find_openapi(folder: pathlib.Path):
+    for p in sorted(folder.rglob("*.json")):
+        try:
+            if "openapi" in json.loads(p.read_text()):
+                return p
+        except (OSError, ValueError, TypeError):
+            continue
+    return None
+
+
+def pdf_texts(folder: pathlib.Path) -> None:
+    """Next to every PDF, its text (the model's file reader may not render PDFs)."""
+    for p in folder.rglob("*.pdf"):
+        try:
+            import pypdf
+            text = "\n\n".join(page.extract_text() or "" for page in pypdf.PdfReader(str(p)).pages)
+        except Exception as e:  # no reader or a broken file: say so, the PDF stays for the model
+            text = f"(text could not be extracted: {e!r})"
+        p.with_name(p.name + ".txt").write_text(text)
+
+
+def stage(slot: str, api_file, briefs: list, case=None) -> pathlib.Path:
     """A clean working folder OUTSIDE the repository (so no project memory, no parent CLAUDE.md, no
     git history): kit files, our library, the inputs. No dev/, results/ or other briefs."""
     st = pathlib.Path(tempfile.mkdtemp(prefix=f"bb-{slot}-")) / "stage"
@@ -95,7 +122,11 @@ def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
             shutil.copy2(src, st / rel)
     if SKILLS_DIR.exists():
         shutil.copytree(SKILLS_DIR, st / ".claude" / "skills")
-    shutil.copy2(api_file, st / "input" / api_file.name)
+    if case is not None:
+        shutil.copytree(case, st / "input" / "case", ignore=shutil.ignore_patterns(".DS_Store", "__MACOSX"))
+        pdf_texts(st / "input" / "case")
+    if api_file is not None:
+        shutil.copy2(api_file, st / "input" / api_file.name)
     for b in briefs:
         shutil.copy2(b, st / "input" / pathlib.Path(b).name)
     if practice_args(os.environ.get("BUILD_PRACTICE", "")) and os.environ["BUILD_PRACTICE"].strip().endswith(".json"):
@@ -135,6 +166,28 @@ def prompt_for(slot: str, api_name: str, brief_names: list, deadline: float) -> 
         f"Hard time limit: finish before {time.strftime('%H:%M', time.localtime(deadline))} local time, "
         "tests included. When in doubt, stop testing and leave a valid work/workflow.json. "
         "Run every command in the foreground and wait for it: never use nohup, & or background jobs. " + tests
+    )
+
+
+def case_prompt(slot: str, api_rel, deadline: float) -> str:
+    base = os.environ.get("BUILD_TOOL_BASE_URL", "").strip()
+    api = (f"Tool API file: {api_rel}. " if api_rel else
+           "There is no OpenAPI file: write work/tool-api.json (OpenAPI 3) from the case's integration/service "
+           f"documents, exactly their paths, methods, field names and shapes, with servers[0].url = {base or '<ask: none given>'}. "
+           "Every tool in the workflow comes from that file. ")
+    return (
+        f"Build a Freya phone agent. Slot: {slot}. The whole case is in input/case/ (start with its BRIEF/README). "
+        "Read every file; PDFs also have a .txt next to them. " + api +
+        "Use the read-brief, design-agent and check-agent skills in that order. If the call is not the kind the "
+        "reference generator builds, design-agent tells you how to write your own generator. Speak the language the "
+        "case says the calls are in. "
+        "Work only inside this folder. Write the final workflow to work/workflow.json and copy every version that "
+        "passes builder/validate.py to work/good.workflow.json. "
+        f"Hard time limit: finish before {time.strftime('%H:%M', time.localtime(deadline))} local time. "
+        "When in doubt, stop and leave a valid work/workflow.json. "
+        "Run every command in the foreground and wait for it: never use nohup, & or background jobs. "
+        "The bank has NO practice customers on Freya for this case: do not run run_tests.py; use the validator, "
+        "smoke checks you write for your code steps, and the platform dry run."
     )
 
 
@@ -207,6 +260,22 @@ def pick_workflow(st: pathlib.Path, api: dict, trace: Trace) -> dict | None:
     return None
 
 
+def platform_checked(st: pathlib.Path, slot: str, trace: Trace) -> dict | None:
+    """For a case our validator does not fully understand (other API shapes): the run's own
+    workflow, if the platform's dry run accepts it."""
+    import freya
+    for name in ("workflow.json", "good.workflow.json"):
+        try:
+            wf = json.loads((st / "work" / name).read_text())
+            freya.validate_workflow(slot, wf)
+        except Exception as e:
+            trace.log("dry_run_rejected", file=name, error=str(e)[:500])
+            continue
+        trace.log("dry_run_accepted", file=name)
+        return wf
+    return None
+
+
 def generate_from_spec(st: pathlib.Path, api_file: pathlib.Path, trace: Trace) -> None:
     """Last resort: build work/workflow.json from work/spec.json with the reference generator."""
     gen = st / "work" / "reference" / "generate.py"
@@ -227,14 +296,23 @@ def main(argv: list) -> int:
     if len(argv) < 3:
         print(__doc__)
         return 2
-    api_file, briefs = pathlib.Path(argv[1]).resolve(), [str(pathlib.Path(b).resolve()) for b in argv[2:]]
-    slot = os.environ.get("BUILD_SLOT") or slot_name(briefs)     # override only for practice runs
+    case = pathlib.Path(argv[1]).resolve() if len(argv) == 2 and pathlib.Path(argv[1]).is_dir() else None
+    if case is not None:
+        api_file, briefs = find_openapi(case), []
+        slot = os.environ.get("BUILD_SLOT") or slot_name([str(case / "case")]).replace("-case", "") or "case"
+    else:
+        api_file, briefs = pathlib.Path(argv[1]).resolve(), [str(pathlib.Path(b).resolve()) for b in argv[2:]]
+        slot = os.environ.get("BUILD_SLOT") or slot_name(briefs)     # override only for practice runs
     start = time.time()
     trace = Trace(ROOT / "traces" / f"{slot}-{time.strftime('%Y%m%d-%H%M%S')}.jsonl")
     trace.log("start", slot=slot, commit=git_commit(), model=MODEL, budget_s=BUDGET_S,
-              inputs={p: sha(pathlib.Path(p)) for p in [str(api_file)] + briefs})
-    st = stage(slot, api_file, briefs)
-    prompt = prompt_for(slot, api_file.name, [pathlib.Path(b).name for b in briefs], start + BUDGET_S)
+              inputs={str(p): sha(p) for p in ([api_file] if api_file else []) + [pathlib.Path(b) for b in briefs]
+                      + (sorted(x for x in case.rglob("*") if x.is_file()) if case else [])})
+    st = stage(slot, api_file, briefs, case)
+    if case is not None:
+        prompt = case_prompt(slot, api_file and "input/case/" + str(api_file.relative_to(case)), start + BUDGET_S)
+    else:
+        prompt = prompt_for(slot, api_file.name, [pathlib.Path(b).name for b in briefs], start + BUDGET_S)
     trace.log("prompt", text=prompt)
     try:
         asyncio.run(asyncio.wait_for(run_model(st, prompt, trace), timeout=BUDGET_S))
@@ -247,11 +325,21 @@ def main(argv: list) -> int:
         shutil.rmtree(keep)
     shutil.copytree(st / "work", keep / "work")                  # everything the run made, kept with the repo
     trace.log("work_kept", path=str(keep.relative_to(ROOT)))
+    if api_file is None:
+        api_file = st / "work" / "tool-api.json"
+        if not api_file.exists():
+            trace.log("end", ok=False, reason="no tool API file written", seconds=round(time.time() - start))
+            trace.close()
+            print("FAILED: the run wrote no work/tool-api.json. Trace:", trace.path)
+            return 1
+        shutil.copy2(api_file, st / "input" / api_file.name)
     api = json.loads(api_file.read_text())
     wf = pick_workflow(st, api, trace)
     if wf is None:
         generate_from_spec(st, api_file, trace)
         wf = pick_workflow(st, api, trace)
+    if wf is None and case is not None:
+        wf = platform_checked(st, slot, trace)
     if wf is None:
         trace.log("end", ok=False, reason="no valid workflow", seconds=round(time.time() - start))
         trace.close()

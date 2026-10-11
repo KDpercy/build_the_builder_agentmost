@@ -5,6 +5,29 @@ description: Turn work/spec.json and work/rules.json into a Freya workflow with 
 
 # Design the agent
 
+## 0. Does the case fit the reference?
+The reference generator builds one kind of call: an outbound debt-collection call (identity,
+account, per-product promise to pay, read-back, close). If the case is a different kind of
+call (an inbound question, a service request, another language, different tools), do NOT
+force it into the reference. Instead write your own generator, work/build_workflow.py, that
+writes work/workflow.json:
+- Read docs/workflow-format.md and docs/tools-and-code.md first, and examples/base-agent.json
+  for a complete valid workflow. Reuse builder/lib/nodes.py (conversation, code_node,
+  api_tool, routes, enum_extraction, end_node) and builder/lib/calendar_code.py for dates.
+- Draw the call as nodes from the case's flow drawing and rules: one node per decision the
+  bank describes, routes on extracted values or tool results, code steps for every lookup,
+  comparison, date or amount, and fixed `says` lines for every sentence the bank prescribes.
+- Tools: one api_request tool per service in the tool API file, with exactly its method,
+  path, fields and shapes. Values the call already has (variables) are baked, never asked.
+  Where a service returns a list, pick from it in a code step, not in the prompt.
+- Write every spoken line and prompt in the language of the calls. Keep prompts short and
+  concrete; numbers and dates are read out from variables that code prepared.
+- Every hard rule below still applies. Write rules.json entries pointing at your nodes.
+Then run your generator, and use check-agent as usual (the smoke step in check-agent is for
+the reference; for your generator, write a small script that runs each code step on the
+test customers' service answers and prints the variables it sets).
+
+
 ## 1. Generate from the reference
     cp -r builder/reference work/reference
     python3 work/reference/generate.py work/spec.json input/<tool api file> work/workflow.json
