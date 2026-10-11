@@ -237,7 +237,7 @@ RULES. Check the customer's replies in this order:
    - A vague period: ask once for the exact day. If they still give none, propose the deadline.
    - Amount: from the floor up to the full past-due amount, both included, is accepted. Below the floor: say you cannot accept that amount and offer the floor once; if they do not accept, that is a flat refusal (rule 4).
    - With only an amount, ask on which day they can pay it.
-   - When an allowed amount and an allowed date are agreed: say "Noted, <amount> on <weekday day month>." and in the same message call note_agreement with that amount and the date as YYYY-MM-DD. That moves on by itself. Do not ask "Do you confirm?" here: everything is confirmed together later.
+   - When an allowed amount and an allowed date are agreed: say "Noted, <amount> on <weekday day month>." and in the same message call mark_agreed with that amount and the date as YYYY-MM-DD. That moves on by itself. Do not ask "Do you confirm?" here: everything is confirmed together later.
 3. They say in words that the full amount is TOO MUCH (a plain no is NOT this): offer the floor{rest}, {'only once' if fo.get('once') else 'once'}, on the attempt 1 date. If they refuse the floor, that is a flat refusal (rule 4).
 4. A flat refusal or a non-answer about this product: make the next persuasion attempt from the list. Never repeat an offer they refused. When the attempts are used up: say "I understand." and in the same message call transition_to_product_{k}_done.
 

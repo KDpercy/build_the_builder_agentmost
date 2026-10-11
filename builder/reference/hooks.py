@@ -103,6 +103,7 @@ try:
                     if pid.lower() in (str(k + 1), 'product ' + str(k + 1), s.lower()):
                         pid = s
         b[pf] = pid
+        vars['cp_last_pid'] = pid
         dls = json.loads(str(vars.get('deadlines_json') or '') or 'null') or dict()
         df = F.get('date') or 'date'
         ds = str(b.get(df) or '')[:10]
@@ -135,6 +136,10 @@ try:
         ok = (not failed(result)) and tv(result['data'].get('ok'))
         if ok:
             vars['promise_ok_count'] = str(int(float(str(vars.get('promise_ok_count') or '0'))) + 1)
+            done = [x for x in str(vars.get('promised_ids') or '').split(',') if x]
+            if vars.get('cp_last_pid') and vars.get('cp_last_pid') not in done:
+                done.append(str(vars.get('cp_last_pid')))
+            vars['promised_ids'] = ','.join(done)
             msg = ('This promise is RECORDED. If another agreed product is not recorded yet, record it now. When every agreed product is recorded, '
                    'tell the customer, and say exactly: "' + str(CFG.get('after_promise') or '') + '" '
                    + ('Then write a note for each product without a promise, one per message. ' if CFG.get('notes') else '')
@@ -258,3 +263,28 @@ def close_pre(spec: dict) -> str:
     return _with_cfg({"logic": spec.get("outcome_logic") or {}, "tools": spec.get("tool_names") or {},
                       "fields": spec.get("tool_fields") or {},
                       "response": (spec.get("identity") or {}).get("response") or {}}, CLOSE_PRE)
+
+
+NOTE_POST = r'''
+try:
+    if isinstance(result, dict):
+        result.pop('header', None)
+        ok = (not failed(result)) and tv(result['data'].get('ok'))
+        ids = [x for x in str(vars.get('prod_ids') or '').split(',') if x]
+        promised = [x for x in str(vars.get('promised_ids') or '').split(',') if x]
+        noted = [it.split(':', 1)[0] for it in str(vars.get('notes_seen') or '').split(';') if ':' in it]
+        missing = [x for x in ids if x not in promised and x not in noted]
+        if not ok:
+            msg = 'The note was NOT saved. Write it once more with the same product and reason.'
+        elif missing:
+            msg = 'The note is saved. Products still without a promise or a note: ' + ', '.join(missing) + '. Write the note for ' + missing[0] + ' now. Do NOT close the call yet.'
+        else:
+            msg = 'The note is saved. Every product now has a promise or a note: thank the customer, say goodbye and call the closing tool.'
+        tell(result, msg)
+except Exception:
+    pass
+'''
+
+
+def note_post(spec: dict) -> str:
+    return _with_cfg({}, NOTE_POST)

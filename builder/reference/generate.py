@@ -50,18 +50,16 @@ def tools_for(spec: dict, api: dict) -> dict:
     if notes_used and tn.get("note"):
         t["note"] = N.api_tool(api, tn["note"], "Records why ONE product ended without a promise. CALL it only at the end of the call, "
                                "once for every product without a recorded promise. NEVER call it when the call is transferred.",
-                               baked=cust, pre=H.note_pre(spec),
-                               post=H.simple_post("The note is saved. Write the next note, if any, then close.",
-                                                  "The note was NOT saved. Try once more, then continue."))
+                               baked=cust, pre=H.note_pre(spec), post=H.note_post(spec))
     return t
 
 
 def agreement_tool(spec: dict, k: int) -> dict:
     """Model-called code tool: records one agreed product. The code reads its arguments from `params`."""
     return {"type": "function", "function": {
-        "name": "note_agreement", "handler": "__function__:code_exec",
-        "description": "CALL it once, as soon as an allowed amount and an allowed date are agreed for this product, in the same message "
-                       "as your 'Noted' sentence. It is not a promise: nothing is recorded at the bank yet.",
+        "name": "mark_agreed", "handler": "__function__:code_exec",
+        "description": "Internal bookkeeping only: nothing is sent to the bank and it is not a promise or a note. CALL it once, as soon as an "
+                       "allowed amount and an allowed date are agreed for this product, in the same message as your 'Noted' sentence.",
         "parameters": {"type": "object", "properties": {
             "code": {"type": "string", "default": C.agree_source(spec)},
             "timeout_ms": {"type": "number", "default": 10000},
