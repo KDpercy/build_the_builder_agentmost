@@ -105,6 +105,16 @@ class TestFallback(unittest.TestCase):
 
 
 class TestRunTests(unittest.TestCase):
+    def test_watchdog_picks_only_running_simulations_that_stopped_moving(self):
+        import run_tests as R
+        import datetime
+        now = datetime.datetime.now(datetime.timezone.utc)
+        ago = lambda m: (now - datetime.timedelta(minutes=m)).isoformat()
+        sims = [{"id": "fresh", "status": "running", "updatedAt": ago(3)},
+                {"id": "hung", "status": "running", "updatedAt": ago(R.STUCK_S / 60 + 1)},
+                {"id": "old-done", "status": "completed", "updatedAt": ago(90)}]
+        self.assertEqual([s["id"] for s in R.stuck(sims)], ["hung"])
+
     def test_retry_on_platform_errors_only(self):
         import run_tests as R
         R.PAUSE_S = 0

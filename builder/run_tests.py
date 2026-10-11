@@ -6,19 +6,22 @@
   5xx errors and timeouts (3 tries, 10 s apart). The kit's freya.py does not retry.
 - Never stops a running test. If run_cases still fails, waits until the workspace has no running
   simulation, then runs once more.
-- A simulation of ours that stays "running" with no update for 20 minutes is stuck: it is cancelled
-  (POST /api/v2/simulations/{id}/cancel), since every later simulation would wait for it forever.
+- A simulation of ours that stays "running" with no update for 15 minutes (twice the 7-minute call
+  limit) is stuck: it is cancelled (POST /api/v2/simulations/{id}/cancel), since the kit's client
+  would wait for it forever and every later simulation would queue behind it. A watchdog thread
+  checks this every minute while run_cases.py runs, not only after a failure.
 """
 import datetime
 import os
 import runpy
 import sys
+import threading
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 TRIES, PAUSE_S = 3, 10
-POLL_S, MAX_WAIT_S, STUCK_S = 30, 900, 20 * 60
+POLL_S, MAX_WAIT_S, STUCK_S, WATCH_S = 30, 900, 15 * 60, 60
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
@@ -67,6 +70,28 @@ def age_s(stamp: str) -> float:
         return 0.0
 
 
+def stuck(sims: list) -> list:
+    return [s for s in sims if s.get("status") == "running" and age_s(s.get("updatedAt")) > STUCK_S]
+
+
+def cancel(s: dict) -> None:
+    import freya
+    print(f"simulation {s.get('id')} has not moved for {age_s(s.get('updatedAt')) / 60:.0f} min: cancelling it", flush=True)
+    try:
+        freya.api("POST", f"/api/v2/simulations/{s.get('id')}/cancel", {})
+    except Exception as e:
+        print(f"cancel failed: {str(e)[:80]}", flush=True)
+
+
+def watchdog(stop: threading.Event) -> None:
+    while not stop.wait(WATCH_S):
+        try:
+            for s in stuck(simulations()):
+                cancel(s)
+        except Exception as e:  # a listing error during an outage: try again next minute
+            print(f"watchdog: cannot list simulations ({str(e)[:60]})", flush=True)
+
+
 def wait_until_idle() -> None:
     import freya
     waited = 0
@@ -78,13 +103,8 @@ def wait_until_idle() -> None:
             running = [None]
         if not running:
             return
-        s = running[0]
-        if s and age_s(s.get("updatedAt")) > STUCK_S:
-            print(f"simulation {s.get('id')} has not moved for {age_s(s.get('updatedAt')) / 60:.0f} min: cancelling it", flush=True)
-            try:
-                freya.api("POST", f"/api/v2/simulations/{s.get('id')}/cancel", {})
-            except Exception as e:
-                print(f"cancel failed: {str(e)[:80]}", flush=True)
+        for s in stuck([s for s in running if s]):
+            cancel(s)
         print(f"waiting for the running simulation to finish ({waited} s)", flush=True)
         time.sleep(POLL_S)
         waited += POLL_S
@@ -108,14 +128,19 @@ def main(argv: list) -> int:
         return 2
     os.chdir(ROOT)
     patch_clients()
+    stop = threading.Event()
+    threading.Thread(target=watchdog, args=(stop,), daemon=True).start()
     rc = 1
-    for attempt in (1, 2):
-        rc = run_once(argv[1:])
-        if rc == 0:
-            return 0
-        print(f"attempt {attempt} failed; the platform may be unstable", flush=True)
-        wait_until_idle()
-    return rc
+    try:
+        for attempt in (1, 2):
+            rc = run_once(argv[1:])
+            if rc == 0:
+                return 0
+            print(f"attempt {attempt} failed; the platform may be unstable", flush=True)
+            wait_until_idle()
+        return rc
+    finally:
+        stop.set()
 
 
 if __name__ == "__main__":
