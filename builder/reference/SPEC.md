@@ -32,7 +32,7 @@ Text values are spoken or shown to the phone agent: copy required sentences word
 | `persuasion.close_refused` | [outcome, reason] | close codes when every product is refused after its attempts |
 | `products.type_field` | text | the account field holding the product type |
 | `products.fields` | {id, due_amount, late_days} | the account's field names for the id, the overdue amount and the days late |
-| `products.types` | {type: {spoken, floor_field}} | `spoken` may use `{field}` from the account, e.g. `card {last}` |
+| `products.types` | {type: {spoken, floor_field}} or {type: {spoken, floor_percent, floor_round}} | `spoken` may use `{field}` from the account, e.g. `card {last}`. Floor from an account field, or a percentage of the overdue amount; `floor_round` = `up_whole`, `down_whole` or `cents` |
 | `products.response_path` | text | the field of the account reply that holds the product list, e.g. `products` (`data.products` also works) |
 | `debt_statement` | text | how the debt is introduced after verification |
 | `first_ask` / `first_ask_all` | text | the first question for one product / several products |
@@ -49,6 +49,7 @@ Text values are spoken or shown to the phone agent: copy required sentences word
 | `tool_fields` | {customer, product, amount, date, queue, note_reason, outcome, reason} | REQUIRED. Request field names |
 
 Date expressions: `today`, `next_business_day`, `deadline`, `business_days_after_today:N`,
+`calendar_days_after_today:N` (add `:back` or `:forward` to move off a non-working day),
 `last_business_day_this_week`, `last_business_day_this_week_or_next_if_today`.
 If the brief needs one that is not here, add it to `lib/date_facts.py` in your work copy.
 

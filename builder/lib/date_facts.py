@@ -8,6 +8,7 @@ All values come from spec.json, which the builder fills from the brief at run ti
      "callback": {"days": ["today", "next_business_day"], "from": "HH:MM", "to": "HH:MM",
                   "later_than_now": true}}
 Date expressions: "today", "next_business_day", "deadline", "business_days_after_today:N",
+"calendar_days_after_today:N" (optionally ":back" or ":forward" to move off a non-working day),
 "last_business_day_this_week_or_next_if_today", "last_business_day_this_week".
 The generated code writes text variables and never raises. Nothing here is specific to one brief.
 """
@@ -26,6 +27,13 @@ def date_expr(expr, today, deadline=None):
         return deadline or today
     if e.startswith('business_days_after_today:'):
         return nth_biz_after(today, int(e.split(':')[1]))
+    if e.startswith('calendar_days_after_today:'):
+        bits = e.split(':')
+        d = today + TD(days=int(bits[1]))
+        how = bits[2] if len(bits) > 2 else ''
+        while how in ('back', 'forward') and not isbiz(d):
+            d = d + TD(days=-1 if how == 'back' else 1)
+        return d
     if e in ('last_business_day_this_week', 'last_business_day_this_week_or_next_if_today'):
         d = week_end_biz(today)
         if d is None or d < today or (d == today and e.endswith('_if_today')):

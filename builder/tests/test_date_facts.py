@@ -55,6 +55,13 @@ class TestDateFacts(unittest.TestCase):
         self.assertEqual(de("last_business_day_this_week_or_next_if_today", D(2030, 3, 11)), D(2030, 3, 14))  # 15th holiday
         self.assertEqual(de("last_business_day_this_week_or_next_if_today", D(2030, 3, 11), D(2030, 3, 12)), D(2030, 3, 12))
 
+    def test_calendar_day_expressions(self):
+        _, ns = run("2030-03-01T12:00")   # Friday; 2030-03-04 is a holiday
+        de = ns["date_expr"]
+        self.assertEqual(de("calendar_days_after_today:2", D(2030, 3, 1)), D(2030, 3, 3))           # Sunday, as is
+        self.assertEqual(de("calendar_days_after_today:2:back", D(2030, 3, 1)), D(2030, 3, 1))      # back to Friday
+        self.assertEqual(de("calendar_days_after_today:2:forward", D(2030, 3, 1)), D(2030, 3, 5))   # past the holiday
+
     def test_calendar_lines(self):
         _, ns = run("2030-03-01T12:00")
         text = ns["calendar_lines"](D(2030, 3, 1), D(2030, 3, 14), 2)

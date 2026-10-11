@@ -61,6 +61,16 @@ class TestDebtFacts(unittest.TestCase):
         self.assertEqual(run([{"kind": "overdraft"}])["debt_state"], "error")
 
 
+class TestPercentFloor(unittest.TestCase):
+    def test_floor_as_percentage_of_the_overdue_amount(self):
+        spec = json.loads(json.dumps(SPEC))
+        spec["products"]["types"]["mortgage"] = {"spoken": "mortgage", "floor_percent": 25, "floor_round": "up_whole"}
+        v = {"now": "2030-03-05T10:00", "account_products": json.dumps([dict(ACCOUNT[1], owed=1201)])}
+        exec(debt_source(spec), {"vars": v})
+        self.assertEqual(v["debt_state"], "ok")
+        self.assertEqual(v["p1_floor"], "301.00")    # 25% of 1201 = 300.25, rounded up to a whole unit
+
+
 class TestPromiseRetryFill(unittest.TestCase):
     def test_missing_amount_and_date_come_from_stored_args(self):
         from reference import hooks as RH

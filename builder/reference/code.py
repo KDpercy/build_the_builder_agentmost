@@ -51,6 +51,22 @@ def spoken(p):
     for k, v in p.items():
         s = s.replace('{' + str(k) + '}', str(v))
     return s
+def floor_of(t, p, past):
+    """The lowest acceptable amount: an account field, or a percentage of the overdue amount."""
+    if t.get('floor_field'):
+        return num(p.get(t.get('floor_field')))
+    pct = num(t.get('floor_percent'))
+    if pct is None or past is None:
+        return None
+    f = past * pct / 100.0
+    r = str(t.get('floor_round') or 'cents')
+    if r == 'up_whole':
+        f = float(int(f) + (1 if f > int(f) else 0))
+    elif r == 'down_whole':
+        f = float(int(f))
+    else:
+        f = round(f + 1e-9, 2)
+    return f
 def offer(kind, x, too_much):
     if kind == 'floor' or (kind == 'full_or_floor_if_too_much' and too_much):
         return x['floor']
@@ -65,7 +81,7 @@ try:
         deadline = date_expr(band.get('deadline'), today)
         t = TYPES.get(str(p.get(TYPE_FIELD) or '')) or dict()
         x = dict(n=i + 1, pid=str(p.get(PF.get('id') or '') or ''), words=spoken(p),
-                 past=num(p.get(PF.get('due_amount') or '')), floor=num(p.get(t.get('floor_field') or '')),
+                 past=num(p.get(PF.get('due_amount') or '')), floor=floor_of(t, p, num(p.get(PF.get('due_amount') or ''))),
                  dl=dl, band=str(band.get('name') or ''), attempts=int(band.get('attempts') or 0), deadline=deadline)
         x['dates'] = [date_expr(a.get('date'), today, deadline) for a in ATTEMPTS]
         prods.append(x)
