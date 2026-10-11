@@ -16,7 +16,7 @@ After each: dev/check_build.sh <slot>. Then score rehearsal1 on the practice cus
 with builder/run_tests.py. Afterwards move submission/rehearsal* to out/ so submission/ holds only
 the final exports.
 
-## 17:00 freeze
+## 16:00 freeze (Madrid; = 17:00 Istanbul). Code changes stop at 15:30
 1. All unit tests green:
        python3 -m unittest discover -s builder/tests
 2. Commit, push, note the hash in dev/HANDOFF.md:

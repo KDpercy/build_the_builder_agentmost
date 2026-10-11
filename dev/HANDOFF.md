@@ -3,7 +3,7 @@
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
 ## NOW (Sun 11 Oct ~12:10) - read this first after a compaction
-- Final briefs at 19:00 Madrid; our freeze 17:00. Runbook: dev/RUNBOOK.md. Repo pushed to
+- Final briefs at 19:00 Madrid (17:00 UTC per RULES); our freeze 16:00 Madrid (= 17:00 Istanbul), code changes stop 15:30. Runbook: dev/RUNBOOK.md. Repo pushed to
   github.com/KDpercy/build_the_builder_agentmost (git push works from Claude's shell).
 - Builder works end to end (builder/README.md). Last runs: A (run 5) 9/10 self-test, $1.04;
   V2 variant (unforeseen rules) handled by editing its generator copy, $1.01. Spend ~$5.09/10.
@@ -12,7 +12,7 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 - Step 1 still to do when Freya is back: measure ref-a (agent cbc21b5c) --reps 3 and ref-b
   (7ca97613) --reps 3 + dev/cases/b-set1/2.json, via `python3 builder/run_tests.py ...`.
   Both were regenerated from dev/specs with all fixes (versions 10 and 13).
-- Then: 16:00 rehearsal of the runbook (fresh builds of A and A+B), 17:00 freeze.
+- Rehearsal builds done 12:15-12:27 (see log). Freeze 16:00 Madrid.
 - Platform tips adopted (dev/KIT_NOTES.md): retry 5xx, never kill run_cases, cancel stuck
   simulations via POST /api/v2/simulations/{id}/cancel, outage != agent bug.
 - Anthropic key: $9.53 at 12:07 (topped up; ~$1 per build = room for rehearsal + finals + reruns).

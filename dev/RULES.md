@@ -16,7 +16,7 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 (the argument order is ours to choose; it goes in the submission form).
 
 ## Deadlines (Madrid time)
-- Sunday 17:00  our own freeze of the builder
+- Sunday 16:00  our own freeze of the builder (= 17:00 Istanbul; Kerem confirmed 11 Oct). Code changes stop 15:30
 - Sunday 19:00  final briefs arrive (17:00 UTC), each with its own tool API file
 - Sunday 21:00  our target to submit
 - Sunday 22:00  submissions close (20:00 UTC)
