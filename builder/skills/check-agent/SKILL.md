@@ -27,5 +27,12 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
        python3 tools/run_cases.py <agent_id> --brief <letter> --out work/run.json
    Read each FAIL line; read the call with freya.get_call(call_id) before changing anything.
    Run in the foreground and wait: never nohup, & or a background job. One simulation at a time.
+5. Fix and retest, at most three rounds, while time allows:
+   - If the failure comes from your spec or your generator copy (a value read wrongly, a rule
+     the workflow does not enforce), fix it there, regenerate, repeat steps 1 and 3, save, and
+     rerun only the failing cases with `--only <ids>`.
+   - If it comes from information the inputs do not contain, do not guess and never copy a
+     value from the expected test answers: record it in `gaps` and stop.
+   - Keep the version that passed more cases; never leave a worse workflow than before.
 
 Always leave work/good.workflow.json as the last version that passed step 1.
