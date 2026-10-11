@@ -19,7 +19,10 @@ S = {"type": "string"}
 API = {"servers": [{"url": "https://other-bank.example/api"}], "paths": {
     "/verify_identity": op({"client": S, "question": {"type": "string", "enum": ["postcode", "birth_year"]}, "value": S},
                            ["client", "question", "value"]),
-    "/get_account": op({"client": S}, ["client"]),
+    "/get_account": dict(op({"client": S}, ["client"])["post"] and {"post": dict(op({"client": S}, ["client"])["post"], responses={"200": {
+        "content": {"application/json": {"schema": {"properties": {"ok": {"type": "boolean"}, "holdings": {"type": "array", "items": {
+            "type": "object", "properties": {"item": S, "kind": {"type": "string", "enum": ["cardx"]}, "last": S,
+                                             "due": {"type": "number"}, "late": {"type": "integer"}, "min": {"type": "number"}}}}}}}}}})}),
     "/create_promise": op({"client": S, "item": S, "sum": {"type": "number"}, "day": S}, ["client", "item", "sum", "day"]),
     "/add_note": op({"client": S, "item": S, "why": {"type": "string", "enum": ["declined", "settled"]}}, ["client", "item", "why"]),
     "/schedule_callback": op({"client": S, "day": S, "hour": S}, ["client", "day", "hour"]),
@@ -43,7 +46,7 @@ SPEC = {
     "calendar": {"holidays": ["2030-01-01"], "weekend": [4, 5]},
     "bands": [{"name": "any", "min_days": 1, "max_days": 99, "deadline": "business_days_after_today:5", "attempts": 1}],
     "products": {"type_field": "kind", "fields": {"id": "item", "due_amount": "due", "late_days": "late"},
-                 "types": {"cardx": {"spoken": "card {last}", "floor_field": "min"}}},
+                 "types": {"cardx": {"spoken": "card {last}", "floor_field": "min"}}, "response_path": "holdings"},
     "debt_statement": "I am calling about your overdue balance",
     "first_ask": "Can you settle it today?",
     "persuasion": {"attempts": [{"amount": "full", "date": "deadline"}], "floor_offer": {"once": True, "say_with_offer": "the remainder stays open"},
@@ -86,6 +89,10 @@ class TestGenerate(unittest.TestCase):
         for name, n in self.wf["nodes"].items():
             if name.startswith("product_") and n["node_type"] == "conversation":
                 self.assertNotIn("close_call", [t["function"]["name"] for t in n.get("tools", [])], name)
+
+    def test_smoke_runs_the_code_steps_clean(self):
+        import smoke
+        self.assertEqual(smoke.run(self.wf, API, SPEC), [])
 
     def test_no_note_tool_when_notes_are_not_used(self):
         tools = {t["function"]["name"] for n in self.wf["nodes"].values() for t in n.get("tools", [])}

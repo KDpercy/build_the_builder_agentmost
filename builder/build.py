@@ -28,7 +28,7 @@ BUDGET_S = int(os.environ.get("BUILD_BUDGET_S", str(25 * 60)))     # rule: 30 mi
 MODEL = os.environ.get("BUILDER_MODEL", "claude-opus-5-5")
 KIT_FILES = ["freya.py", "docs", "tools", "examples/base-agent.json", "public-test-set.json"]
 # builder/tests is staged for its invented example spec (test_generate.py); it has no brief values.
-BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
+BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/smoke.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
 SKILLS_DIR = ROOT / "builder" / "skills"
 SECRET_PATTERNS = [re.compile(r"fak_[A-Za-z0-9_\-]+"), re.compile(r"sk-ant-[A-Za-z0-9_\-]+")]
 
@@ -173,6 +173,13 @@ def pick_workflow(st: pathlib.Path, api: dict, trace: Trace) -> dict | None:
             trace.log("candidate_unreadable", file=name, error=str(e))
             continue
         errors = [m for level, m in V.validate(wf, api, rules) if level == V.ERROR]
+        spec_file = st / "work" / "spec.json"
+        if not errors and spec_file.exists():
+            import smoke
+            try:
+                errors = smoke.run(wf, api, json.loads(spec_file.read_text()))
+            except Exception as e:          # an unreadable spec or schema must not hide a valid workflow
+                trace.log("smoke_skipped", error=repr(e)[:300])
         trace.log("validate", file=name, errors=errors[:20])
         if not errors:
             return wf

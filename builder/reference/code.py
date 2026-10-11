@@ -35,7 +35,9 @@ def products_from_vars():
     if isinstance(pr, list) and pr:
         return [p for p in pr if isinstance(p, dict)][:MAXP]
     path = str((SPEC.get('products') or dict()).get('response_path') or 'data.products')
-    pat = re.compile(r'_response\.' + re.escape(path) + r'\.(\d+)\.(\w+)$')
+    if path.startswith('data.'):
+        path = path[5:]
+    pat = re.compile(r'_response\.(?:data\.)?' + re.escape(path) + r'\.(\d+)\.(\w+)$')     # with or without the envelope
     by = dict()
     for key, val in list(vars.items()):
         m = pat.search(str(key))

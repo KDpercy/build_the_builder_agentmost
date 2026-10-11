@@ -33,7 +33,7 @@ Text values are spoken or shown to the phone agent: copy required sentences word
 | `products.type_field` | text | the account field holding the product type |
 | `products.fields` | {id, due_amount, late_days} | the account's field names for the id, the overdue amount and the days late |
 | `products.types` | {type: {spoken, floor_field}} | `spoken` may use `{field}` from the account, e.g. `card {last}` |
-| `products.response_path` | text | where the product list is in the account reply (default `data.products`) |
+| `products.response_path` | text | the field of the account reply that holds the product list, e.g. `products` (`data.products` also works) |
 | `debt_statement` | text | how the debt is introduced after verification |
 | `first_ask` / `first_ask_all` | text | the first question for one product / several products |
 | `callback` | {days, from, to, later_than_now, ask_again_once, close_booked, close_none} | days are date expressions |

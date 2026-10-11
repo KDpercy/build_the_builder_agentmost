@@ -17,7 +17,10 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
        python3 -c "import json,sys; sys.path.insert(0,'builder'); import validate as V; \
          print(V.check_ledger(json.load(open('work/rules.json')), {p.name: p.read_text() for p in __import__('pathlib').Path('input').glob('*') if p.suffix != '.json'}))"
    Fix every ERROR. When there are none, copy work/workflow.json to work/good.workflow.json.
-2. Code steps: run each generated code source locally with `vars = {"now": ...}` for several
+2. Smoke test (no platform): runs every code step on a fake account built from the tool API's
+   response schema, stored the way the platform stores it, on several dates:
+       python3 builder/smoke.py work/workflow.json input/<tool api file> work/spec.json
+   Fix every ERROR in the spec or your generator copy. Then also run each generated code source locally with `vars = {"now": ...}` for several
    dates (a weekday, a Friday, a day before a holiday, after the last call hour) and check the
    facts against the brief by hand.
 3. Platform dry run:
