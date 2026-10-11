@@ -1,28 +1,22 @@
 {
  "forbidden_before_verification": [
-  "arrears",
-  "balance",
+  "debt",
+  "past due",
   "overdue",
-  "money owed",
-  "overdraft",
-  "credit card",
-  "home loan",
-  "account"
+  "late payment",
+  "owe"
  ],
  "restricted_words": [
-  "promise is in place"
+  "recorded"
  ],
  "required_sentences": [
-  "Please accept my condolences.",
-  "We will send you a letter confirming this arrangement.",
-  "Is that correct?",
-  "anything left stays in arrears."
+  "Thank you, your payment promise is recorded."
  ],
  "call_variables": [
-  "member_ref",
-  "given_name",
-  "surname",
-  "salutation",
-  "call_time"
+  "customer_id",
+  "first_name",
+  "last_name",
+  "title",
+  "now"
  ]
 }

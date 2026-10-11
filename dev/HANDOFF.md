@@ -19,7 +19,11 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
 ## Sunday log
 - 09:55 rehearsal-a (builder run 1, Brief A) --reps 3: 9/10. Only PUB-10 1/3: its opening said
   "this call is recorded" (fixed in the validator after run 1). Ledger right in all 30 calls.
-- 10:00 BUILDER RUN 3: Brief B, BUILD_PRACTICE=B, slot ref-b (overwrites the V1 agent).
+- 10:11 BUILDER RUN 3: Brief B ONLY (my mistake: Brief B says "every rule of Brief A applies").
+  3.7 min, $0.52, 1/3. The builder did not guess Brief A's values: listed them as gaps and
+  refused to tune to test answers. Correct command for B passes both files:
+  python3 builder/build.py tools/openapi.json briefs/brief-a.md briefs/brief-b.md
+- 10:16 BUILDER RUN 4: Brief A + B files, BUILD_PRACTICE=B, slot ref-b.
 
 ## Overnight log
 - 23:50 reference retests: PUB-06 3/3; ref-a full 9/10 (PUB-01 judge 'no verdict', ledger ok);
