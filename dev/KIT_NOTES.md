@@ -43,8 +43,13 @@ routing events. `POST /api/v2/chat/message` runs one turn in seconds. [api.md]
 - Conversation checks: a judge model reads the transcript against the case's
   `checks` list. One failed check fails the customer.
 - One simulation at a time per workspace. Ten customers take 3 to 11 minutes. A simulation
-  can get stuck in 'running' after all its calls end and then blocks every new one; stop it
-  on the Simulation page of the web app (no API for this).
+  can get stuck in 'running' after all its calls end and then blocks every new one. Stop it on
+  the Simulation page, or POST /api/v2/simulations/{id}/cancel (tip from another team, 11 Oct).
+- Platform tips (another team, 11 Oct): a chat 504 does not mean simulations died; check
+  GET /api/v2/simulations?limit=10; never kill run_cases.py locally (the simulation keeps
+  running on Freya and the next test waits for it); retry 5xx (3 x 10 s; freya.py does not);
+  no tool calls + 0 s agent turns = outage, not an agent bug: wait and rerun, change nothing.
+  builder/run_tests.py implements the retries, the wait and the stuck-cancel.
   A slow model can fail a run that is not our fault; run_cases prints a
   warning when the median slowest turn is above 10 seconds.
 

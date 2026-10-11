@@ -30,6 +30,9 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
        python3 builder/run_tests.py <agent_id> --brief <letter> --out work/run.json
    (run_tests.py wraps tools/run_cases.py and survives short platform outages; use it, not run_cases.py directly)
    Read each FAIL line; read the call with freya.get_call(call_id) before changing anything.
+   An outage is not a bug: if the calls show no tool calls at all, or agent turns of 0 seconds, or
+   platform errors (5xx, timeouts, a code-sandbox error), the platform failed, not your agent. Do
+   NOT change the workflow because of such a run: wait a minute and run the test again.
    Run in the foreground and wait: never nohup, & or a background job. One simulation at a time.
 5. Fix and retest, at most three rounds, while time allows:
    - If the failure comes from your spec or your generator copy (a value read wrongly, a rule

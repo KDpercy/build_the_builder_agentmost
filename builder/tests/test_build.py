@@ -79,6 +79,30 @@ class TestFallback(unittest.TestCase):
             t.close()
 
 
+class TestRunTests(unittest.TestCase):
+    def test_retry_on_platform_errors_only(self):
+        import run_tests as R
+        R.PAUSE_S = 0
+        calls = []
+
+        def flaky(n):
+            calls.append(n)
+            if len(calls) < 3:
+                raise RuntimeError("GET /x -> 504: error code: 504")
+            return "ok"
+        self.assertEqual(R.with_retry(flaky)(1), "ok")
+        self.assertEqual(len(calls), 3)
+
+        def broken():
+            raise RuntimeError("POST /y -> 400: bad request")
+        with self.assertRaises(RuntimeError):
+            R.with_retry(broken)()
+
+    def test_age_of_a_timestamp(self):
+        import run_tests as R
+        self.assertGreater(R.age_s("2020-01-01T00:00:00.000Z"), 3600)
+
+
 class TestFinalRules(unittest.TestCase):
     def test_call_variables_come_from_the_runs_rules_and_spec(self):
         with tempfile.TemporaryDirectory() as d:
