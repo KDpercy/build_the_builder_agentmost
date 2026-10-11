@@ -1,0 +1,439 @@
+{
+ "_note": "Answer key for dev/variants/v2 (Kestrel Mutual). Items under not_expressible are rules SPEC.md has no key or value for; where a SPEC key exists but its value is new (bands.deadline, special case close timing) the value is filled with the suggested form and also listed there. dev only.",
+ "agent_identity": "Kestrel Mutual's virtual assistant",
+ "customer_variable": "ref_no",
+ "now_variable": "local_time",
+ "address_as": "{{courtesy_title}} {{family_name}}",
+ "opening": {
+  "first_sentence": "Good day, this is the virtual assistant of Kestrel Mutual, and this call is recorded.",
+  "ask": "May I speak with {{courtesy_title}} {{family_name}}?"
+ },
+ "forbidden_before_verification": [
+  "arrears",
+  "overdue",
+  "repayment",
+  "owe",
+  "revolving line",
+  "equipment lease"
+ ],
+ "confirmation_words": {
+  "confirms": [
+   "yes",
+   "speaking",
+   "it's me",
+   "the owner's family name as their own"
+  ],
+  "does_not_confirm": [
+   "hello",
+   "who's calling",
+   "what is it about"
+  ],
+  "asks": 2,
+  "close_if_unclear": [
+   "no_contact",
+   "unconfirmed"
+  ]
+ },
+ "identity": {
+  "questions": [
+   {
+    "value": "company_number",
+    "ask": "what is the company registration number of the business?",
+    "kind": "text"
+   },
+   {
+    "value": "founded_year",
+    "ask": "what year was the business founded?",
+    "kind": "year"
+   },
+   {
+    "value": "account_last3",
+    "ask": "what are the last three digits of the business current account?",
+    "kind": "digits:3"
+   }
+  ],
+  "question_field": "check",
+  "answer_field": "answer",
+  "numeric_date_order": null,
+  "wrong_answer_limit": 2,
+  "first_line": "Thank you. For security, what is the company registration number of the business?",
+  "response": {
+   "ok": "ok",
+   "verified": "match",
+   "all_verified": "cleared",
+   "left": "attempts_left",
+   "hint": "hint"
+  },
+  "hints": {
+   "two_digit_year": "ask for the year with all four digits; this retry is not a wrong answer"
+  },
+  "on_failed": {
+   "say": "tell the owner to phone the business banking line printed on their statement",
+   "close": [
+    "id_failed",
+    "wrong_answers"
+   ]
+  },
+  "on_declined": {
+   "explain_once": "the questions stop anyone else from hearing about the business's accounts",
+   "counts_as_declining": "replying \"why are you calling?\" in place of an answer",
+   "close": [
+    "id_failed",
+    "refused"
+   ]
+  }
+ },
+ "calendar": {
+  "holidays": [
+   "2026-11-19",
+   "2026-12-02",
+   "2026-12-17"
+  ],
+  "weekend": [
+   4,
+   5
+  ],
+  "count_today": false
+ },
+ "bands": [
+  {
+   "name": "amber",
+   "min_days": 1,
+   "max_days": 14,
+   "deadline": "calendar_days_after_today_back_to_business_day:9",
+   "attempts": 1
+  },
+  {
+   "name": "red",
+   "min_days": 15,
+   "max_days": 40,
+   "deadline": "calendar_days_after_today_back_to_business_day:5",
+   "attempts": 2
+  },
+  {
+   "name": "black",
+   "min_days": 41,
+   "max_days": 75,
+   "deadline": "calendar_days_after_today_back_to_business_day:3",
+   "attempts": 3
+  }
+ ],
+ "products": {
+  "type_field": "facility_type",
+  "fields": {
+   "id": "facility_id",
+   "due_amount": "arrears_amount",
+   "late_days": "days_in_arrears"
+  },
+  "response_path": "facilities",
+  "types": {
+   "revolving_line": {
+    "spoken": "revolving line ending {line_suffix}"
+   },
+   "equipment_lease": {
+    "spoken": "equipment lease"
+   }
+  }
+ },
+ "debt_statement": "I am calling from Kestrel Mutual's arrears team about a missed repayment.",
+ "first_ask": "Could you pay this by the end of today?",
+ "first_ask_all": "Could you pay both of these by the end of today?",
+ "persuasion": {
+  "attempts": [
+   {
+    "amount": "full_or_floor_if_too_much",
+    "date": "next_business_day"
+   },
+   {
+    "amount": "full_or_floor_if_too_much",
+    "date": "deadline"
+   },
+   {
+    "amount": "floor",
+    "date": "deadline"
+   }
+  ],
+  "floor_offer": {
+   "once": true,
+   "say_with_offer": "The remainder will stay in arrears."
+  },
+  "close_refused": [
+   "no_agreement",
+   "declined"
+  ]
+ },
+ "callback": {
+  "days": [
+   "today"
+  ],
+  "from": "12:00",
+  "to": "15:00",
+  "later_than_now": true,
+  "ask_again_once": true,
+  "close_booked": [
+   "no_contact",
+   "callback_set"
+  ],
+  "close_none": [
+   "no_contact",
+   "callback_none"
+  ]
+ },
+ "third_party": {
+  "wrong_number": [
+   "no_contact",
+   "wrong_party"
+  ],
+  "deceased": {
+   "say": "Please accept our sincere sympathy.",
+   "close": [
+    "no_contact",
+    "deceased"
+   ]
+  }
+ },
+ "special_cases": [
+  {
+   "name": "welfare",
+   "trigger": "illness, a death in the family, losing a major client or closing the business",
+   "precedence": 1,
+   "action": "one sentence of sympathy, no persuasion attempt, offer the business welfare team once",
+   "line": "I am sorry to hear that. Would you like me to connect you with our business welfare team?",
+   "accept": {
+    "transfer": "welfare",
+    "close": [
+     "handed_off",
+     "welfare"
+    ]
+   },
+   "decline": {
+    "close": [
+     "no_agreement",
+     "welfare_declined"
+    ]
+   }
+  },
+  {
+   "name": "workout",
+   "trigger": "longer terms, lower repayments or a restructure",
+   "precedence": 2,
+   "action": "describe nothing",
+   "transfer": "workout",
+   "close": [
+    "handed_off",
+    "workout"
+   ]
+  },
+  {
+   "name": "split",
+   "trigger": "asks to split a facility's payment into parts",
+   "precedence": 3,
+   "action": "explain that only one promise per facility can be recorded; offer the payment link once",
+   "line": "I can send you a secure payment link by text message, so you can pay in parts.",
+   "accept": {
+    "note": "pay_link",
+    "close": [
+     "pay_link",
+     "split_requested"
+    ]
+   },
+   "decline": {
+    "action": "continue the persuasion attempts for that facility; the request is not a refusal"
+   }
+  },
+  {
+   "name": "paid",
+   "trigger": "already paid",
+   "precedence": 4,
+   "action": "say a payment can take two working days to show, record no promise",
+   "close": [
+    "settled_claim",
+    ""
+   ]
+  },
+  {
+   "name": "contested",
+   "trigger": "not our debt, or the facility was closed",
+   "precedence": 5,
+   "action": "leave the claim unchallenged, record no promise",
+   "close": [
+    "no_agreement",
+    "contested"
+   ]
+  },
+  {
+   "name": "staff",
+   "trigger": "asks for a person",
+   "precedence": 6,
+   "action": "ask once whether you can help first",
+   "transfer": "staff",
+   "close": [
+    "handed_off",
+    "staff"
+   ]
+  }
+ ],
+ "outcome_logic": {
+  "on_transfer": "handed_off",
+  "reason_by_queue": {
+   "workout": "workout",
+   "staff": "staff",
+   "welfare": "welfare"
+  },
+  "on_promise": "agreed",
+  "all_notes_paid": "settled_claim",
+  "paid_note": "settled",
+  "no_deal": "no_agreement",
+  "verify_failed": [
+   "id_failed",
+   "wrong_answers"
+  ],
+  "promise_failed": [
+   "no_agreement",
+   "system_fault"
+  ]
+ },
+ "notes": {
+  "used": true,
+  "reasons": [
+   "declined",
+   "contested",
+   "settled",
+   "system_fault",
+   "pay_link"
+  ],
+  "service_error_reason": "system_fault"
+ },
+ "sentences": {
+  "after_promise": "A text message with the details of this promise will reach you shortly.",
+  "deceased": "Please accept our sincere sympathy."
+ },
+ "read_back": {
+  "ask": "Shall I record that?"
+ },
+ "robot_question": "say you are Kestrel Mutual's virtual assistant and carry on",
+ "scam_question": "say they can phone back on the number printed on any Kestrel Mutual statement, and carry on",
+ "never_offer": [
+  "a discount",
+  "a fee waiver",
+  "an interest freeze",
+  "a payment holiday",
+  "any term this brief does not give"
+ ],
+ "tool_names": {
+  "verify": "verify_identity",
+  "account": "get_account",
+  "promise": "create_promise",
+  "callback": "schedule_callback",
+  "transfer": "transfer_to_agent",
+  "note": "add_note",
+  "close": "close_call"
+ },
+ "tool_fields": {
+  "customer": "party_ref",
+  "product": "facility_id",
+  "amount": "promise_amount",
+  "date": "promise_on",
+  "queue": "team",
+  "note_reason": "note_code",
+  "outcome": "disposition",
+  "reason": "cause"
+ },
+ "not_expressible": [
+  {
+   "rule": "Deadline counted in calendar days, then moved back to the previous working day (no SPEC date expression does this).",
+   "quote": "The latest promise date is the band's number of calendar days after today, moved back to the previous working day if it falls on a non-working day.",
+   "suggested_spec": {
+    "bands[].deadline": "calendar_days_after_today_back_to_business_day:N",
+    "date_expression": {
+     "name": "calendar_days_after_today_back_to_business_day",
+     "arg": "N",
+     "meaning": "today + N calendar days; while not a business day, step back one day"
+    }
+   }
+  },
+  {
+   "rule": "Floor is a percentage of the overdue amount, rounded up, not an account field (products.types[].floor_field cannot express it; the API has no floor field).",
+   "quote": "The floor is 25% of the facility's overdue amount, rounded up to a whole currency unit.",
+   "suggested_spec": {
+    "products.floor": {
+     "percent_of_due": 25,
+     "rounding": "ceil",
+     "step": 1
+    }
+   }
+  },
+  {
+   "rule": "Split-payment request: offer a payment link once; on accept, pay_link note for that facility and close as pay_link / split_requested only after all facilities are handled, overriding agreed.",
+   "quote": "If they accept, record no promise for that facility, write its `pay_link` note, and close as `pay_link` / `split_requested` once every facility has been dealt with, even if another facility has a promise.",
+   "suggested_spec": {
+    "special_cases[split].accept": {
+     "note": "pay_link",
+     "close": [
+      "pay_link",
+      "split_requested"
+     ],
+     "close_timing": "after_all_products",
+     "overrides": [
+      "agreed"
+     ]
+    }
+   }
+  },
+  {
+   "rule": "Closing precedence between dispositions (outcome_logic has on_transfer/on_promise but no ranked override for pay_link).",
+   "quote": "Order of precedence when several apply: `handed_off`, then `pay_link`, then `agreed`.",
+   "suggested_spec": {
+    "outcome_logic.precedence": [
+     "handed_off",
+     "pay_link",
+     "agreed"
+    ]
+   }
+  },
+  {
+   "rule": "Skip a persuasion attempt that repeats an already refused offer (attempt 2 equals attempt 1 when the next working day is the latest promise date; attempt 3 equals attempt 2 when the floor was already offered).",
+   "quote": "If an attempt would repeat an offer the owner already refused, skip it and make the next one.",
+   "suggested_spec": {
+    "persuasion.skip_repeated": true
+   }
+  },
+  {
+   "rule": "A non-working day named by the customer is replaced by the next working day, capped at the latest promise date.",
+   "quote": "If that next working day is after the latest promise date, offer the latest promise date instead.",
+   "suggested_spec": {
+    "dates.non_working_named": "next_business_day_capped_at_deadline"
+   }
+  },
+  {
+   "rule": "Callback on the same day only (date expression `today` exists, but a call after 15:00 has no slot at all and must close callback_none without asking).",
+   "quote": "A callback can only be booked for today, between 12:00 and 15:00, both included, and later than `local_time`.",
+   "suggested_spec": {
+    "callback.close_if_no_slot_left": [
+     "no_contact",
+     "callback_none"
+    ]
+   }
+  },
+  {
+   "rule": "No identity question is a date, so numeric_date_order has no value; third question kind digits:3 is in SPEC but untested by the practice briefs, and run_cases.py has no voice for account_last3.",
+   "quote": "the last three digits of the business current account",
+   "suggested_spec": {
+    "identity.numeric_date_order": null
+   }
+  },
+  {
+   "rule": "Notes are written only for verified calls not handed off; handed_off and pre-account closes write none.",
+   "quote": "Calls closed as `handed_off`, and calls closed before `get_account`, write no note.",
+   "suggested_spec": {
+    "notes.skip_on": [
+     "handed_off",
+     "before_account"
+    ]
+   }
+  }
+ ],
+ "gaps": [
+  "The brief does not say which note a facility gets after the welfare offer is declined (declined is the likely reading)."
+ ]
+}

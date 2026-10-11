@@ -1,0 +1,459 @@
+{
+ "openapi": "3.0.0",
+ "info": {
+  "title": "Kestrel Mutual business arrears API",
+  "version": "1"
+ },
+ "servers": [
+  {
+   "url": "https://kestrel-mutual.example/api"
+  }
+ ],
+ "paths": {
+  "/verify_identity": {
+   "post": {
+    "summary": "Check one security answer",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         },
+         "check": {
+          "type": "string",
+          "enum": [
+           "company_number",
+           "founded_year",
+           "account_last3"
+          ]
+         },
+         "answer": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "party_ref",
+         "check",
+         "answer"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          },
+          "match": {
+           "type": "boolean"
+          },
+          "attempts_left": {
+           "type": "integer"
+          },
+          "cleared": {
+           "type": "boolean"
+          },
+          "hint": {
+           "type": "string",
+           "enum": [
+            "two_digit_year"
+           ]
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  },
+  "/get_account": {
+   "post": {
+    "summary": "Facilities of the business that are in arrears",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "party_ref"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          },
+          "facilities": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "facility_id": {
+              "type": "string"
+             },
+             "facility_type": {
+              "type": "string",
+              "enum": [
+               "revolving_line",
+               "equipment_lease"
+              ]
+             },
+             "line_suffix": {
+              "type": "string",
+              "description": "revolving lines only"
+             },
+             "arrears_amount": {
+              "type": "number"
+             },
+             "days_in_arrears": {
+              "type": "integer"
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  },
+  "/create_promise": {
+   "post": {
+    "summary": "Record a promise for one facility",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         },
+         "facility_id": {
+          "type": "string"
+         },
+         "promise_amount": {
+          "type": "number"
+         },
+         "promise_on": {
+          "type": "string",
+          "format": "date"
+         }
+        },
+        "required": [
+         "party_ref",
+         "facility_id",
+         "promise_amount",
+         "promise_on"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          },
+          "promise_no": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  },
+  "/add_note": {
+   "post": {
+    "summary": "Note why a facility has no promise",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         },
+         "facility_id": {
+          "type": "string"
+         },
+         "note_code": {
+          "type": "string",
+          "enum": [
+           "declined",
+           "contested",
+           "settled",
+           "system_fault",
+           "pay_link"
+          ]
+         }
+        },
+        "required": [
+         "party_ref",
+         "facility_id",
+         "note_code"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  },
+  "/schedule_callback": {
+   "post": {
+    "summary": "Book a callback",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         },
+         "cb_date": {
+          "type": "string",
+          "format": "date"
+         },
+         "cb_time": {
+          "type": "string",
+          "description": "HH:MM"
+         }
+        },
+        "required": [
+         "party_ref",
+         "cb_date",
+         "cb_time"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  },
+  "/transfer_to_agent": {
+   "post": {
+    "summary": "Transfer to a team",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         },
+         "team": {
+          "type": "string",
+          "enum": [
+           "workout",
+           "staff",
+           "welfare"
+          ]
+         }
+        },
+        "required": [
+         "party_ref",
+         "team"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  },
+  "/close_call": {
+   "post": {
+    "summary": "Record the call disposition",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "party_ref": {
+          "type": "string"
+         },
+         "disposition": {
+          "type": "string",
+          "enum": [
+           "agreed",
+           "pay_link",
+           "settled_claim",
+           "handed_off",
+           "no_agreement",
+           "id_failed",
+           "no_contact"
+          ]
+         },
+         "cause": {
+          "type": "string",
+          "description": "Required where the disposition table gives one."
+         }
+        },
+        "required": [
+         "party_ref",
+         "disposition"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "`ok` is false when the action was not carried out.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "error": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "500": {
+      "description": "The service failed. Nothing was recorded. The call may be repeated."
+     }
+    }
+   }
+  }
+ }
+}
