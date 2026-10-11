@@ -1,8 +1,8 @@
 {
  "openapi": "3.0.3",
  "info": {
-  "title": "Freya Bank voice statement services",
-  "version": "1.0"
+  "title": "Freya Bank voice assistant statement services",
+  "version": "2026-10-01"
  },
  "servers": [
   {
@@ -12,33 +12,27 @@
  "paths": {
   "/voice/v1/cards.list": {
    "post": {
-    "operationId": "cards_list",
-    "summary": "customer number in, the customer's eligible cards out",
+    "summary": "Customer's cards",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "customerNo"
-          ],
           "properties": {
            "customerNo": {
-            "type": "string",
-            "description": "Customer number, string or number"
+            "type": "string"
            },
            "aiFlow": {
-            "type": "string",
-            "description": "Use case, \"CardOps\""
+            "type": "string"
            }
-          }
+          },
+          "required": [
+           "customerNo"
+          ]
          },
          "call": {
           "type": "object",
@@ -51,14 +45,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -145,7 +142,7 @@
       }
      },
      "404": {
-      "description": "Error, result only",
+      "description": "Not found (WARNING)",
       "content": {
        "application/json": {
         "schema": {
@@ -194,7 +191,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -247,29 +244,24 @@
   },
   "/voice/v1/cards.balance": {
    "post": {
-    "operationId": "cards_balance",
-    "summary": "statement and due dates, debt per currency",
+    "summary": "Statement and due dates, debt per currency",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "cardNumber"
-          ],
           "properties": {
            "cardNumber": {
-            "type": "string",
-            "description": "cardNumber exactly as cards.list returned it"
+            "type": "string"
            }
-          }
+          },
+          "required": [
+           "cardNumber"
+          ]
          },
          "call": {
           "type": "object",
@@ -282,14 +274,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -322,6 +317,9 @@
             "debtTL": {
              "type": "object",
              "properties": {
+              "statementPaymentStatus": {
+               "type": "string"
+              },
               "transferAmount": {
                "type": "number"
               },
@@ -343,28 +341,20 @@
               "totalDebt": {
                "type": "number"
               },
+              "totalDebtPaymentStatus": {
+               "type": "string"
+              },
               "remainAutomaticPaymentAmount": {
                "type": "number"
-              },
-              "statementPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
-              },
-              "totalDebtPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
               }
              }
             },
             "debtUSD": {
              "type": "object",
              "properties": {
+              "statementPaymentStatus": {
+               "type": "string"
+              },
               "transferAmount": {
                "type": "number"
               },
@@ -386,28 +376,20 @@
               "totalDebt": {
                "type": "number"
               },
+              "totalDebtPaymentStatus": {
+               "type": "string"
+              },
               "remainAutomaticPaymentAmount": {
                "type": "number"
-              },
-              "statementPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
-              },
-              "totalDebtPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
               }
              }
             },
             "debtEUR": {
              "type": "object",
              "properties": {
+              "statementPaymentStatus": {
+               "type": "string"
+              },
               "transferAmount": {
                "type": "number"
               },
@@ -429,28 +411,20 @@
               "totalDebt": {
                "type": "number"
               },
+              "totalDebtPaymentStatus": {
+               "type": "string"
+              },
               "remainAutomaticPaymentAmount": {
                "type": "number"
-              },
-              "statementPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
-              },
-              "totalDebtPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
               }
              }
             },
             "debtGBP": {
              "type": "object",
              "properties": {
+              "statementPaymentStatus": {
+               "type": "string"
+              },
               "transferAmount": {
                "type": "number"
               },
@@ -472,22 +446,11 @@
               "totalDebt": {
                "type": "number"
               },
+              "totalDebtPaymentStatus": {
+               "type": "string"
+              },
               "remainAutomaticPaymentAmount": {
                "type": "number"
-              },
-              "statementPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
-              },
-              "totalDebtPaymentStatus": {
-               "type": "string",
-               "enum": [
-                "HAS_DEBT",
-                "NO_DEBT"
-               ]
               }
              }
             },
@@ -549,7 +512,7 @@
       }
      },
      "400": {
-      "description": "Error, result only",
+      "description": "INVALID_ARGUMENTS_ERROR",
       "content": {
        "application/json": {
         "schema": {
@@ -598,7 +561,7 @@
       }
      },
      "404": {
-      "description": "Error, result only",
+      "description": "Not found (WARNING)",
       "content": {
        "application/json": {
         "schema": {
@@ -647,7 +610,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -700,28 +663,24 @@
   },
   "/voice/v1/statement.week.get": {
    "post": {
-    "operationId": "statement_week_get",
-    "summary": "the card's current statement week and day, joint statement info",
+    "summary": "Current statement week and day, joint statement info",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "cardNumber"
-          ],
           "properties": {
            "cardNumber": {
             "type": "string"
            }
-          }
+          },
+          "required": [
+           "cardNumber"
+          ]
          },
          "call": {
           "type": "object",
@@ -734,14 +693,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -836,7 +798,7 @@
       }
      },
      "404": {
-      "description": "Error, result only",
+      "description": "Not found (WARNING)",
       "content": {
        "application/json": {
         "schema": {
@@ -885,7 +847,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -938,38 +900,32 @@
   },
   "/voice/v1/statement.week.decide": {
    "post": {
-    "operationId": "statement_week_decide",
-    "summary": "preview of the dates with the requested week; changes nothing",
+    "summary": "Preview of the dates with the requested week (changes nothing)",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "cardNumber",
-           "newStatementWeek",
-           "statementDay"
-          ],
           "properties": {
            "cardNumber": {
             "type": "string"
            },
            "newStatementWeek": {
-            "type": "integer",
-            "description": "1-4, number or string"
+            "type": "integer"
            },
            "statementDay": {
-            "type": "integer",
-            "description": "current statementDay from statement.week.get"
+            "type": "integer"
            }
-          }
+          },
+          "required": [
+           "cardNumber",
+           "newStatementWeek",
+           "statementDay"
+          ]
          },
          "call": {
           "type": "object",
@@ -982,14 +938,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -1058,7 +1017,7 @@
       }
      },
      "400": {
-      "description": "Error, result only",
+      "description": "INVALID_ARGUMENTS_ERROR",
       "content": {
        "application/json": {
         "schema": {
@@ -1107,7 +1066,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -1160,38 +1119,32 @@
   },
   "/voice/v1/statement.week.change": {
    "post": {
-    "operationId": "statement_week_change",
-    "summary": "changes the statement week",
+    "summary": "Changes the statement week",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "cardNumber",
-           "newStatementWeek",
-           "statementDay"
-          ],
           "properties": {
            "cardNumber": {
             "type": "string"
            },
            "newStatementWeek": {
-            "type": "integer",
-            "description": "1-4, number or string"
+            "type": "integer"
            },
            "statementDay": {
-            "type": "integer",
-            "description": "current statementDay"
+            "type": "integer"
            }
-          }
+          },
+          "required": [
+           "cardNumber",
+           "newStatementWeek",
+           "statementDay"
+          ]
          },
          "call": {
           "type": "object",
@@ -1204,14 +1157,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -1280,7 +1236,7 @@
       }
      },
      "400": {
-      "description": "Error, result only",
+      "description": "INVALID_ARGUMENTS_ERROR",
       "content": {
        "application/json": {
         "schema": {
@@ -1329,7 +1285,7 @@
       }
      },
      "401": {
-      "description": "Error, result only",
+      "description": "Token missing or expired",
       "content": {
        "application/json": {
         "schema": {
@@ -1378,7 +1334,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -1431,28 +1387,19 @@
   },
   "/voice/v1/contact.email.get": {
    "post": {
-    "operationId": "contact_email_get",
-    "summary": "registered e-mail / phone",
+    "summary": "Registered e-mail / phone",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "customerNo",
-           "intAddressInfoType"
-          ],
           "properties": {
            "customerNo": {
-            "type": "string",
-            "description": "Customer number, string or number"
+            "type": "string"
            },
            "intAddressInfoType": {
             "type": "string",
@@ -1462,7 +1409,11 @@
              "B"
             ]
            }
-          }
+          },
+          "required": [
+           "customerNo",
+           "intAddressInfoType"
+          ]
          },
          "call": {
           "type": "object",
@@ -1475,14 +1426,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -1560,7 +1514,7 @@
       }
      },
      "400": {
-      "description": "Error, result only",
+      "description": "INVALID_ARGUMENTS_ERROR",
       "content": {
        "application/json": {
         "schema": {
@@ -1609,7 +1563,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -1662,27 +1616,16 @@
   },
   "/voice/v1/statement.pdf.send": {
    "post": {
-    "operationId": "statement_pdf_send",
-    "summary": "sends the statement PDF by e-mail",
+    "summary": "Sends the statement PDF by e-mail",
     "requestBody": {
      "required": true,
      "content": {
       "application/json": {
        "schema": {
         "type": "object",
-        "required": [
-         "data"
-        ],
         "properties": {
          "data": {
           "type": "object",
-          "required": [
-           "customerNo",
-           "cardNumber",
-           "currencyType",
-           "statementDate",
-           "emailAddress"
-          ],
           "properties": {
            "customerNo": {
             "type": "string"
@@ -1700,13 +1643,19 @@
             ]
            },
            "statementDate": {
-            "type": "string",
-            "description": "dd.MM.yyyy, statementDate from cards.balance"
+            "type": "string"
            },
            "emailAddress": {
             "type": "string"
            }
-          }
+          },
+          "required": [
+           "customerNo",
+           "cardNumber",
+           "currencyType",
+           "statementDate",
+           "emailAddress"
+          ]
          },
          "call": {
           "type": "object",
@@ -1719,14 +1668,17 @@
            }
           }
          }
-        }
+        },
+        "required": [
+         "data"
+        ]
        }
       }
      }
     },
     "responses": {
      "200": {
-      "description": "Success",
+      "description": "Success (result.returnCode \"1\")",
       "content": {
        "application/json": {
         "schema": {
@@ -1783,7 +1735,7 @@
       }
      },
      "400": {
-      "description": "Error, result only",
+      "description": "INVALID_ARGUMENTS_ERROR",
       "content": {
        "application/json": {
         "schema": {
@@ -1832,7 +1784,7 @@
       }
      },
      "404": {
-      "description": "Error, result only",
+      "description": "Not found (WARNING)",
       "content": {
        "application/json": {
         "schema": {
@@ -1881,7 +1833,7 @@
       }
      },
      "500": {
-      "description": "Error, result only",
+      "description": "FBE00099 technical error",
       "content": {
        "application/json": {
         "schema": {
@@ -1932,5 +1884,18 @@
     }
    }
   }
- }
+ },
+ "components": {
+  "securitySchemes": {
+   "bearer": {
+    "type": "http",
+    "scheme": "bearer"
+   }
+  }
+ },
+ "security": [
+  {
+   "bearer": []
+  }
+ ]
 }

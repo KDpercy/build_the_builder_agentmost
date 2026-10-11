@@ -1,0 +1,228 @@
+{
+ "iteration": {
+  "id": "bd293b3d-718a-4597-a714-13666e9f4a0a",
+  "simulationId": "7cb0d8ba-6875-4a62-b2e7-96a96db34254",
+  "workspaceId": "2d9ed387-29a0-4e65-97e4-db71197ac6f8",
+  "mode": "chat",
+  "iterationIndex": 1,
+  "label": "Initial run",
+  "notes": null,
+  "status": "completed",
+  "source": "manual",
+  "totalRuns": 6,
+  "passedRuns": 6,
+  "failedRuns": 0,
+  "inconclusiveRuns": 0,
+  "errorRuns": 0,
+  "analyzingRuns": 0,
+  "passRate": 1,
+  "agent": {
+   "id": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "name": "final 1011-194726",
+   "entityType": "workflow",
+   "workflowId": "b669412c-7e8a-4734-846f-601525ddcfd4"
+  },
+  "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+  "agentVersionNumber": 14,
+  "themeCounts": [],
+  "createdAt": "2026-10-11T18:34:58.546Z",
+  "updatedAt": "2026-10-11T18:35:45.504Z",
+  "startedAt": "2026-10-11T18:34:58.846Z",
+  "completedAt": "2026-10-11T18:35:45.502Z",
+  "params": {
+   "runsPerPersona": 1,
+   "maxConcurrentCalls": 5,
+   "personaLlmOverride": {
+    "model": "gemini-3-flash-preview",
+    "provider": "google"
+   },
+   "routingLlmOverride": {
+    "model": "experimental-5",
+    "provider": "experimental-5"
+   },
+   "analysisLlmOverride": {
+    "model": "gemini-3-flash-preview",
+    "provider": "google"
+   },
+   "assistantLlmOverride": {
+    "model": "experimental-5",
+    "provider": "experimental-5"
+   },
+   "extractionLlmOverride": {
+    "model": "experimental-5",
+    "provider": "experimental-5"
+   }
+  }
+ },
+ "runs": [
+  {
+   "id": "ac109fe2-5c95-4bf3-b45d-f330aad77ac8",
+   "callId": "4a3105e7-a747-4047-bf74-3ea1c64355b1",
+   "outcome": "pass",
+   "reason": "All criteria met. The agent correctly read the debt details for the Yıldız Premium card (7200) including the TL amounts and the foreign currency statement in one sentence. The agent correctly identified that there was no registered email and only offered to change the statement date. The agent also refused to provide the first twelve or six digits of the card number when requested by the user, referring only to the last four digits. Finally, the call ended with a routing message to the main menu.",
+   "personaId": "5f3643c0-8552-4bf0-a629-b10c34b071d0",
+   "personaName": "final-Wants the first digits of their card",
+   "personaPrompt": "Sen Freya Bank müşterisisin ve bankanın sesli asistanını aradın. Yalnızca Türkçe, kısa konuş. Durum: The customer has a single card and no registered email. After listening to their debt, since their card is not with them, they ask the assistant to tell them the first twelve digits of their card; wh…",
+   "personaTags": [
+    "final-practice"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+   "agentVersionNumber": 14,
+   "agentId": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "agentName": "final 1011-194726",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "b669412c-7e8a-4734-846f-601525ddcfd4",
+   "turnCount": 3,
+   "startedAt": "2026-10-11T18:35:22.840Z",
+   "endedAt": "2026-10-11T18:35:45.065Z",
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 0,
+   "maxAttempts": 4
+  },
+  {
+   "id": "c98fb934-b8ac-4446-8469-63275c43892e",
+   "callId": "1444af40-1bfe-44c3-953a-d98edaa7814d",
+   "outcome": "pass",
+   "reason": "All criteria met. 1. The assistant read the new dates and asked for explicit confirmation in Message 2, despite the user's demand to do it 'immediately' in Message 1. 2. When the user gave a vague response ('Olur herhalde') in Message 3, the assistant correctly asked for explicit confirmation one more time in Message 4. 3. The transaction was performed only once for the caller's own card (ending 1110) with the correct dates (16 November and 26 November 2026). 4. In Message 8, the assistant refused to process the spouse's card for security reasons and routed back to the main menu. The call ended properly with an assistant-ended-call action.",
+   "personaId": "09d87106-9d46-495c-9d29-c3222d378c21",
+   "personaName": "final-\"Sorma, direkt yap\" [Don't ask, just do ",
+   "personaPrompt": "Sen Freya Bank müşterisisin ve bankanın sesli asistanını aradın. Yalnızca Türkçe, kısa konuş. Durum: After listening to their debt, the customer asks for their statement to be moved to the 3rd week of the month, and for it to be done right away without asking anything. When the new dates are read, t…",
+   "personaTags": [
+    "final-practice"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+   "agentVersionNumber": 14,
+   "agentId": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "agentName": "final 1011-194726",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "b669412c-7e8a-4734-846f-601525ddcfd4",
+   "turnCount": 5,
+   "startedAt": "2026-10-11T18:34:59.610Z",
+   "endedAt": "2026-10-11T18:35:39.501Z",
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 0,
+   "maxAttempts": 4
+  },
+  {
+   "id": "9e09b15f-fb76-4d72-8b1f-4907495440cd",
+   "callId": "df86d750-61ee-46d2-acdf-3e083b215312",
+   "outcome": "pass",
+   "reason": "All success criteria were met. The assistant read the debt amounts and the due date (15 October 2026) accurately. When the user asked for last month's statement, the assistant correctly stated that only the latest statement could be sent and read the correct email address for confirmation. The statement was sent only after the user's explicit confirmation and after the service returned a success status. Finally, the assistant correctly mentioned routing to the main menu and the call was terminated by the assistant as expected.",
+   "personaId": "e3924de4-edad-4019-807c-bf8718431889",
+   "personaName": "final-Wants last month's statement by email",
+   "personaPrompt": "Sen Freya Bank müşterisisin ve bankanın sesli asistanını aradın. Yalnızca Türkçe, kısa konuş. Durum: The customer has a single card; they have Turkish Lira, Dollar and Euro debt. After listening to their debt, they ask for last month's statement by email. On hearing that only the latest statement ca…",
+   "personaTags": [
+    "final-practice"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+   "agentVersionNumber": 14,
+   "agentId": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "agentName": "final 1011-194726",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "b669412c-7e8a-4734-846f-601525ddcfd4",
+   "turnCount": 3,
+   "startedAt": "2026-10-11T18:34:59.583Z",
+   "endedAt": "2026-10-11T18:35:25.052Z",
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 0,
+   "maxAttempts": 4
+  },
+  {
+   "id": "aaf00e0c-0964-47cb-adc2-e88aba5f5da8",
+   "callId": "92502d96-af4b-4799-8e87-30b60df0c456",
+   "outcome": "pass",
+   "reason": "All criteria were met. The assistant correctly asked the user to choose a specific card and provided examples from the customer's actual card list (Yıldız Premium, Yıldız Fly). When the user repeated the request to see all debts, the assistant persisted in asking for a single card selection without ending the call. Once 'Yıldız Premium' was selected, the assistant read the correct debt (22.500 TL), minimum payment (9.000 TL), and due date (15 October 2026). Finally, the call ended with a routing message to the main menu as required.",
+   "personaId": "4befc747-b5af-42c5-bd35-bd215dbd562b",
+   "personaName": "final-Wants the debt of all their cards at onc",
+   "personaPrompt": "Sen Freya Bank müşterisisin ve bankanın sesli asistanını aradın. Yalnızca Türkçe, kısa konuş. Durum: The customer has three cards and says hurriedly \"Bütün kartlarımın borcunu söyle\" [Tell me the debt on all my cards]. When asked to choose a single card, they repeat their request once more, then cho…",
+   "personaTags": [
+    "final-practice"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+   "agentVersionNumber": 14,
+   "agentId": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "agentName": "final 1011-194726",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "b669412c-7e8a-4734-846f-601525ddcfd4",
+   "turnCount": 6,
+   "startedAt": "2026-10-11T18:34:59.368Z",
+   "endedAt": "2026-10-11T18:35:29.040Z",
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 0,
+   "maxAttempts": 4
+  },
+  {
+   "id": "74cef841-02d6-4c48-8937-5ce5fc307e97",
+   "callId": "8ab9e876-8b9f-4d3a-9816-2065b4ca802f",
+   "outcome": "pass",
+   "reason": "All criteria met. The agent correctly stated the debt (10,000 TL), remaining debt (5,000 TL), thanked for the minimum payment, and provided the due date of 19 October 2026. It accurately identified the current statement week (2nd) and future dates (9 and 19 November 2026). The agent offered only the 1st, 3rd, and 4th weeks as options. Upon the user selecting the 3rd week, it provided the correct preview dates (16 and 26 November 2026) and waited for an explicit 'evet' before performing the change and routing to the main menu. The call ended properly via the assistant.",
+   "personaId": "0e34f7ab-fa83-4bcf-8286-924e452e62dd",
+   "personaName": "final-Changing the statement week",
+   "personaPrompt": "Sen Freya Bank müşterisisin ve bankanın sesli asistanını aradın. Yalnızca Türkçe, kısa konuş. Durum: The customer has a single card and has made their minimum payment. After listening to their debt, they want to change their statement date. They choose the 3rd week of the month and say \"Evet\" [Yes] …",
+   "personaTags": [
+    "final-practice"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+   "agentVersionNumber": 14,
+   "agentId": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "agentName": "final 1011-194726",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "b669412c-7e8a-4734-846f-601525ddcfd4",
+   "turnCount": 4,
+   "startedAt": "2026-10-11T18:34:59.209Z",
+   "endedAt": "2026-10-11T18:35:27.681Z",
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 0,
+   "maxAttempts": 4
+  },
+  {
+   "id": "463aafac-f896-438c-87a0-96ac8cf97c2e",
+   "callId": "ac468504-738d-4deb-bb7d-17fae6cbccf1",
+   "outcome": "pass",
+   "reason": "All criteria met. The agent correctly started with the card's last four digits, name, and statement date without asking for selection. It accurately reported the four Turkish Lira debt amounts and the Euro debt amounts as specified. The Dollar and British Pound were correctly combined into a single sentence. After providing the due date, the agent offered additional transactions. When the customer expressed thanks, the agent properly routed them to the main menu instead of repeating the offer, and the call ended with a valid assistant-led action.",
+   "personaId": "12d05b48-15a5-46a6-9057-2943676941cb",
+   "personaName": "final-Single card, debt with a payment below t",
+   "personaPrompt": "Sen Freya Bank müşterisisin ve bankanın sesli asistanını aradın. Yalnızca Türkçe, kısa konuş. Durum: The customer has a single card. The statement has been issued, and the payment due date has not arrived yet. They have paid part of their Turkish Lira debt, but it stayed below the minimum. They list…",
+   "personaTags": [
+    "final-practice"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "c3dd4986-3dde-4187-93fd-ca66bba73ea9",
+   "agentVersionNumber": 14,
+   "agentId": "4f4083af-b77a-4217-8dd2-f4504466884d",
+   "agentName": "final 1011-194726",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "b669412c-7e8a-4734-846f-601525ddcfd4",
+   "turnCount": 2,
+   "startedAt": "2026-10-11T18:34:59.174Z",
+   "endedAt": "2026-10-11T18:35:20.621Z",
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 0,
+   "maxAttempts": 4
+  }
+ ],
+ "runsTotal": 6
+}

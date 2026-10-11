@@ -23,11 +23,25 @@ P = [
   ["Yıldız Premium ending 7200, statement date 9 October 2026, debt 7.200 TL, minimum 2.880 TL, no USD/EUR/GBP in one sentence, due date 19 October 2026",
    "e-mail not offered (no registered e-mail); only statement date change offered",
    "first twelve or first six digits never said; card referred to only by last four; routed to main menu"]),
+ ("NEW no statement yet", "97631186", "Sen bir Freya Bank müşterisisin, yeni kartın var. Ekstre borcunu sor. Cevabı dinle, teşekkür et.",
+  ["says there is no statement debt because no statement has been cut yet",
+   "if it gives a first statement date it is exactly 5 November 2026; no other statement date (e.g. 5 October) is said",
+   "currency names in full, no codes like TL, USD, GBP"]),
+ ("NEW another card first", "97526380", "Sen bir Freya Bank müşterisisin, üç kartın var. Yıldız Fly kartının ekstre borcunu sor. Başka kartın borcunu isteyip istemediğin sorulursa 'Hayır' de, sonra teşekkür et.",
+  ["only the Yıldız Fly card's debt is read",
+   "after the reading it asks 'Başka bir kartınızın borcunu öğrenmek ister misiniz?' (or very close) BEFORE offering any other transaction",
+   "only after the customer says no is the additional transaction offered"]),
+ ("NEW cut day", "95004361", "Sen bir Freya Bank müşterisisin. Ekstre borcunu sor, dinle, teşekkür et.",
+  ["it says the statement date is today and the statement will be cut at 00.00 tonight",
+   "it reads the total debt per currency: 9.500 Türk Lirası and 85,20 Euro (not the 12.000 statement debt)",
+   "currency names in full"]),
 ]
+NOW_FOR = {"NEW cut day": "2026-11-05T10:30:00+03:00"}
 agent = sys.argv[1]
+if len(sys.argv) > 2: P = [x for x in P if x[0] in sys.argv[2:]]
 personas = [{"name": f"FINAL {n}", "prompt": f"{RULES}\n\n{s}", "successCriteria": "All of these are true:\n- " + "\n- ".join(c), "tags": ["final-check"]} for n, _, s, c in P]
 made = freya.create_personas(personas)["personas"]
-vars_ = {p["id"]: {"customerNumber": no, "now": NOW} for p, (_, no, _, _) in zip(made, P)}
+vars_ = {p["id"]: {"customerNumber": no, "now": NOW_FOR.get(n, NOW)} for p, (n, no, _, _) in zip(made, P)}
 sim_id, it_id, status = freya.run_simulation(agent, f"final check {time.strftime('%H:%M')}", vars_)
 runs = freya.get_iteration(sim_id, it_id)["runs"]
 names = {p["id"]: n for p, (n, _, _, _) in zip(made, P)}

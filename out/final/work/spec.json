@@ -1,0 +1,18 @@
+{
+ "kind": "inbound statement-debt service call (Turkish); own generator work/build_workflow.py",
+ "call_variables": {"customerNumber": "8-digit customer number from the IVR, never asked", "now": "call time, Istanbul, ISO; all date decisions"},
+ "language": "tr",
+ "tools": {"cards_list": "customerNo={{customerNumber}}, aiFlow=CardOps", "cards_balance": "cardNumber from cards_list", "statement_week_get": "cardNumber", "statement_week_decide": "cardNumber, newStatementWeek, statementDay", "statement_week_change": "same, after explicit yes", "contact_email_get": "customerNo, intAddressInfoType=E", "statement_pdf_send": "customerNo, cardNumber, currencyType=TL, statementDate, emailAddress=registered"},
+ "tool_timeout_ms": 20000,
+ "tool_timeout_reason": "test data has a 12 s delay; contract: answers can take longer than ten seconds and still succeed; no timeout agreed",
+ "conflicts": [
+  {"topic": "angry caller", "winner": "2026-10-09 recap: three calming replies", "loser": "Deniz's draft: two"},
+  {"topic": "out-of-scope question", "winner": "2026-10-09 recap: ask 'Size bu konuda yardımcı olamıyorum. Sizi ana menüye aktarmamı ister misiniz?'", "loser": "2026-10-08 analysis 8.4: send straight to main menu"},
+  {"topic": "currency names", "winner": "2026-10-10: İngiliz Sterlini in full", "loser": "Ozan's 'Sterlin' suggestion"},
+  {"topic": "new card without statement", "winner": "2026-10-10: no-statement sentence + first cut date from service", "loser": "no-debt sentence with a date"},
+  {"topic": "card number masking", "winner": "2026-10-09: never more than last four digits whatever the service returns", "loser": "test masked form"},
+  {"topic": "another card before offer", "winner": "2026-10-10 and 8 Oct 5.1", "loser": "Freya's first test build"},
+  {"topic": "e-mail address", "winner": "analysis: registered address only", "loser": "FAQ: any address"}
+ ],
+ "gaps": ["no service flag for the yearly statement-week change right: the change is offered; the yearly sentence is used only if the caller says it was already used", "client timeout not agreed: 20 s used", "exact sentence for remaining automatic payment not given: paraphrased", "foreign currency moved into TL (transferAmount) line not drafted by the bank: not spoken", "third-party IVR login hand-back mechanism unknown: security sentence then main-menu closing"]
+}
