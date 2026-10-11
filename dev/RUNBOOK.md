@@ -29,8 +29,15 @@ the final exports.
        briefs/final1/   (brief file(s) + its tool API file)
        briefs/final2/
    Do not edit them. Commit them as received.
-2. Practice customers? If Freya says yes and gives a brief letter for run_cases, set
-   BUILD_PRACTICE=<letter> on that build. Otherwise leave it unset.
+2. Practice customers? Look at what came with the brief:
+   - nothing about practice customers -> leave BUILD_PRACTICE unset (the build only validates,
+     smoke-tests and dry-runs; ~3 min, ~$0.75)
+   - a cases/test-set JSON file (same shape as public-test-set.json) -> save it in the brief's
+     folder and add BUILD_PRACTICE=briefs/final1/<cases file>.json before python3 in the command
+   - a new public-test-set.json with a new brief letter -> replace ours, commit, and add
+     BUILD_PRACTICE=<letter>
+   With practice customers a build runs simulations (one at a time, ~10-20 min): build the two
+   briefs one after the other, never at the same time.
 3. Build each brief, one at a time (≈5-15 min each). A brief made of several files: pass all of
    them, in a sensible order (earlier documents first, memos last):
        (source env.sh && source env.builder.sh && python3 builder/build.py briefs/final1/<tool api>.json briefs/final1/<file1> [<file2> ...])

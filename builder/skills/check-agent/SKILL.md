@@ -27,7 +27,7 @@ Cheapest first. A check must be able to fail. Stop testing when the time limit i
        python3 -c "import freya,json; print(freya.validate_workflow('<slot>', json.load(open('work/workflow.json'))))"
 4. Platform tests, only if the bank has practice customers for this brief:
        python3 -c "import freya,json; print(freya.save_workflow('<slot>', json.load(open('work/workflow.json'))))"
-       python3 builder/run_tests.py <agent_id> --brief <letter> --out work/run.json
+       python3 builder/run_tests.py <agent_id> <the practice arguments your prompt gives> --out work/run.json
    (run_tests.py wraps tools/run_cases.py and survives short platform outages; use it, not run_cases.py directly)
    Read each FAIL line; read the call with freya.get_call(call_id) before changing anything.
    An outage is not a bug: if the calls show no tool calls at all, or agent turns of 0 seconds, or

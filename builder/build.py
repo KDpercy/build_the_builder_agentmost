@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "builder"))
 
 BUDGET_S = int(os.environ.get("BUILD_BUDGET_S", str(25 * 60)))     # rule: 30 minutes per brief, tests included
 MODEL = os.environ.get("BUILDER_MODEL", "claude-opus-5-5")
+PRACTICE_CASES = "practice-cases.json"
 KIT_FILES = ["freya.py", "docs", "tools", "examples/base-agent.json", "public-test-set.json"]
 # builder/tests is staged for its invented example spec (test_generate.py); it has no brief values.
 BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/smoke.py", "builder/run_tests.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
@@ -97,6 +98,8 @@ def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
     shutil.copy2(api_file, st / "input" / api_file.name)
     for b in briefs:
         shutil.copy2(b, st / "input" / pathlib.Path(b).name)
+    if practice_args(os.environ.get("BUILD_PRACTICE", "")) and os.environ["BUILD_PRACTICE"].strip().endswith(".json"):
+        shutil.copy2(os.environ["BUILD_PRACTICE"].strip(), st / "input" / PRACTICE_CASES)
     state = ROOT / ".freya-agents.json"          # same slot -> same workflow on every run (rule 5)
     if not state.exists():
         state.write_text("{}")
@@ -106,10 +109,23 @@ def stage(slot: str, api_file: pathlib.Path, briefs: list) -> pathlib.Path:
     return st
 
 
+def practice_args(practice: str):
+    """BUILD_PRACTICE is a brief letter of the kit's public-test-set.json ("A") or the path of a
+    cases file the bank handed out with the brief. Empty: the bank has no practice customers."""
+    practice = practice.strip()
+    if not practice:
+        return None
+    if practice.endswith(".json"):
+        if not pathlib.Path(practice).is_file():
+            sys.exit(f"BUILD_PRACTICE file not found: {practice}")
+        return f"--cases input/{PRACTICE_CASES}"
+    return f"--brief {practice}"
+
+
 def prompt_for(slot: str, api_name: str, brief_names: list, deadline: float) -> str:
-    practice = os.environ.get("BUILD_PRACTICE", "").strip()       # e.g. "A" when the bank has practice customers
-    tests = (f"The bank has practice customers for this brief: python3 builder/run_tests.py <agent_id> --brief {practice}. "
-             if practice else "The bank has NO practice customers for this brief: do not run any practice test at all. ")
+    args = practice_args(os.environ.get("BUILD_PRACTICE", ""))
+    tests = (f"The bank has practice customers for this brief: python3 builder/run_tests.py <agent_id> {args}. "
+             if args else "The bank has NO practice customers for this brief: do not run any practice test at all. ")
     return (
         f"Build a Freya phone agent. Slot: {slot}. Tool API file: input/{api_name}. "
         f"Brief files: {', '.join('input/' + b for b in brief_names)}. "

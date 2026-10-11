@@ -26,6 +26,25 @@ class TestBuild(unittest.TestCase):
         self.assertNotEqual(one, two)
         self.assertEqual(one, "final1-brief")
 
+    def test_practice_option(self):
+        with tempfile.TemporaryDirectory() as d:
+            cases = pathlib.Path(d) / "final-cases.json"
+            cases.write_text("[]")
+            self.assertIsNone(B.practice_args(""))
+            self.assertEqual(B.practice_args("C"), "--brief C")
+            self.assertEqual(B.practice_args(str(cases)), "--cases input/practice-cases.json")
+            with self.assertRaises(SystemExit):
+                B.practice_args(str(pathlib.Path(d) / "missing.json"))
+            os.environ["BUILD_PRACTICE"] = str(cases)
+            try:
+                text = B.prompt_for("s", "api.json", ["b.md"], 0)
+                st = B.stage("s", cases, [str(cases)])
+                self.assertTrue((st / "input" / "practice-cases.json").exists())
+            finally:
+                del os.environ["BUILD_PRACTICE"]
+            self.assertIn("run_tests.py <agent_id> --cases input/practice-cases.json", text)
+            self.assertIn("NO practice customers", B.prompt_for("s", "api.json", ["b.md"], 0))
+
     def test_trace_scrubs_keys(self):
         with tempfile.TemporaryDirectory() as d:
             os.environ["FREYA_BANK_TEAM_KEY"] = "team-secret-123456"

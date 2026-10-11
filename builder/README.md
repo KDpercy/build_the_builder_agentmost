@@ -7,8 +7,9 @@ One command turns a bank's brief files and its tool API file into a Freya phone 
 Needs `FREYA_API_KEY`, `FREYA_BANK_TEAM_KEY` (see `env.example`) and `ANTHROPIC_API_KEY`
 (or a Claude login), and `pip install claude-agent-sdk`. A brief made of several documents
 (a mail, a policy, a memo, a code list) is passed as several files. Optional environment:
-`BUILDER_MODEL` (default `claude-opus-5-5`), `BUILD_PRACTICE=<letter>` when the bank has practice
-customers for the brief (otherwise no platform tests are run), `BUILD_BUDGET_S` (default 1500).
+`BUILDER_MODEL` (default `claude-opus-5-5`), `BUILD_PRACTICE` when the bank has practice customers for
+the brief: a brief letter of `public-test-set.json` or the path of a cases file handed out with the
+brief (otherwise no platform tests are run), `BUILD_BUDGET_S` (default 1500).
 
 ## What one run does
 1. **Stage.** Copies the inputs, the kit files and the builder's library into a temporary folder
