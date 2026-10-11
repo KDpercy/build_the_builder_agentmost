@@ -86,4 +86,5 @@ Our command: `python3 builder/build.py <tool_api_file> <brief_file> [<brief_file
 - Last scores: hand A 10/10 --reps 3; hand B 3/3 --reps 3; reference A 9/10, B 3/3;
   builder run 1 (A) 10/10 own test; builder run 2 (V1) spec matches answer key
 - Next step: see the MORNING REPORT in dev/HANDOFF.md
-- Known problems: Freya simulation stuck since 00:06 Sun (blocks all tests); no GitHub remote
+- GitHub: private repo https://github.com/KDpercy/build_the_builder_agentmost (pushed 11:10 Sun)
+- Known problems: Freya platform unstable at times (502/503/504, stuck simulations)
