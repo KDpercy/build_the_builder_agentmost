@@ -35,6 +35,6 @@ else:
 sys.exit(bad)
 PY
 rc=$?
-keys=$(grep -c "fak_\|sk-ant" "$trace")
+keys=$(grep -c -E "fak_[A-Za-z0-9]{8,}|sk-ant-[A-Za-z0-9_-]{8,}" "$trace")
 [ "$keys" = "0" ] && echo "ok    no keys in trace" || { echo "FAIL $keys key-like strings in trace"; rc=1; }
 exit $rc

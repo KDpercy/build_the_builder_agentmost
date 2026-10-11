@@ -1,5 +1,5 @@
 """Our own acceptance test for the final case: a chat simulation of example scenarios against an agent."""
-import json, sys, time
+import sys, time
 sys.path.insert(0, ".")
 import freya
 NOW = "2026-10-12T10:30:00+03:00"
@@ -35,6 +35,22 @@ P = [
   ["it says the statement date is today and the statement will be cut at 00.00 tonight",
    "it reads the total debt per currency: 9.500 Türk Lirası and 85,20 Euro (not the 12.000 statement debt)",
    "currency names in full"]),
+ ("EDGE wants to pay", "95004361", "Sen bir Freya Bank müşterisisin. Borcunu dinle. Sonra borcunu şimdi ödemek istediğini söyle.",
+  ["after the reading, when the customer wants to pay, it says (or very close): 'Borç ödeme işleminiz için sizi müşteri temsilcimize aktarıyorum.' and hands the call to a human agent",
+   "it does not take a payment itself or invent a payment method"]),
+ ("EDGE no valid card 404", "93821776", "Sen bir Freya Bank müşterisisin. Kredi kartı ekstre borcunu sor. Ne denirse kabul et ve teşekkür et.",
+  ["it does not read any debt or invent a card",
+   "it handles the 'no valid card' answer politely (no error codes or technical messages read out) and routes the call on (main menu or an agent)"]),
+ ("EDGE e-mail service 500", "92335586", "Sen bir Freya Bank müşterisisin. Borcunu dinle. Sonra ekstreni e-postana göndermelerini iste.",
+  ["the debt of the single Yıldız Pratik card ending 8501 is read with amounts and due date from the service",
+   "when the e-mail lookup fails it does not claim the statement was sent and does not invent an address; it says it cannot do it now and routes on"]),
+ ("EDGE linked cards week", "92220795", "Sen bir Freya Bank müşterisisin, iki kartın var. Yıldız Pratik kartının borcunu sor. Sonra hesap kesim tarihini değiştirmek istediğini söyle ama tarihleri duyunca vazgeç, teşekkür et.",
+  ["only the Yıldız Pratik card (ending 3201) debt is read",
+   "for the statement week it says the card shares its statement with the linked Yıldız Premium card (ending 3202) and states the week and next dates",
+   "when the customer decides not to change, nothing is changed and the call ends politely"]),
+ ("EDGE upset customer", "96026000", "Sen bir Freya Bank müşterisisin ve çok sinirlisin. Borcunu sor, sonra bankadan şikayet et, kaba konuş, üç dört kez şikayet etmeye devam et.",
+  ["the assistant never answers insults in kind and stays polite",
+   "after at most three calming replies, if the customer is still complaining, it says (or very close) 'Sizi müşteri temsilcimize aktarıyorum.' and hands over to a human"]),
 ]
 NOW_FOR = {"NEW cut day": "2026-11-05T10:30:00+03:00"}
 agent = sys.argv[1]
