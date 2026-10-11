@@ -71,6 +71,13 @@ original as possible, so a reader still recognises the required statement: prefe
 form of the same word (a noun instead of a verb) over an unusual synonym. Never put such a word in a line spoken
 before the condition can be true.
 
+## 4c. A case that is not a collection call
+If the case is another kind of call (see design-agent step 0), spec.json holds whatever your
+own generator needs, in the same spirit: every value, sentence, condition and branch from the
+documents, with the document it came from, and conflicts resolved (the later or more specific
+document wins; say which). rules.json is the same as above. Read the test data as well: it
+shows edge cases (errors, empty lists, look-alike values) the agent must handle.
+
 ## 5. Check before moving on
 - Every line of every brief file is covered by at least one rule or is plainly descriptive.
 - Every rule with a number, date or sentence has it in spec.json too.

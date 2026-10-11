@@ -72,3 +72,26 @@ class TestNodes(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestApiShapes(unittest.TestCase):
+    SPEC2 = {"servers": [{"url": "https://mock"}], "paths": {
+        "/cards/get": {"post": {"requestBody": {"content": {"application/json": {"schema": {"properties": {"customerNo": {"type": "string"}}}}}}}},
+        "/statement/week/get": {"post": {}},
+        "/contact/email": {"get": {"parameters": [{"name": "customerNo", "in": "query", "required": True}]}},
+        "/cards/{cardNumber}/balance": {"get": {"operationId": "cards.balance",
+                                               "parameters": [{"name": "cardNumber", "in": "path", "required": True}]}}}}
+
+    def test_names_never_collide(self):
+        self.assertEqual(sorted(N.api_spec_tools(self.SPEC2)), ["cards_balance", "cards_get", "email", "statement_week_get"])
+
+    def test_query_and_path_parameters_go_into_the_url(self):
+        api = N.api_spec_tools(self.SPEC2)
+        url = N.api_tool(api, "email", "x", baked={"customerNo": "{{customerNumber}}"})["function"]["parameters"]["properties"]["url"]["default"]
+        self.assertEqual(url, "https://mock/contact/email?customerNo={{customerNumber}}")
+        url = N.api_tool(api, "cards_balance", "x")["function"]["parameters"]["properties"]["url"]["default"]
+        self.assertEqual(url, "https://mock/cards/{{cards_balance_cardNumber}}/balance")
+
+    def test_validator_names_tools_the_same_way(self):
+        import validate as V
+        self.assertEqual(sorted(V.load_api(self.SPEC2)), sorted(N.api_spec_tools(self.SPEC2)))

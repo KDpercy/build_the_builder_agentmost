@@ -22,12 +22,15 @@ function pick(sources, names) {
   return undefined;
 }
 
-// A card-keyed service: exact masked number first, then the same last four digits.
+// A card-keyed service: the masked number exactly as cards.list gave it. Another mask of the same
+// card (first 4 + last 4, as cards.balance shows it) matches only when exactly one card has those
+// visible first digits and those last four.
 function byCard(table, card) {
   if (!table || !card) return undefined;
   if (table[card]) return table[card];
-  const last4 = card.replace(/\D/g, "").slice(-4);
-  const keys = Object.keys(table).filter((k) => k.replace(/\D/g, "").slice(-4) === last4);
+  const m = String(card).match(/^(\d*)\D+(\d{4})$/);
+  if (!m || m[1].length < 4) return undefined;
+  const keys = Object.keys(table).filter((k) => k.startsWith(m[1]) && k.endsWith(m[2]));
   return keys.length === 1 ? table[keys[0]] : undefined;
 }
 

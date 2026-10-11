@@ -181,13 +181,18 @@ def case_prompt(slot: str, api_rel, deadline: float) -> str:
         "Use the read-brief, design-agent and check-agent skills in that order. If the call is not the kind the "
         "reference generator builds, design-agent tells you how to write your own generator. Speak the language the "
         "case says the calls are in. "
+        "The call variables the case names (for example a customer number and the call time) are the only facts the "
+        "agent has at the start: use them as {{name}} placeholders exactly as the case spells them, and list them under "
+        "call_variables in work/validate-rules.json. Set every tool's timeoutMs above the slowest answer the case "
+        "documents (test data may include delays) unless the case gives a timeout. "
         "Work only inside this folder. Write the final workflow to work/workflow.json and copy every version that "
         "passes builder/validate.py to work/good.workflow.json. "
         f"Hard time limit: finish before {time.strftime('%H:%M', time.localtime(deadline))} local time. "
         "When in doubt, stop and leave a valid work/workflow.json. "
         "Run every command in the foreground and wait for it: never use nohup, & or background jobs. "
-        "The bank has NO practice customers on Freya for this case: do not run run_tests.py; use the validator, "
-        "smoke checks you write for your code steps, and the platform dry run."
+        "The bank has NO practice customers on Freya for this case: do not run run_tests.py. Check with the validator, "
+        "smoke checks you write for your code steps, the platform dry run, and conversations through "
+        "builder/chat_test.py (see check-agent) against the bank's test customers, whose answers the services return."
     )
 
 
@@ -299,6 +304,8 @@ def main(argv: list) -> int:
     case = pathlib.Path(argv[1]).resolve() if len(argv) == 2 and pathlib.Path(argv[1]).is_dir() else None
     if case is not None:
         api_file, briefs = find_openapi(case), []
+        if api_file is None and not os.environ.get("BUILD_TOOL_BASE_URL", "").strip():
+            sys.exit("The case has no OpenAPI file: set BUILD_TOOL_BASE_URL to the bank's services (or your mock of them).")
         slot = os.environ.get("BUILD_SLOT") or slot_name([str(case / "case")]).replace("-case", "") or "case"
     else:
         api_file, briefs = pathlib.Path(argv[1]).resolve(), [str(pathlib.Path(b).resolve()) for b in argv[2:]]

@@ -4,24 +4,64 @@ Nothing here is specific to one brief: no URL, field name, allowed value or sent
 """
 
 
+import re
+from collections import Counter
+
+
+def _clean(text: str) -> str:
+    return re.sub(r"[^A-Za-z0-9_]+", "_", text).strip("_")
+
+
+def tool_names(spec: dict) -> dict:
+    """(path, method) -> tool name: the operationId, else the last path segment, else (when two
+    services share that segment, e.g. /cards/get and /statement/week/get) the whole path."""
+    ops = [(path, method, op) for path, m in spec.get("paths", {}).items() for method, op in m.items()
+           if isinstance(op, dict)]
+    last = Counter(_clean(path.strip("/").split("/")[-1]) for path, _, _ in ops)
+    out = {}
+    for path, method, op in ops:
+        seg = _clean(path.strip("/").split("/")[-1])
+        name = _clean(op.get("operationId", "")) or (seg if last[seg] == 1 else _clean(path.strip("/").replace("/", "_")))
+        out[(path, method)] = name
+    return out
+
+
 def api_spec_tools(spec: dict) -> dict:
-    """Tool name -> {"url", "props": {field: schema}, "required": [...]} from an OpenAPI file."""
+    """Tool name -> {"url", "method", "props": body fields, "required", "params": query/path
+    parameters, "summary"} from an OpenAPI file."""
     base = (spec.get("servers") or [{}])[0].get("url", "").rstrip("/")
+    names = tool_names(spec)
     tools = {}
-    for path, ops in spec.get("paths", {}).items():
-        for method, op in ops.items():
-            schema = (op.get("requestBody", {}).get("content", {})
-                      .get("application/json", {}).get("schema", {}))
-            tools[path.strip("/").split("/")[-1]] = {
-                "url": base + path, "method": method.upper(),
-                "props": schema.get("properties", {}), "required": schema.get("required", []),
-                "summary": op.get("summary", "") or op.get("description", ""),
-            }
+    for (path, method), name in names.items():
+        op = spec["paths"][path][method]
+        schema = (op.get("requestBody", {}).get("content", {})
+                  .get("application/json", {}).get("schema", {}))
+        params = {p["name"]: {"in": p.get("in", "query"), "required": bool(p.get("required")),
+                              "schema": p.get("schema", {}), "description": p.get("description", "")}
+                  for p in op.get("parameters", []) if isinstance(p, dict) and p.get("in") in ("query", "path")}
+        tools[name] = {
+            "url": base + path, "method": method.upper(),
+            "props": schema.get("properties", {}), "required": schema.get("required", []),
+            "params": params, "summary": op.get("summary", "") or op.get("description", ""),
+        }
     return tools
 
 
+def tool_url(t: dict, name: str, baked: dict) -> str:
+    """The URL with path parameters filled and query parameters appended, each from a call
+    variable (baked) or a model-filled placeholder."""
+    url, query = t["url"], []
+    for p, info in t.get("params", {}).items():
+        value = baked.get(p, "{{" + name + "_" + p + "}}")
+        if info["in"] == "path":
+            url = url.replace("{" + p + "}", value)
+        else:
+            query.append(f"{p}={value}")
+    return url + ("?" + "&".join(query) if query else "")
+
+
 def api_tool(api: dict, name: str, description: str, fields: dict | None = None, baked: dict | None = None,
-             pre: str = "", post: str = "", retries: int = 0, timeout_ms: int = 12000) -> dict:
+             pre: str = "", post: str = "", retries: int = 0, timeout_ms: int = 20000) -> dict:
     """An api_call tool for `name`, every body field taken from the tool API.
 
     fields: per-field overrides {field: {"description", "default", "enum"}} for model-filled fields.
@@ -50,7 +90,7 @@ def api_tool(api: dict, name: str, description: str, fields: dict | None = None,
         "function": {
             "name": name, "handler": "__function__:api_call", "description": description,
             "parameters": {"type": "object", "properties": {
-                "url": {"type": "string", "default": t["url"]},
+                "url": {"type": "string", "default": tool_url(t, name, baked)},
                 "method": {"type": "string", "default": t["method"]},
                 "headers": {"type": "object", "properties": {"Content-Type": {"type": "string", "default": "application/json"}}},
                 "body": {"type": "object", "properties": props, "required": list(t["required"])},

@@ -27,15 +27,12 @@ DYNAMIC_WRITE = re.compile(r"vars\[([^\]]*\+[^\]]*)\]\s*=")
 
 
 def load_api(spec: dict) -> dict:
-    """Map tool name -> {"props": {field: enum or None}, "required": [...]} from an OpenAPI file."""
-    tools = {}
-    for path, ops in spec.get("paths", {}).items():
-        for op in ops.values():
-            schema = (op.get("requestBody", {}).get("content", {})
-                      .get("application/json", {}).get("schema", {}))
-            props = {k: v.get("enum") for k, v in schema.get("properties", {}).items()}
-            tools[path.strip("/").split("/")[-1]] = {"props": props, "required": schema.get("required", [])}
-    return tools
+    """Map tool name -> {"props": {field: enum or None}, "required": [...], "params": {...}} from an
+    OpenAPI file, named exactly as the workflow building blocks name them."""
+    from lib.nodes import api_spec_tools
+    return {name: {"props": {k: v.get("enum") for k, v in t["props"].items()}, "required": t["required"],
+                   "params": t["params"]}
+            for name, t in api_spec_tools(spec).items()}
 
 
 def all_tools(node: dict) -> list:
@@ -183,6 +180,10 @@ def check_tools(wf: dict, api: dict) -> list:
             for field in api[tool]["required"]:
                 if field not in body:
                     out.append((ERROR, f"{name}: {tool} is missing required field {field!r}"))
+            url = str(fn.get("parameters", {}).get("properties", {}).get("url", {}).get("default", ""))
+            for p, info in api[tool].get("params", {}).items():
+                if info["required"] and (p + "=" not in url if info["in"] == "query" else "{" + p + "}" in url):
+                    out.append((ERROR, f"{name}: {tool} url does not fill the {info['in']} parameter {p!r}"))
     return out
 
 
