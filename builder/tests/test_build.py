@@ -115,6 +115,22 @@ class TestRunTests(unittest.TestCase):
                 {"id": "old-done", "status": "completed", "updatedAt": ago(90)}]
         self.assertEqual([s["id"] for s in R.stuck(sims)], ["hung"])
 
+    def test_freya_retries_only_reads_and_cancels(self):
+        import run_tests as R
+        R.PAUSE_S = 0
+        calls = []
+
+        def api(method, path, *a, **k):
+            calls.append(method)
+            raise RuntimeError(f"{method} {path} -> 504: error code: 504")
+        safe = R.freya_retry(api)
+        for method, path, tries in (("GET", "/api/v2/simulations", 3), ("POST", "/api/v2/simulations/x/cancel", 3),
+                                    ("POST", "/api/v2/simulations", 1)):
+            calls.clear()
+            with self.assertRaises(RuntimeError):
+                safe(method, path)
+            self.assertEqual(len(calls), tries, (method, path))
+
     def test_retry_on_platform_errors_only(self):
         import run_tests as R
         R.PAUSE_S = 0

@@ -2,8 +2,9 @@
 
     python3 builder/run_tests.py <agent_id> <run_cases.py arguments...>
 
-- Runs tools/run_cases.py in this process with every Freya API call and bank call retried on
-  5xx errors and timeouts (3 tries, 10 s apart). The kit's freya.py does not retry.
+- Runs tools/run_cases.py in this process with Freya reads and cancels and every bank call retried
+  on 5xx errors and timeouts (3 tries, 10 s apart). The kit's freya.py does not retry. A Freya
+  POST that creates something is never repeated (a 504 may hide a success).
 - Never stops a running test. If run_cases still fails, waits until the workspace has no running
   simulation, then runs once more.
 - A simulation of ours that stays "running" with no update for 15 minutes (twice the 7-minute call
@@ -44,11 +45,22 @@ def with_retry(fn):
     return wrapped
 
 
+def freya_retry(api):
+    """Retry only what is safe to repeat: reads and cancels. A POST that creates something (a
+    simulation) may have gone through behind a 504, so repeating it could start a second one."""
+    retrying = with_retry(api)
+
+    def wrapped(method, path, *args, **kwargs):
+        safe = method == "GET" or str(path).endswith("/cancel")
+        return (retrying if safe else api)(method, path, *args, **kwargs)
+    return wrapped
+
+
 def patch_clients() -> None:
     import freya
     import score
     if not getattr(freya.api, "_retrying", False):
-        freya.api = with_retry(freya.api)
+        freya.api = freya_retry(freya.api)
         freya.api._retrying = True
     if not getattr(score.http, "_retrying", False):
         score.http = with_retry(score.http)
