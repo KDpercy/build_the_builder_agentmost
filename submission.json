@@ -1,0 +1,10 @@
+{
+  "team": "Kerem Dak",
+  "members": [{ "name": "Kerem Dak", "email": "dakkerem@gmail.com" }],
+  "repo": "https://github.com/KDpercy/build_the_builder_agentmost",
+  "commit": "TO FILL: the commit of the final builder run",
+  "run_command": "BUILD_TOOL_BASE_URL=https://freya-bank-mock.dakkerem.workers.dev python3 builder/build.py {case_folder}",
+  "workflow": "submission/final.workflow.json",
+  "trace": "TO FILL: traces/final-<time>.jsonl",
+  "mock_url": "https://freya-bank-mock.dakkerem.workers.dev"
+}
