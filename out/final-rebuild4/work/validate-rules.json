@@ -1,0 +1,4 @@
+{"call_variables": ["customerNumber", "now"],
+ "restricted_words": [],
+ "required_sentences": ["Sizi ana menüye yönlendiriyorum.", "Sizi müşteri temsilcimize aktarıyorum.", "Borç ödeme işleminiz için sizi müşteri temsilcimize aktarıyorum."],
+ "forbidden_before_verification": []}

@@ -1,0 +1,129 @@
+{
+ "rules": [
+  {
+   "id": "R1",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "The assistant does **not** ask for any code, PIN or date of birth.",
+   "kind": "identity",
+   "rule": "Never ask for code, PIN or birth date.",
+   "implemented_by": "system_prompt"
+  },
+  {
+   "id": "R2",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "One eligible card: it is the card. No question, go to the debt.",
+   "kind": "other",
+   "rule": "Single card is read without asking.",
+   "implemented_by": "cards_list post hook yapilacak"
+  },
+  {
+   "id": "R3",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "At most two examples, and only names from this caller's own list.",
+   "kind": "other",
+   "rule": "Selection question gives max two own card names.",
+   "implemented_by": "cards_list post hook"
+  },
+  {
+   "id": "R4",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "Every reading opens with “Sonu [son 4 hane] ile biten [kart adı]”, every time, also on the second card in the same call.",
+   "kind": "debt_statement",
+   "rule": "Reading opens with last four and card name.",
+   "implemented_by": "cards_balance post hook"
+  },
+  {
+   "id": "R5",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "Currency names in full, never the code: TL → Türk Lirası, USD → Dolar, EUR → Euro, GBP → İngiliz Sterlini.",
+   "kind": "forbidden",
+   "rule": "Full currency names.",
+   "implemented_by": "cards_balance post hook + system_prompt"
+  },
+  {
+   "id": "R6",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "A currency whose block is missing or empty in `cards.balance` (the card simply doesn't have it) is **left out** of this sentence.",
+   "kind": "debt_statement",
+   "rule": "Missing blocks are omitted.",
+   "implemented_by": "cards_balance post hook"
+  },
+  {
+   "id": "R7",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "Only a clear \"evet\" counts.",
+   "kind": "read_back",
+   "rule": "Only explicit evet confirms week change.",
+   "implemented_by": "assistant task step 6"
+  },
+  {
+   "id": "R8",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "Only after a clear yes, call `statement.pdf.send`, and only ever with the registered address.",
+   "kind": "special_case",
+   "rule": "PDF only after yes, registered address only.",
+   "implemented_by": "assistant task step 5"
+  },
+  {
+   "id": "R9",
+   "file": "2026-10-08-statement-debt-analysis.md",
+   "quote": "The caller asks for a person, at any point: put them through at once, no tries, no persuading.",
+   "kind": "special_case",
+   "rule": "Immediate transfer on request.",
+   "implemented_by": "system_prompt"
+  },
+  {
+   "id": "R10",
+   "file": "2026-10-09-decisions-recap.txt",
+   "quote": "Whatever comes back, the assistant never reads out",
+   "kind": "forbidden",
+   "rule": "Never read more than the last four digits of a card.",
+   "implemented_by": "system_prompt"
+  },
+  {
+   "id": "R11",
+   "file": "2026-10-09-decisions-recap.txt",
+   "quote": "One correction: on the angry caller it was three calming replies, not two.",
+   "kind": "special_case",
+   "rule": "Three calming replies before transfer (recap wins).",
+   "implemented_by": "system_prompt"
+  },
+  {
+   "id": "R12",
+   "file": "2026-10-10-follow-up-session-transcript.txt",
+   "quote": "If there is another card, first that.",
+   "kind": "multi_product",
+   "rule": "Another-card question before offer.",
+   "implemented_by": "assistant task step 3"
+  },
+  {
+   "id": "R13",
+   "file": "2026-10-10-follow-up-session-transcript.txt",
+   "quote": "Opening whichever, then the total debt.",
+   "kind": "dates",
+   "rule": "On cut day read total debt.",
+   "implemented_by": "cards_balance post hook kesim_gunu_metni"
+  },
+  {
+   "id": "R14",
+   "file": "2026-10-01-service-contract.md",
+   "quote": "Card number: always send the `cardNumber` **exactly as `cards.list` returned it**.",
+   "kind": "other",
+   "rule": "Use cardNumber as returned.",
+   "implemented_by": "tool parameter descriptions"
+  }
+ ],
+ "conflicts": [
+  {
+   "topic": "angry caller",
+   "earlier": "5. Angry or abusive caller: up to two calming replies, then agent.",
+   "later": "One correction: on the angry caller it was three calming replies, not two.",
+   "winner": "three"
+  },
+  {
+   "topic": "another card before offer",
+   "later": "If there is another card, first that.",
+   "winner": "another-card question first"
+  }
+ ]
+}

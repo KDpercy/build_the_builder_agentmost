@@ -1,0 +1,15 @@
+{
+ "kind": "inbound statement debt (own generator work/build_workflow.py)",
+ "language": "tr",
+ "call_variables": {
+  "customerNumber": "8-digit customer number from IVR",
+  "now": "call time, Istanbul"
+ },
+ "tool_timeout_ms": 25000,
+ "gaps": [
+  "slow-service timeout not agreed: 25 s used (12 s delay in test data)",
+  "yearly week-change flag not exposed: change always offered",
+  "transferAmount line not drafted by bank: not said",
+  "silence handled by platform inactivity monitor and prompt"
+ ]
+}
