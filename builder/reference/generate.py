@@ -56,6 +56,21 @@ def tools_for(spec: dict, api: dict) -> dict:
     return t
 
 
+def agreement_tool(spec: dict, k: int) -> dict:
+    """Model-called code tool: records one agreed product. The code reads its arguments from `params`."""
+    return {"type": "function", "function": {
+        "name": "note_agreement", "handler": "__function__:code_exec",
+        "description": "CALL it once, as soon as an allowed amount and an allowed date are agreed for this product, in the same message "
+                       "as your 'Noted' sentence. It is not a promise: nothing is recorded at the bank yet.",
+        "parameters": {"type": "object", "properties": {
+            "code": {"type": "string", "default": C.agree_source(spec)},
+            "timeout_ms": {"type": "number", "default": 10000},
+            "product_number": {"type": "string", "default": str(k)},
+            "amount": {"type": "number", "description": "the agreed amount for this product, a number such as 120.50"},
+            "date": {"type": "string", "description": "the agreed date as YYYY-MM-DD, taken from the CALENDAR"}},
+            "required": ["amount", "date"]}}}
+
+
 def build(spec: dict, api_spec: dict) -> dict:
     api = N.api_spec_tools(api_spec)
     tn = spec["tool_names"]
@@ -106,8 +121,9 @@ def build(spec: dict, api_spec: dict) -> dict:
     for k in range(1, C.MAX_PRODUCTS + 1):
         done = f"product_{k}_done"
         nodes[f"product_{k}"] = N.conversation(
-            f"product_{k}", P.product_task(spec, k), [T["transfer"]],      # no close tool: closing happens after read-back
-            [closed, give_up] + to_offer + [P.tool_move(done, f"CALL it when product {k} is settled: agreed amount and date, refused after its "
+            f"product_{k}", P.product_task(spec, k), [T["transfer"], agreement_tool(spec, k)],   # no close tool: closing happens after read-back
+            [closed, give_up] + to_offer + [N.var_is(done, f"product {k} agreed", f"p{k}_agreed", ["yes"]),
+                                            P.tool_move(done, f"CALL it when product {k} is settled without an agreement: refused after its "
                                                               "attempts, or settled by a special case.")],
             {"type": "llm"}, extraction=extraction, max_turns=40)
         nxt = [{"target_node": f"product_{k + 1}", "description": "another product follows",

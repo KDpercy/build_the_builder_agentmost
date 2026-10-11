@@ -237,7 +237,7 @@ RULES. Check the customer's replies in this order:
    - A vague period: ask once for the exact day. If they still give none, propose the deadline.
    - Amount: from the floor up to the full past-due amount, both included, is accepted. Below the floor: say you cannot accept that amount and offer the floor once; if they do not accept, that is a flat refusal (rule 4).
    - With only an amount, ask on which day they can pay it.
-   - When an allowed amount and an allowed date are agreed: say "Noted, <amount> on <weekday day month>." and in the same message call transition_to_product_{k}_done. Do not ask "Do you confirm?" here: everything is confirmed together later.
+   - When an allowed amount and an allowed date are agreed: say "Noted, <amount> on <weekday day month>." and in the same message call note_agreement with that amount and the date as YYYY-MM-DD. That moves on by itself. Do not ask "Do you confirm?" here: everything is confirmed together later.
 3. They say in words that the full amount is TOO MUCH (a plain no is NOT this): offer the floor{rest}, {'only once' if fo.get('once') else 'once'}, on the attempt 1 date. If they refuse the floor, that is a flat refusal (rule 4).
 4. A flat refusal or a non-answer about this product: make the next persuasion attempt from the list. Never repeat an offer they refused. When the attempts are used up: say "I understand." and in the same message call transition_to_product_{k}_done.
 
@@ -293,9 +293,10 @@ CLOSE
 def readback_task(spec: dict) -> str:
     return f"""Every product has been handled. Products ({{{{n_products}}}}): {{{{product_list}}}}.
 
-For each product in order, work out from the conversation its status: agreed (amount and date), refused, or settled by a special case.
-Every agreed product has a line where you said "Noted, <amount> on <date>." for it: find each of those lines. A product with such a line is agreed, even if the customer refused other products.
-If the customer named one date for everything: each product is agreed at its full past-due amount on that date, except a product whose deadline is earlier: that product is agreed on its own deadline.
+AGREED PRODUCTS, as stored by the system (this list is the truth; read back exactly these):
+{{{{agreements_text}}}}
+Every other product was refused or settled by a special case: work out which from the conversation.
+Only if that list says "none yet" and the customer named one date for everything: each product is agreed at its full past-due amount on that date, except a product whose deadline is earlier: that product is agreed on its own deadline.
 
 YOUR FIRST MESSAGE IN THIS STEP: if at least one product is agreed, the single read-back of all agreed products. Otherwise go straight to closing.
 Use the DATE WORDS and the CALENDAR below for every date you say: never work out a weekday or a date yourself.

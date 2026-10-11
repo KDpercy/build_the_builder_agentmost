@@ -4,6 +4,7 @@ No brief values here: products, fields, bands, floors, attempts and sentences co
 """
 import json
 
+from lib.calendar_code import calendar_source
 from lib.date_facts import date_facts_source
 
 MAX_PRODUCTS = 3
@@ -110,6 +111,11 @@ try:
         cal.append('- ' + sp(d) + ' (' + d.isoformat() + ')' + (' [today]' if d == today else '') + ': ' + ' '.join(parts))
         d = d + TD(days=1)
     vars['all_calendar'] = '\n'.join(cal)
+    vars['agreements_json'] = '[]'
+    vars['agreements_text'] = 'none yet'
+    for x in prods:
+        vars['p' + str(x['n']) + '_agreed'] = 'no'
+        vars['p' + str(x['n']) + '_words_id'] = x['words'] + ' (id ' + x['pid'] + ')' 
     vars['n_products'] = str(n)
     vars['prod_ids'] = ','.join(x['pid'] for x in prods)
     vars['product_list'] = '; '.join('product ' + str(x['n']) + ' = ' + x['words'] + ' (' + x['pid'] + ')' for x in prods)
@@ -154,3 +160,32 @@ def products_mapping(spec: dict) -> list:
     """get_account response -> the variable the debt code reads (a JSON list of products)."""
     path = (spec.get("products") or {}).get("response_path") or "data.products"
     return [{"path": path, "variable": "account_products"}]
+
+
+AGREE = r'''
+import json
+try:
+    p = params if isinstance(params, dict) else dict()
+except Exception:
+    p = dict()
+try:
+    k = str(p.get('product_number') or '').strip()
+    amt = float(str(p.get('amount')).replace(',', ''))
+    d = str(p.get('date') or '')[:10]
+    day = D.fromisoformat(d)
+    items = [a for a in json.loads(str(vars.get('agreements_json') or '[]')) if str(a.get('n')) != k]
+    items.append(dict(n=k, words=str(vars.get('p' + k + '_words_id') or ('product ' + k)), amount='%.2f' % amt, date=d, spoken=sp(day)))
+    items.sort(key=lambda a: int(a['n']))
+    vars['agreements_json'] = json.dumps(items)
+    vars['agreements_text'] = '\n'.join('- product ' + a['n'] + ', ' + a['words'] + ': ' + a['amount'] + ' on ' + a['spoken'] + ' (' + a['date'] + ')' for a in items)
+    vars['p' + k + '_agreed'] = 'yes'
+except Exception as e:
+    vars['agree_error'] = str(e)[:200]
+'''
+
+
+def agree_source(spec: dict) -> str:
+    """Code of the note_agreement tool: stores one agreed product (from params) in variables."""
+    src = calendar_source(spec.get("calendar") or {}) + AGREE
+    assert "{{" not in src and "}}" not in src
+    return src
