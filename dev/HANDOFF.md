@@ -20,6 +20,14 @@ Rewrite this file at the end of every session. Keep it under 40 lines.
   final briefs and who supplies model credentials on their rerun.
 
 ## Sunday log
+- 12:50-14:40 Freya mostly down (504/500/503, calls hanging). Measurements: ref-A rep1 8/9 judge-pass
+  (10th never ran), rep2 hung -> no score; rehearsal1 scoring: no simulation could be created; ref-B
+  reps3 failed on 503; B set1 0/3 = outage (0 s turns, no verdict); B set2 2/3: PUB-12, PUB-13 pass,
+  PUB-11 = platform retried the call (ledger has a complete first attempt, transcript only the
+  retry, 58 s turn, customer hung up). No agent bug found in any run today.
+  Fixes from it: run_tests watchdog cancels hung simulations mid-run (4f8674a); Freya POSTs that
+  create something are never retried (a9e6f1e). No duplicate simulations were created.
+- Cases-file build (BUILD_PRACTICE=<file>.json) never ran on the platform (Freya down); unit-tested.
 - 12:15-12:27 rehearsal (no BUILD_PRACTICE, final-day commands, dev/check_build.sh): r1 A 3 min $0.74,
   r2 A+B 2.5 min $0.69, r3 V1 4 docs $0.52 -> found hardship `line` without the required sympathy
   sentence (fixed lines are spoken verbatim); fixed in read-brief + SPEC.md (ea5d33e), r3 rerun $0.70: ok.
