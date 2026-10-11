@@ -2,19 +2,21 @@
 
 Rewrite this file at the end of every session. Keep it under 40 lines.
 
-## MORNING REPORT (Sun 11 Oct, written ~00:55)
-- Our builder works end to end. Run 1 (Brief A): 7.5 min, $0.79, its own test 10/10.
-  Run 2 (raw-material variant V1, no practice customers): 2.7 min, $0.81, spec matches the
-  answer key, both memo overrides applied. Total builder spend tonight $1.60.
-- Reference agents (generic code from a spec): A 9/10 (the 1 fail was a judge glitch),
-  B 3/3, PUB-06/PUB-10 3/3 each. 69 unit tests green. No practice-brief names in builder code.
-- (RESOLVED 09:55: Kerem stopped it on the Simulation page of the web app. A stuck
-  simulation can be stopped there.) WAS BLOCKER: Freya simulation ba5fc132 stuck in 'running' since 00:06; every new simulation is
-  refused. Ask Freya (dev@freyavoice.ai) to clear it. The waiting client was stopped at 00:55
-  (no polling overnight). When clear, run Brief A on the run-1 agent:
-  source env.sh && python3 tools/run_cases.py 1e3ff1a8-4477-4b94-a6e5-54054a299c0a --brief A --reps 3 --out results/rehearsal-a-reps3.json
-- First thing today: if unblocked, `--reps 3` on rehearsal-a; then a builder run on Brief B
-  (BUILD_PRACTICE=B); then Phase 5 rehearsal (section 7 of PLAN). GitHub remote still missing.
+## NOW (Sun 11 Oct ~12:10) - read this first after a compaction
+- Final briefs at 19:00 Madrid; our freeze 17:00. Runbook: dev/RUNBOOK.md. Repo pushed to
+  github.com/KDpercy/build_the_builder_agentmost (git push works from Claude's shell).
+- Builder works end to end (builder/README.md). Last runs: A (run 5) 9/10 self-test, $1.04;
+  V2 variant (unforeseen rules) handled by editing its generator copy, $1.01. Spend ~$5.09/10.
+- Freya API DOWN since ~11:36 (504 on everything). An old wrapper (pid 7259, started 11:36,
+  measuring reference A --reps 3) is still waiting: do NOT kill it (tip 3).
+- Step 1 still to do when Freya is back: measure ref-a (agent cbc21b5c) --reps 3 and ref-b
+  (7ca97613) --reps 3 + dev/cases/b-set1/2.json, via `python3 builder/run_tests.py ...`.
+  Both were regenerated from dev/specs with all fixes (versions 10 and 13).
+- Then: 16:00 rehearsal of the runbook (fresh builds of A and A+B), 17:00 freeze.
+- Platform tips adopted (dev/KIT_NOTES.md): retry 5xx, never kill run_cases, cancel stuck
+  simulations via POST /api/v2/simulations/{id}/cancel, outage != agent bug.
+- Kerem to do: top up the Anthropic key a little; ask Freya about practice customers for the
+  final briefs and who supplies model credentials on their rerun.
 
 ## Sunday log
 - 09:55 rehearsal-a (builder run 1, Brief A) --reps 3: 9/10. Only PUB-10 1/3: its opening said
