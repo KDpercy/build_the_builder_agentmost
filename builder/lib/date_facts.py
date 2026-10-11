@@ -59,7 +59,8 @@ def calendar_lines(today, deadline, days_after=21):
     while x <= deadline + TD(days=days_after):
         tag = sp(x) + ' (' + x.isoformat() + ')' + (' [today]' if x == today else '')
         if x > deadline:
-            act = 'AFTER the deadline. The latest date you can record is ' + sp(deadline) + '; offer it.'
+            act = ('AFTER the deadline. Say: "The latest date I can record is ' + sp(deadline) + '. Can you pay on that day?" '
+                   'If they say yes, ' + sp(deadline) + ' is the agreed date: do not ask for another day.')
         elif isbiz(x):
             act = 'OK, can be recorded.'
         else:

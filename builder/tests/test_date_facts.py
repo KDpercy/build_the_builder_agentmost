@@ -67,6 +67,7 @@ class TestDateFacts(unittest.TestCase):
         text = ns["calendar_lines"](D(2030, 3, 1), D(2030, 3, 14), 2)
         self.assertIn("Monday 4 March 2030 (2030-03-04): NOT allowed, a bank holiday. Offer the next business day, Tuesday 5 March 2030.", text)
         self.assertIn("Friday 15 March 2030 (2030-03-15): AFTER the deadline", text)
+        self.assertIn("Can you pay on that day?", text)
 
     def test_now_variable_name_comes_from_the_spec(self):
         v = {"stamp": "2030-03-01T12:15"}

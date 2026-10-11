@@ -117,7 +117,7 @@ try:
         parts = []
         for x in prods:
             if d > x['deadline']:
-                act = 'after its deadline; the latest date for it is ' + sp(x['deadline'])
+                act = 'after its deadline; offer exactly ' + sp(x['deadline']) + ' (its latest date) and, on a yes, that is the agreed date'
             elif isbiz(d):
                 act = 'OK'
             else:
