@@ -1,53 +1,337 @@
 {
- "agent_identity": "the Freya Bank assistant",
+ "agent_identity": "Freya Bank's digital assistant",
  "customer_variable": "customer_id",
  "now_variable": "now",
  "address_as": "{{title}} {{last_name}}",
- "opening": {"first_sentence": "Hello, this is an automated assistant calling from Freya Bank.", "ask": "Am I speaking with {{title}} {{first_name}} {{last_name}}?"},
- "forbidden_before_verification": ["debt", "past due", "overdue", "late payment", "owe"],
- "confirmation_words": {"confirms": ["yes", "speaking", "that's me"], "does_not_confirm": ["hello", "who is this", "what is this about"], "asks": 2, "close_if_unclear": ["not_reached", "unclear"]},
- "identity": {"questions": [{"value": "date_of_birth", "ask": "what is your date of birth?", "kind": "date"},
-                            {"value": "phone_last4", "ask": "what are the last four digits of your phone number?", "kind": "digits:4"}],
-              "question_field": "field", "answer_field": "answer", "numeric_date_order": "dmy", "wrong_answer_limit": 3,
-              "first_line": "Thank you. Before we continue I need to check two security questions. First, what is your date of birth?",
-              "response": {"ok": "ok", "verified": "verified", "all_verified": "all_verified", "left": "wrong_answers_left", "hint": "hint"},
-              "hints": {"day_month_swapped": "Ask the customer to repeat the date of birth, saying the month as a word."},
-              "on_failed": {"say": "I'm sorry, I could not verify your identity, so I cannot continue this call.", "close": ["not_verified", "failed"]},
-              "on_declined": {"explain_once": "the questions protect your account", "counts_as_declining": "refusing to answer after the explanation", "close": ["not_verified", "declined"]}},
- "calendar": {"holidays": [], "weekend": [5, 6], "count_today": false},
- "bands": [{"name": "all", "min_days": 1, "max_days": 9999, "deadline": "business_days_after_today:5", "attempts": 2}],
- "products": {"type_field": "type", "fields": {"id": "product_id", "due_amount": "past_due", "late_days": "days_late"},
-              "types": {"credit_card": {"spoken": "credit card ending {card_last4}", "floor_field": "minimum_payment"},
-                        "personal_loan": {"spoken": "personal loan", "floor_field": "instalment_amount"},
-                        "car_loan": {"spoken": "car loan", "floor_field": "instalment_amount"}},
-              "response_path": "data.products"},
- "debt_statement": "I'm calling about late payments on your accounts with Freya Bank.",
- "first_ask": "Can you pay the full amount today?",
- "first_ask_all": "Can you pay all of them today?",
- "persuasion": {"attempts": [{"amount": "full", "date": "deadline"}, {"amount": "floor", "date": "deadline"}],
-                "floor_offer": {"once": true, "say_with_offer": "the rest of the amount stays due"},
-                "close_refused": ["no_promise", "refused"]},
- "callback": {"days": ["next_business_day"], "from": "09:00", "to": "17:00", "later_than_now": true, "ask_again_once": true, "close_booked": ["not_reached", "callback"], "close_none": ["not_reached", "no_callback"]},
- "third_party": {"wrong_number": ["not_reached", "wrong_number"], "deceased": {"say": "I'm very sorry for your loss.", "close": ["not_reached", "deceased"]}},
- "special_cases": [
-  {"name": "restructuring", "trigger": "the customer asks to restructure the debt or for a payment plan", "precedence": 1, "action": "transfer to the restructuring queue; promises already recorded stay, promises agreed but not recorded are not recorded; add no notes", "transfer": "restructuring", "close": ["transferred", "restructuring"]},
-  {"name": "human", "trigger": "the customer asks for a human", "precedence": 2, "action": "transfer to the general queue; add no notes", "transfer": "general", "close": ["transferred", "human"]},
-  {"name": "dispute", "trigger": "the customer disputes one product", "precedence": 3, "action": "note that product with reason dispute and continue with the other products"},
-  {"name": "paid", "trigger": "the customer says one product is already paid", "precedence": 3, "action": "note that product with reason paid and continue with the other products"},
-  {"name": "hardship", "trigger": "the customer says they cannot pay one product because of hardship", "precedence": 4, "action": "note that product with reason hardship and continue with the other products"}
+ "opening": {
+  "first_sentence": "Hello, this is a digital assistant calling from Freya Bank, and please note that this call is being taped.",
+  "ask": "Am I speaking with {{title}} {{last_name}}?"
+ },
+ "forbidden_before_verification": [
+  "collections",
+  "debt",
+  "payment",
+  "credit card",
+  "personal loan",
+  "car loan"
  ],
- "outcome_logic": {"on_transfer": "transferred", "reason_by_queue": {"restructuring": "restructuring", "general": "human", "support": "support"},
-                   "on_promise": "promise", "all_notes_paid": "paid", "paid_note": "paid", "no_deal": "no_promise",
-                   "verify_failed": ["not_verified", "failed"], "promise_failed": ["no_promise", "service_error"]},
- "notes": {"used": true, "reasons": ["refused", "hardship", "dispute", "paid", "service_error"], "service_error_reason": "service_error"},
- "sentences": {"after_promise": "Thank you, your payment promise is recorded."},
- "read_back": {"ask": "Is that all correct?"},
- "robot_question": "Say honestly that you are an automated assistant of Freya Bank.",
- "scam_question": "Say the customer can call Freya Bank on the number on their card to check this call is genuine; never ask for card numbers or passwords.",
- "never_offer": ["a discount", "a fee waiver", "debt forgiveness"],
- "restricted_words": ["recorded"],
- "tool_names": {"verify": "verify_identity", "account": "get_account", "promise": "create_promise", "callback": "schedule_callback", "transfer": "transfer_to_agent", "note": "add_note", "close": "close_call"},
- "tool_fields": {"customer": "customer_id", "product": "product_id", "amount": "amount", "date": "date", "queue": "queue", "note_reason": "reason", "outcome": "outcome", "reason": "reason"},
- "gaps": ["Brief A is not in input/: opening sentence, forbidden words, identity order and limits, calendar holidays, bands and deadlines, persuasion attempts (rule 30), callback window, special cases (rule 41), outcome reasons and required sentences are placeholders chosen as safe defaults, not brief values",
-          "call variable names taken from docs/api.md example (customer_id, first_name, last_name, title, now)"]
+ "confirmation_words": {
+  "confirms": [
+   "yes",
+   "that's me",
+   "speaking",
+   "the customer's own name"
+  ],
+  "does_not_confirm": [
+   "hello",
+   "go ahead",
+   "who is this"
+  ],
+  "asks": 2,
+  "close_if_unclear": [
+   "not_reached",
+   "unclear"
+  ]
+ },
+ "identity": {
+  "questions": [
+   {
+    "value": "date_of_birth",
+    "ask": "What is your date of birth?",
+    "kind": "date"
+   },
+   {
+    "value": "phone_last4",
+    "ask": "What are the last four digits of the phone number we have on file for you?",
+    "kind": "digits:4"
+   }
+  ],
+  "question_field": "field",
+  "answer_field": "answer",
+  "numeric_date_order": "dmy",
+  "wrong_answer_limit": 3,
+  "first_line": "Thank you. Before we continue I need to ask two security questions. First, what is your date of birth?",
+  "response": {
+   "ok": "ok",
+   "verified": "verified",
+   "all_verified": "all_verified",
+   "left": "wrong_answers_left",
+   "hint": "hint"
+  },
+  "hints": {
+   "day_month_swapped": "Ask the customer to say the month of their date of birth as a word. This retry does not count as a wrong answer."
+  },
+  "on_failed": {
+   "say": "Tell the customer to use the mobile app or a branch. Do not state anything about the account.",
+   "close": [
+    "not_verified",
+    "failed"
+   ]
+  },
+  "on_declined": {
+   "explain_once": "the questions protect their account",
+   "counts_as_declining": "asking what the call is about instead of answering; a second refusal or a second such question closes the call",
+   "close": [
+    "not_verified",
+    "declined"
+   ]
+  }
+ },
+ "calendar": {
+  "holidays": [
+   "2026-10-26",
+   "2026-11-11",
+   "2026-11-26",
+   "2026-12-25",
+   "2027-01-01"
+  ],
+  "weekend": [
+   5,
+   6
+  ],
+  "count_today": false
+ },
+ "bands": [
+  {
+   "name": "early",
+   "min_days": 1,
+   "max_days": 7,
+   "deadline": "business_days_after_today:12",
+   "attempts": 1
+  },
+  {
+   "name": "late",
+   "min_days": 8,
+   "max_days": 45,
+   "deadline": "business_days_after_today:7",
+   "attempts": 2
+  }
+ ],
+ "products": {
+  "type_field": "type",
+  "fields": {
+   "id": "product_id",
+   "due_amount": "past_due",
+   "late_days": "days_late"
+  },
+  "types": {
+   "credit_card": {
+    "spoken": "credit card ending {card_last4}",
+    "floor_field": "minimum_payment"
+   },
+   "personal_loan": {
+    "spoken": "personal loan",
+    "floor_field": "instalment_amount"
+   },
+   "car_loan": {
+    "spoken": "car loan",
+    "floor_field": "instalment_amount"
+   }
+  },
+  "response_path": "products"
+ },
+ "debt_statement": "I am calling from the collections team about a late payment.",
+ "first_ask": "Can you make this payment today?",
+ "first_ask_all": "Can you make all of these payments today?",
+ "persuasion": {
+  "attempts": [
+   {
+    "amount": "full_or_floor_if_too_much",
+    "date": "last_business_day_this_week_or_next_if_today"
+   },
+   {
+    "amount": "floor",
+    "date": "deadline"
+   }
+  ],
+  "floor_offer": {
+   "once": true,
+   "say_with_offer": "the rest stays overdue"
+  },
+  "close_refused": [
+   "no_promise",
+   "refused"
+  ]
+ },
+ "callback": {
+  "days": [
+   "today",
+   "next_business_day"
+  ],
+  "from": "10:00",
+  "to": "19:00",
+  "later_than_now": true,
+  "ask_again_once": true,
+  "close_booked": [
+   "not_reached",
+   "callback"
+  ],
+  "close_none": [
+   "not_reached",
+   "no_callback"
+  ]
+ },
+ "third_party": {
+  "wrong_number": [
+   "not_reached",
+   "wrong_number"
+  ],
+  "deceased": {
+   "say": "I am sorry for your loss.",
+   "close": [
+    "not_reached",
+    "deceased"
+   ]
+  }
+ },
+ "special_cases": [
+  {
+   "name": "hardship",
+   "trigger": "the customer mentions illness, a death in the family or job loss",
+   "precedence": 1,
+   "action": "say one short sentence of sympathy, make no persuasion attempt, offer to connect them with the customer support team. If they still name a date or an amount themselves, record the promise under the normal date and amount rules.",
+   "line": "I am sorry to hear that. Would you like me to connect you with our customer support team?",
+   "accept": {
+    "transfer": "support",
+    "close": [
+     "transferred",
+     "support"
+    ]
+   },
+   "decline": {
+    "close": [
+     "no_promise",
+     "hardship"
+    ],
+    "note": "hardship"
+   }
+  },
+  {
+   "name": "already_paid",
+   "trigger": "the customer says they already paid this past-due amount",
+   "action": "say that payments can take one business day to appear, take no promise for that product; note it as paid and continue with the other products",
+   "note": "paid",
+   "precedence": 4
+  },
+  {
+   "name": "dispute",
+   "trigger": "the customer says the debt is not theirs, they never had the product, or the product was closed or paid off in the past",
+   "action": "do not argue, take no promise for that product; note it as dispute and continue with the other products",
+   "note": "dispute",
+   "precedence": 5
+  },
+  {
+   "name": "restructuring",
+   "trigger": "the customer asks for a new payment plan or lower instalments",
+   "action": "do not describe a plan; transfer to restructuring. Promises agreed but not yet recorded are not recorded. Add no notes.",
+   "transfer": "restructuring",
+   "close": [
+    "transferred",
+    "restructuring"
+   ],
+   "precedence": 3
+  },
+  {
+   "name": "human",
+   "trigger": "the customer asks for a human (before or after verification)",
+   "action": "ask once whether you can help first; if they insist, transfer to general. Add no notes.",
+   "transfer": "general",
+   "close": [
+    "transferred",
+    "human"
+   ],
+   "precedence": 2
+  },
+  {
+   "name": "change_promise",
+   "trigger": "the customer asks to change or cancel a recorded promise",
+   "action": "say they can change it in the mobile app",
+   "precedence": 7
+  },
+  {
+   "name": "unknown_question",
+   "trigger": "a question the tools cannot answer",
+   "action": "say you do not have that information; never invent figures, dates or reasons",
+   "precedence": 8
+  },
+  {
+   "name": "no_talk",
+   "trigger": "the customer says twice that they do not want to talk",
+   "action": "after verification close as no_promise / refused; before verification close as not_verified / declined",
+   "close": [
+    "no_promise",
+    "refused"
+   ],
+   "precedence": 6
+  }
+ ],
+ "outcome_logic": {
+  "on_transfer": "transferred",
+  "reason_by_queue": {
+   "restructuring": "restructuring",
+   "general": "human",
+   "support": "support"
+  },
+  "on_promise": "promise",
+  "all_notes_paid": "paid",
+  "paid_note": "paid",
+  "no_deal": "no_promise",
+  "verify_failed": [
+   "not_verified",
+   "failed"
+  ],
+  "promise_failed": [
+   "no_promise",
+   "service_error"
+  ]
+ },
+ "notes": {
+  "used": true,
+  "reasons": [
+   "refused",
+   "hardship",
+   "dispute",
+   "paid",
+   "service_error"
+  ],
+  "service_error_reason": "service_error"
+ },
+ "sentences": {
+  "after_promise": "You will receive a text message confirming this promise."
+ },
+ "read_back": {
+  "ask": "Do you confirm?"
+ },
+ "robot_question": "Say that you are Freya Bank's digital assistant and continue.",
+ "scam_question": "Say they can verify the call by phoning Freya Bank's customer service number, and continue.",
+ "never_offer": [
+  "a discount",
+  "a waiver",
+  "an instalment plan",
+  "any term that is not in the brief"
+ ],
+ "tool_names": {
+  "verify": "verify_identity",
+  "account": "get_account",
+  "promise": "create_promise",
+  "callback": "schedule_callback",
+  "transfer": "transfer_to_agent",
+  "note": "add_note",
+  "close": "close_call"
+ },
+ "tool_fields": {
+  "customer": "customer_id",
+  "product": "product_id",
+  "amount": "amount",
+  "date": "date",
+  "queue": "queue",
+  "note_reason": "reason",
+  "outcome": "outcome",
+  "reason": "reason"
+ },
+ "gaps": [
+  "exact first-sentence wording is not given (content only)",
+  "wording of security questions not given",
+  "tool failure handling for tools other than create_promise not specified: safe retry once then close honestly"
+ ]
 }

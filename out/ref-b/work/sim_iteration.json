@@ -1,0 +1,146 @@
+{
+ "iteration": {
+  "id": "ceccd8ac-88a6-4b27-8dad-e5b9aa6109e7",
+  "simulationId": "f9473ed6-e909-4300-8f0f-1d157b8e5365",
+  "workspaceId": "2d9ed387-29a0-4e65-97e4-db71197ac6f8",
+  "mode": "chat",
+  "iterationIndex": 1,
+  "label": "Initial run",
+  "notes": null,
+  "status": "running",
+  "source": "manual",
+  "totalRuns": 3,
+  "passedRuns": 0,
+  "failedRuns": 0,
+  "inconclusiveRuns": 3,
+  "errorRuns": 0,
+  "analyzingRuns": 0,
+  "passRate": 0,
+  "agent": {
+   "id": "7ca97613-ffbe-447a-be26-199626f6b126",
+   "name": "ref-b 1010-210621",
+   "entityType": "workflow",
+   "workflowId": "30b0b7a1-538f-4f7f-a030-9adc54b35383"
+  },
+  "agentVersionId": "300495fc-4af0-4a2f-bfa0-e79ffa98d96f",
+  "agentVersionNumber": 9,
+  "themeCounts": [],
+  "createdAt": "2026-10-11T08:18:00.094Z",
+  "updatedAt": "2026-10-11T08:24:59.053Z",
+  "startedAt": "2026-10-11T08:18:01.167Z",
+  "params": {
+   "runsPerPersona": 1,
+   "maxConcurrentCalls": 5,
+   "personaLlmOverride": {
+    "model": "gemini-3-flash-preview",
+    "provider": "google"
+   },
+   "routingLlmOverride": {
+    "model": "experimental-5",
+    "provider": "experimental-5"
+   },
+   "analysisLlmOverride": {
+    "model": "gemini-3-flash-preview",
+    "provider": "google"
+   },
+   "assistantLlmOverride": {
+    "model": "experimental-5",
+    "provider": "experimental-5"
+   },
+   "extractionLlmOverride": {
+    "model": "experimental-5",
+    "provider": "experimental-5"
+   }
+  }
+ },
+ "runs": [
+  {
+   "id": "61722707-0a1b-4f57-bd2d-0378389dbb77",
+   "callId": "f3e2479f-8ada-4211-908c-d873591f128d",
+   "outcome": "analyzing",
+   "reason": null,
+   "personaId": "89f563b5-a9c7-4818-8fb5-caf8aae561a8",
+   "personaName": "PUB-11 Three products, one date for all",
+   "personaPrompt": "OUTPUT RULE: Write only the words you say on the phone. No stage directions, no brackets. One or two short sentences per turn, then wait for the other side.\n\nWHO YOU ARE: You are Sofia Almeida. Your date of birth is 1987-06-03 (say it in words, like '14 March 1988'). The last four digits of your pho\u2026",
+   "personaTags": [
+    "hackathon",
+    "brief-B"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "300495fc-4af0-4a2f-bfa0-e79ffa98d96f",
+   "agentVersionNumber": 9,
+   "agentId": "7ca97613-ffbe-447a-be26-199626f6b126",
+   "agentName": "ref-b 1010-210621",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "30b0b7a1-538f-4f7f-a030-9adc54b35383",
+   "turnCount": null,
+   "startedAt": "2026-10-11T08:24:23.415Z",
+   "endedAt": null,
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 1,
+   "maxAttempts": 4
+  },
+  {
+   "id": "acf6eb0d-553f-4a3a-a513-2d7ada2b24fa",
+   "callId": "357deb0d-7be5-45d7-a4b8-db3bcee7fae2",
+   "outcome": "analyzing",
+   "reason": null,
+   "personaId": "56ff0ea8-3e91-4769-b345-a924ff37f990",
+   "personaName": "PUB-13 One date for both, but the deadlines differ",
+   "personaPrompt": "OUTPUT RULE: Write only the words you say on the phone. No stage directions, no brackets. One or two short sentences per turn, then wait for the other side.\n\nWHO YOU ARE: You are Elena Rossi. Your date of birth is 1991-01-08 (say it in words, like '14 March 1988'). The last four digits of your phone\u2026",
+   "personaTags": [
+    "hackathon",
+    "brief-B"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "300495fc-4af0-4a2f-bfa0-e79ffa98d96f",
+   "agentVersionNumber": 9,
+   "agentId": "7ca97613-ffbe-447a-be26-199626f6b126",
+   "agentName": "ref-b 1010-210621",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "30b0b7a1-538f-4f7f-a030-9adc54b35383",
+   "turnCount": null,
+   "startedAt": "2026-10-11T08:24:23.270Z",
+   "endedAt": null,
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 1,
+   "maxAttempts": 4
+  },
+  {
+   "id": "0c17dee6-3bd7-4977-9b55-526757910b2c",
+   "callId": "efd02672-9746-4a0b-abdb-7fd39254209b",
+   "outcome": "analyzing",
+   "reason": null,
+   "personaId": "243fab11-61c1-46e0-a8f6-6bce1644ed4f",
+   "personaName": "PUB-12 Promises one product, refuses two",
+   "personaPrompt": "OUTPUT RULE: Write only the words you say on the phone. No stage directions, no brackets. One or two short sentences per turn, then wait for the other side.\n\nWHO YOU ARE: You are Marcus Bell. Your date of birth is 1983-10-19 (say it in words, like '14 March 1988'). The last four digits of your phone\u2026",
+   "personaTags": [
+    "hackathon",
+    "brief-B"
+   ],
+   "personaVersionNumber": 1,
+   "agentVersionId": "300495fc-4af0-4a2f-bfa0-e79ffa98d96f",
+   "agentVersionNumber": 9,
+   "agentId": "7ca97613-ffbe-447a-be26-199626f6b126",
+   "agentName": "ref-b 1010-210621",
+   "agentEntityType": "workflow",
+   "agentWorkflowId": "30b0b7a1-538f-4f7f-a030-9adc54b35383",
+   "turnCount": null,
+   "startedAt": "2026-10-11T08:24:22.746Z",
+   "endedAt": null,
+   "avgLatencyMs": null,
+   "interruptionCount": null,
+   "assertions": [],
+   "customMetrics": [],
+   "attempts": 1,
+   "maxAttempts": 4
+  }
+ ],
+ "runsTotal": 3
+}
