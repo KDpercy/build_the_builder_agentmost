@@ -45,6 +45,17 @@ class TestBuild(unittest.TestCase):
             self.assertIn("run_tests.py <agent_id> --cases input/practice-cases.json", text)
             self.assertIn("NO practice customers", B.prompt_for("s", "api.json", ["b.md"], 0))
 
+    def test_case_folder_is_accepted_by_main(self):
+        with tempfile.TemporaryDirectory() as d:
+            env = dict(os.environ)
+            os.environ.pop("BUILD_TOOL_BASE_URL", None)
+            try:
+                with self.assertRaises(SystemExit) as e:      # passes the argument check, then needs the base URL
+                    B.main(["build.py", d])
+                self.assertIn("BUILD_TOOL_BASE_URL", str(e.exception))
+            finally:
+                os.environ.clear(); os.environ.update(env)
+
     def test_trace_scrubs_keys(self):
         with tempfile.TemporaryDirectory() as d:
             os.environ["FREYA_BANK_TEAM_KEY"] = "team-secret-123456"

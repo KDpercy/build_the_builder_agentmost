@@ -298,7 +298,7 @@ def generate_from_spec(st: pathlib.Path, api_file: pathlib.Path, trace: Trace) -
 
 
 def main(argv: list) -> int:
-    if len(argv) < 3:
+    if len(argv) < 3 and not (len(argv) == 2 and pathlib.Path(argv[1]).is_dir()):
         print(__doc__)
         return 2
     case = pathlib.Path(argv[1]).resolve() if len(argv) == 2 and pathlib.Path(argv[1]).is_dir() else None
