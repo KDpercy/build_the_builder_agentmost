@@ -35,7 +35,7 @@ MODEL = os.environ.get("BUILDER_MODEL", "claude-opus-5-5")
 PRACTICE_CASES = "practice-cases.json"
 KIT_FILES = ["freya.py", "docs", "tools", "examples/base-agent.json", "public-test-set.json"]
 # builder/tests is staged for its invented example spec (test_generate.py); it has no brief values.
-BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/smoke.py", "builder/run_tests.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
+BUILDER_FILES = ["builder/lib", "builder/validate.py", "builder/smoke.py", "builder/run_tests.py", "builder/chat_test.py", "builder/sim_test.py", "builder/reference", "builder/tests", "builder/PATTERNS.md"]
 SKILLS_DIR = ROOT / "builder" / "skills"
 SECRET_PATTERNS = [re.compile(r"fak_[A-Za-z0-9_\-]+"), re.compile(r"sk-ant-[A-Za-z0-9_\-]+")]
 

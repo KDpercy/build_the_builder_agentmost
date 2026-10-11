@@ -56,6 +56,14 @@ class TestBuild(unittest.TestCase):
             finally:
                 os.environ.clear(); os.environ.update(env)
 
+    def test_every_script_the_skills_name_is_staged(self):
+        import re
+        named = set()
+        for skill in (B.ROOT / "builder" / "skills").rglob("SKILL.md"):
+            named |= set(re.findall(r"builder/[\w/]+\.py", skill.read_text()))
+        staged = lambda p: any(p == f or p.startswith(f + "/") for f in B.BUILDER_FILES)
+        self.assertEqual(sorted(p for p in named if not staged(p)), [])
+
     def test_trace_scrubs_keys(self):
         with tempfile.TemporaryDirectory() as d:
             os.environ["FREYA_BANK_TEAM_KEY"] = "team-secret-123456"
